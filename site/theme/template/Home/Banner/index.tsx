@@ -27,13 +27,13 @@ const Banner = (props: { location: any }) => {
           </p>
 
           <div className="home-banner-content-operations">
-            <Link to={getLocalizedPathname('/docs/react/introduce', isZhCN, location.query)}>
+            <Link to='/components/overview-cn/'>
               <Button type="primary" shape="round">
                 <FormattedMessage id="app.home.getting-started" />
               </Button>
             </Link>
             <Link to={getLocalizedPathname('/docs/spec/introduce', isZhCN, location.query)}>
-              <Button shape="round" ghost>
+              <Button shape="round" ghost disabled>
                 <FormattedMessage id="app.home.design-language" />
               </Button>
             </Link>

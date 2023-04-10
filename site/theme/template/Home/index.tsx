@@ -6,7 +6,6 @@ import Banner from './Banner';
 import RecommendPage from './RecommendPage';
 import DesignPage from './DesignPage';
 import MorePage from './MorePage';
-import Footer from '../Layout/Footer';
 import { getLocalizedPathname } from '../utils';
 import './index.less';
 
@@ -65,11 +64,8 @@ const Home = (props: { location: any }) => {
     <div className="home-container">
       <style dangerouslySetInnerHTML={{ __html: getStyle() }} />
       <Banner location={location} />
-      <div style={{ maxWidth: 1256, margin: '0 auto' }}>
-        <BlockContent title={<FormattedMessage id="app.home.recommend" />}>
-          <RecommendPage />
-        </BlockContent>
 
+      <div style={{ maxWidth: 1256, margin: '0 auto', filter: 'opacity(0.2) grayscale(1)' }}>
         <BlockContent title={<FormattedMessage id="app.home.design-and-framework" />}>
           <DesignPage location={location} />
         </BlockContent>
@@ -85,7 +81,6 @@ const Home = (props: { location: any }) => {
           <MorePage />
         </BlockContent>
       </div>
-      <Footer location={location} />
     </div>
   );
 };

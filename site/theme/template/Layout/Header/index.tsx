@@ -257,35 +257,6 @@ const Header: React.FC<HeaderProps & WrappedComponentProps<'intl'>> = props => {
 
         let menu: (React.ReactElement | null)[] = [
           navigationNode,
-          <Select
-            key="version"
-            className="version"
-            size="small"
-            defaultValue={antdVersion}
-            onChange={handleVersionChange}
-            dropdownStyle={getDropdownStyle}
-            getPopupContainer={trigger => trigger.parentNode}
-          >
-            {versionOptions}
-          </Select>,
-          <Button
-            size="small"
-            onClick={onLangChange}
-            className="header-button header-lang-button"
-            key="lang-button"
-          >
-            <FormattedMessage id="app.header.lang" />
-          </Button>,
-          <Button
-            size="small"
-            onClick={onDirectionChange}
-            className="header-button header-direction-button"
-            key="direction-button"
-          >
-            {nextDirectionText}
-          </Button>,
-          <More key="more" {...sharedProps} />,
-          <Github key="github" responsive={responsive} />,
         ];
 
         if (windowWidth < RESPONSIVE_XS) {

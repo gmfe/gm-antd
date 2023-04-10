@@ -1,19 +1,8 @@
 {
-  "name": "antd",
-  "version": "4.24.0",
+  "name": "gm-antd",
+  "version": "4.24.8",
   "description": "An enterprise-class UI design language and React components implementation",
   "title": "Ant Design",
-  "keywords": [
-    "ant",
-    "component",
-    "components",
-    "design",
-    "framework",
-    "frontend",
-    "react",
-    "react-component",
-    "ui"
-  ],
   "homepage": "https://ant.design",
   "bugs": {
     "url": "https://github.com/ant-design/ant-design/issues"
