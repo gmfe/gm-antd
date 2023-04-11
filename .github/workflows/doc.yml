@@ -39,7 +39,7 @@ jobs:
       - name: Build
         run: |
           yarn
-          yarn build
+          yarn run version
           yarn site
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
