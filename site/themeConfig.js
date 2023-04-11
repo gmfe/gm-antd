@@ -22,6 +22,7 @@ module.exports = {
     Other: 6,
     Deprecated: 7,
 
+    开始: -2,
     组件总览: -1,
     通用: 0,
     布局: 1,

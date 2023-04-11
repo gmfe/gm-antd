@@ -116,7 +116,15 @@ const webpackVariableConfig = injectLessVariables(getWebpackConfig(false), {
 
 if (process.env.RUN_ENV === 'PRODUCTION') {
   webpackConfig.forEach(config => {
-    ignoreMomentLocale(config);
+    // if (config.output.library) config.output.library = config.output.library.replace('gm-', '');
+    // config.entry = Object.keys(config.entry).reduce((prev, key) => {
+    //   if (key.indexOf('gm-') > -1) {
+    //     prev[key.replace('gm-', '')] = config.entry[key];
+    //     delete config.entry[key];
+    //   }
+    //   return prev;
+    // }, {});
+  ignoreMomentLocale(config);
     externalMoment(config);
     addLocales(config);
     // Reduce non-minified dist files size

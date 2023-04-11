@@ -220,7 +220,7 @@ export default class Layout extends React.Component<LayoutPropsType, LayoutState
     const { appLocale, direction, isMobile, theme, setTheme, setIframeTheme } = this.state;
     const title =
       appLocale.locale === 'zh-CN'
-        ? 'Ant Design - 一套企业级 UI 设计语言和 React 组件库'
+        ? 'GM Ant Design - AntD二次开发文档'
         : "Ant Design - The world's second most popular React UI framework";
     const description =
       appLocale.locale === 'zh-CN'

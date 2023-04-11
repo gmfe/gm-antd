@@ -662,7 +662,6 @@ exports[`renders ./components/table/demo/basic.md extend context correctly 1`] =
       </div>
       <ul
         class="ant-pagination ant-table-pagination ant-table-pagination-right"
-        unselectable="unselectable"
       >
         <li
           aria-disabled="true"
@@ -879,7 +878,6 @@ exports[`renders ./components/table/demo/bordered.md extend context correctly 1`
       </div>
       <ul
         class="ant-pagination ant-table-pagination ant-table-pagination-right"
-        unselectable="unselectable"
       >
         <li
           aria-disabled="true"
@@ -1159,7 +1157,6 @@ exports[`renders ./components/table/demo/colspan-rowspan.md extend context corre
       </div>
       <ul
         class="ant-pagination ant-table-pagination ant-table-pagination-right"
-        unselectable="unselectable"
       >
         <li
           aria-disabled="true"
@@ -1856,7 +1853,6 @@ exports[`renders ./components/table/demo/custom-filter-panel.md extend context c
       </div>
       <ul
         class="ant-pagination ant-table-pagination ant-table-pagination-right"
-        unselectable="unselectable"
       >
         <li
           aria-disabled="true"
@@ -2056,7 +2052,6 @@ exports[`renders ./components/table/demo/drag-sorting.md extend context correctl
       </div>
       <ul
         class="ant-pagination ant-table-pagination ant-table-pagination-right"
-        unselectable="unselectable"
       >
         <li
           aria-disabled="true"
@@ -4765,7 +4760,6 @@ Array [
         </div>
         <ul
           class="ant-pagination ant-table-pagination ant-table-pagination-right"
-          unselectable="unselectable"
         >
           <li
             aria-disabled="true"
@@ -5144,7 +5138,6 @@ exports[`renders ./components/table/demo/edit-cell.md extend context correctly 1
         </div>
         <ul
           class="ant-pagination ant-table-pagination ant-table-pagination-right"
-          unselectable="unselectable"
         >
           <li
             aria-disabled="true"
@@ -5587,7 +5580,6 @@ exports[`renders ./components/table/demo/edit-row.md extend context correctly 1`
       </div>
       <ul
         class="ant-pagination ant-table-pagination ant-table-pagination-right"
-        unselectable="unselectable"
       >
         <li
           aria-disabled="true"
@@ -6148,7 +6140,6 @@ exports[`renders ./components/table/demo/ellipsis.md extend context correctly 1`
       </div>
       <ul
         class="ant-pagination ant-table-pagination ant-table-pagination-right"
-        unselectable="unselectable"
       >
         <li
           aria-disabled="true"
@@ -6734,7 +6725,6 @@ exports[`renders ./components/table/demo/ellipsis-custom-tooltip.md extend conte
       </div>
       <ul
         class="ant-pagination ant-table-pagination ant-table-pagination-right"
-        unselectable="unselectable"
       >
         <li
           aria-disabled="true"
@@ -7031,7 +7021,6 @@ exports[`renders ./components/table/demo/expand.md extend context correctly 1`] 
       </div>
       <ul
         class="ant-pagination ant-table-pagination ant-table-pagination-right"
-        unselectable="unselectable"
       >
         <li
           aria-disabled="true"
@@ -7267,7 +7256,7 @@ exports[`renders ./components/table/demo/filter-in-tree.md extend context correc
                                 <div
                                   aria-hidden="true"
                                   class="ant-tree-treenode"
-                                  style="position:absolute;pointer-events:none;visibility:hidden;height:0;overflow:hidden"
+                                  style="position:absolute;pointer-events:none;visibility:hidden;height:0;overflow:hidden;border:0;padding:0"
                                 >
                                   <div
                                     class="ant-tree-indent"
@@ -8028,7 +8017,6 @@ exports[`renders ./components/table/demo/filter-in-tree.md extend context correc
       </div>
       <ul
         class="ant-pagination ant-table-pagination ant-table-pagination-right"
-        unselectable="unselectable"
       >
         <li
           aria-disabled="true"
@@ -8264,7 +8252,7 @@ exports[`renders ./components/table/demo/filter-search.md extend context correct
                                 <div
                                   aria-hidden="true"
                                   class="ant-tree-treenode"
-                                  style="position:absolute;pointer-events:none;visibility:hidden;height:0;overflow:hidden"
+                                  style="position:absolute;pointer-events:none;visibility:hidden;height:0;overflow:hidden;border:0;padding:0"
                                 >
                                   <div
                                     class="ant-tree-indent"
@@ -8849,7 +8837,6 @@ exports[`renders ./components/table/demo/filter-search.md extend context correct
       </div>
       <ul
         class="ant-pagination ant-table-pagination ant-table-pagination-right"
-        unselectable="unselectable"
       >
         <li
           aria-disabled="true"
@@ -9272,7 +9259,6 @@ exports[`renders ./components/table/demo/fixed-columns.md extend context correct
       </div>
       <ul
         class="ant-pagination ant-table-pagination ant-table-pagination-right"
-        unselectable="unselectable"
       >
         <li
           aria-disabled="true"
@@ -10239,7 +10225,6 @@ exports[`renders ./components/table/demo/fixed-columns-header.md extend context 
       </div>
       <ul
         class="ant-pagination ant-table-pagination ant-table-pagination-right"
-        unselectable="unselectable"
       >
         <li
           aria-disabled="true"
@@ -11699,7 +11684,6 @@ exports[`renders ./components/table/demo/fixed-header.md extend context correctl
       </div>
       <ul
         class="ant-pagination ant-table-pagination ant-table-pagination-right"
-        unselectable="unselectable"
       >
         <li
           aria-disabled="true"
@@ -12967,7 +12951,6 @@ exports[`renders ./components/table/demo/grouping-columns.md extend context corr
       </div>
       <ul
         class="ant-pagination ant-pagination-mini ant-table-pagination ant-table-pagination-right"
-        unselectable="unselectable"
       >
         <li
           aria-disabled="true"
@@ -13611,6 +13594,7 @@ exports[`renders ./components/table/demo/head.md extend context correctly 1`] = 
                                     <ul
                                       class="ant-dropdown-menu ant-dropdown-menu-sub ant-dropdown-menu-vertical"
                                       data-menu-list="true"
+                                      role="menu"
                                     >
                                       <li
                                         class="ant-dropdown-menu-item"
@@ -14239,7 +14223,6 @@ exports[`renders ./components/table/demo/head.md extend context correctly 1`] = 
       </div>
       <ul
         class="ant-pagination ant-table-pagination ant-table-pagination-right"
-        unselectable="unselectable"
       >
         <li
           aria-disabled="true"
@@ -14590,7 +14573,6 @@ exports[`renders ./components/table/demo/jsx.md extend context correctly 1`] = `
       </div>
       <ul
         class="ant-pagination ant-table-pagination ant-table-pagination-right"
-        unselectable="unselectable"
       >
         <li
           aria-disabled="true"
@@ -15072,7 +15054,6 @@ exports[`renders ./components/table/demo/multiple-sorter.md extend context corre
       </div>
       <ul
         class="ant-pagination ant-table-pagination ant-table-pagination-right"
-        unselectable="unselectable"
       >
         <li
           aria-disabled="true"
@@ -15412,7 +15393,6 @@ exports[`renders ./components/table/demo/narrow.md extend context correctly 1`] 
         </div>
         <ul
           class="ant-pagination ant-pagination-mini ant-table-pagination ant-table-pagination-right"
-          unselectable="unselectable"
         >
           <li
             aria-disabled="false"
@@ -16159,7 +16139,6 @@ Array [
         </div>
         <ul
           class="ant-pagination ant-table-pagination ant-table-pagination-right"
-          unselectable="unselectable"
         >
           <li
             aria-disabled="true"
@@ -17199,7 +17178,6 @@ Array [
         </div>
         <ul
           class="ant-pagination ant-table-pagination ant-table-pagination-right"
-          unselectable="unselectable"
         >
           <li
             aria-disabled="true"
@@ -18234,7 +18212,6 @@ Array [
         </div>
         <ul
           class="ant-pagination ant-pagination-mini ant-table-pagination ant-table-pagination-right"
-          unselectable="unselectable"
         >
           <li
             aria-disabled="true"
@@ -19269,7 +19246,6 @@ Array [
         </div>
         <ul
           class="ant-pagination ant-pagination-mini ant-table-pagination ant-table-pagination-right"
-          unselectable="unselectable"
         >
           <li
             aria-disabled="true"
@@ -19638,7 +19614,6 @@ exports[`renders ./components/table/demo/order-column.md extend context correctl
       </div>
       <ul
         class="ant-pagination ant-table-pagination ant-table-pagination-right"
-        unselectable="unselectable"
       >
         <li
           aria-disabled="true"
@@ -19900,7 +19875,6 @@ exports[`renders ./components/table/demo/pagination.md extend context correctly 
       >
         <ul
           class="ant-pagination ant-table-pagination ant-table-pagination-left"
-          unselectable="unselectable"
         >
           <li
             aria-disabled="true"
@@ -20216,7 +20190,6 @@ exports[`renders ./components/table/demo/pagination.md extend context correctly 
         </div>
         <ul
           class="ant-pagination ant-table-pagination ant-table-pagination-right"
-          unselectable="unselectable"
         >
           <li
             aria-disabled="true"
@@ -21175,7 +21148,6 @@ Array [
         </div>
         <ul
           class="ant-pagination ant-table-pagination ant-table-pagination-right"
-          unselectable="unselectable"
         >
           <li
             aria-disabled="true"
@@ -21524,7 +21496,6 @@ exports[`renders ./components/table/demo/resizable-column.md extend context corr
       </div>
       <ul
         class="ant-pagination ant-table-pagination ant-table-pagination-right"
-        unselectable="unselectable"
       >
         <li
           aria-disabled="true"
@@ -21663,7 +21634,6 @@ exports[`renders ./components/table/demo/responsive.md extend context correctly 
       </div>
       <ul
         class="ant-pagination ant-table-pagination ant-table-pagination-right"
-        unselectable="unselectable"
       >
         <li
           aria-disabled="true"
@@ -22044,7 +22014,6 @@ exports[`renders ./components/table/demo/row-selection.md extend context correct
         </div>
         <ul
           class="ant-pagination ant-table-pagination ant-table-pagination-right"
-          unselectable="unselectable"
         >
           <li
             aria-disabled="true"
@@ -22616,7 +22585,6 @@ exports[`renders ./components/table/demo/row-selection-and-operation.md extend c
         </div>
         <ul
           class="ant-pagination ant-table-pagination ant-table-pagination-right"
-          unselectable="unselectable"
         >
           <li
             aria-disabled="true"
@@ -23536,7 +23504,6 @@ exports[`renders ./components/table/demo/row-selection-custom.md extend context 
       </div>
       <ul
         class="ant-pagination ant-table-pagination ant-table-pagination-right"
-        unselectable="unselectable"
       >
         <li
           aria-disabled="true"
@@ -23949,7 +23916,6 @@ exports[`renders ./components/table/demo/row-selection-custom-debug.md extend co
       </div>
       <ul
         class="ant-pagination ant-table-pagination ant-table-pagination-right"
-        unselectable="unselectable"
       >
         <li
           aria-disabled="true"
@@ -24194,7 +24160,6 @@ exports[`renders ./components/table/demo/size.md extend context correctly 1`] = 
         </div>
         <ul
           class="ant-pagination ant-pagination-mini ant-table-pagination ant-table-pagination-right"
-          unselectable="unselectable"
         >
           <li
             aria-disabled="true"
@@ -24391,7 +24356,6 @@ exports[`renders ./components/table/demo/size.md extend context correctly 1`] = 
         </div>
         <ul
           class="ant-pagination ant-pagination-mini ant-table-pagination ant-table-pagination-right"
-          unselectable="unselectable"
         >
           <li
             aria-disabled="true"
@@ -25408,7 +25372,6 @@ exports[`renders ./components/table/demo/sticky.md extend context correctly 1`] 
       </div>
       <ul
         class="ant-pagination ant-table-pagination ant-table-pagination-right"
-        unselectable="unselectable"
       >
         <li
           aria-disabled="true"
@@ -26601,7 +26564,6 @@ Array [
         </div>
         <ul
           class="ant-pagination ant-table-pagination ant-table-pagination-right"
-          unselectable="unselectable"
         >
           <li
             aria-disabled="true"
@@ -27313,7 +27275,6 @@ Array [
         </div>
         <ul
           class="ant-pagination ant-table-pagination ant-table-pagination-right"
-          unselectable="unselectable"
         >
           <li
             aria-disabled="true"

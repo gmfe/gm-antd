@@ -1,19 +1,16 @@
 import React, { useCallback, useContext, useEffect, useRef, useState, useMemo } from 'react';
 import type { WrappedComponentProps } from 'react-intl';
-import { FormattedMessage, injectIntl } from 'react-intl';
+import { injectIntl } from 'react-intl';
 import moment from 'moment';
 import classNames from 'classnames';
-import { Select, Row, Col, Drawer, Button, Modal } from 'antd';
+import { Row, Col, Drawer, Modal } from 'antd';
 import { MenuOutlined } from '@ant-design/icons';
 import canUseDom from 'rc-util/lib/Dom/canUseDom';
 import type { DirectionType } from 'antd/es/config-provider';
 import * as utils from '../../utils';
-import packageJson from '../../../../../package.json';
 import Logo from './Logo';
 import SearchBar from './SearchBar';
-import More from './More';
 import Navigation from './Navigation';
-import Github from './Github';
 import type { SiteContextProps } from '../SiteContext';
 import SiteContext from '../SiteContext';
 import { ping } from '../../utils';
@@ -23,10 +20,6 @@ import './index.less';
 
 const RESPONSIVE_XS = 1120;
 const RESPONSIVE_SM = 1200;
-
-const { Option } = Select;
-
-const antdVersion: string = packageJson.version;
 
 export interface HeaderProps {
   intl: { locale: string };
@@ -98,7 +91,7 @@ interface HeaderState {
 }
 
 const Header: React.FC<HeaderProps & WrappedComponentProps<'intl'>> = props => {
-  const { intl, router, location, themeConfig, changeDirection } = props;
+  const { intl, router, location, changeDirection } = props;
   const [headerState, setHeaderState] = useState<HeaderState>({
     menuVisible: false,
     windowWidth: 1400,
@@ -163,20 +156,6 @@ const Header: React.FC<HeaderProps & WrappedComponentProps<'intl'>> = props => {
     };
   }, []);
 
-  // eslint-disable-next-line class-methods-use-this
-  const handleVersionChange = useCallback((url: string) => {
-    const currentUrl = window.location.href;
-    const currentPathname = window.location.pathname;
-    if (/overview/.test(currentPathname) && /0?[1-39][0-3]?x/.test(url)) {
-      window.location.href = currentUrl
-        .replace(window.location.origin, url)
-        .replace(/\/components\/overview/, `/docs${/0(9|10)x/.test(url) ? '' : '/react'}/introduce`)
-        .replace(/\/$/, '');
-      return;
-    }
-    window.location.href = currentUrl.replace(window.location.origin, url);
-  }, []);
-
   const onLangChange = useCallback(() => {
     const { pathname, query } = location;
     const currentProtocol = `${window.location.protocol}//`;
@@ -198,24 +177,10 @@ const Header: React.FC<HeaderProps & WrappedComponentProps<'intl'>> = props => {
     [direction],
   );
 
-  const getDropdownStyle = useMemo<React.CSSProperties>(
-    () => (direction === 'rtl' ? { direction: 'ltr', textAlign: 'right' } : {}),
-    [direction],
-  );
-
   return (
     <SiteContext.Consumer>
       {({ isMobile }) => {
         const { menuVisible, windowWidth, searching, showTechUIButton } = headerState;
-        const docVersions: Record<string, string> = {
-          [antdVersion]: antdVersion,
-          ...themeConfig?.docVersions,
-        };
-        const versionOptions = Object.keys(docVersions).map(version => (
-          <Option value={docVersions[version]} key={version}>
-            {version}
-          </Option>
-        ));
 
         const pathname = location.pathname.replace(/(^\/|\/$)/g, '');
 
@@ -255,9 +220,7 @@ const Header: React.FC<HeaderProps & WrappedComponentProps<'intl'>> = props => {
           />
         );
 
-        let menu: (React.ReactElement | null)[] = [
-          navigationNode,
-        ];
+        let menu: (React.ReactElement | null)[] = [navigationNode];
 
         if (windowWidth < RESPONSIVE_XS) {
           menu = searching ? [] : [navigationNode];

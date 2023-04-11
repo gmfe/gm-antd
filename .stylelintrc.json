@@ -5,9 +5,18 @@
     "stylelint-config-prettier"
   ],
   "customSyntax": "postcss-less",
-  "plugins": ["stylelint-declaration-block-no-ignored-properties"],
+  "plugins": [
+    "stylelint-declaration-block-no-ignored-properties"
+  ],
   "rules": {
-    "function-name-case": ["lower", { "ignoreFunctions": ["/colorPalette/"] }],
+    "function-name-case": [
+      "lower",
+      {
+        "ignoreFunctions": [
+          "/colorPalette/"
+        ]
+      }
+    ],
     "function-no-unknown": [
       true,
       {
@@ -38,7 +47,10 @@
     "color-function-notation": "legacy",
     "selector-class-pattern": null,
     "selector-id-pattern": null,
-    "selector-not-notation": null
+    "selector-not-notation": null,
+    "import-notation": null
   },
-  "ignoreFiles": ["components/style/color/{bezierEasing,colorPalette,tinyColor}.less"]
+  "ignoreFiles": [
+    "components/style/color/{bezierEasing,colorPalette,tinyColor}.less"
+  ]
 }

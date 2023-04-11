@@ -3,7 +3,6 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { Typography } from 'antd';
 import { Link } from 'bisheng/router';
 import Banner from './Banner';
-import RecommendPage from './RecommendPage';
 import DesignPage from './DesignPage';
 import MorePage from './MorePage';
 import { getLocalizedPathname } from '../utils';

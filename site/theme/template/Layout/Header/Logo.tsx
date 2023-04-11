@@ -12,7 +12,8 @@ export interface LogoProps {
 const Logo = ({ isZhCN, location }: LogoProps) => (
   <h1>
     <Link to={utils.getLocalizedPathname('/', isZhCN, location.query)} id="logo">
-      GM Ant Design
+      <span>GM </span>
+      <span>Ant Design</span>
     </Link>
   </h1>
 );

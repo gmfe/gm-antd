@@ -1,15 +1,12 @@
 #!/bin/sh
 
-echo "[TEST ALL] test changlog"
-node ./scripts/check-version-md.js
-
-echo "[TEST ALL] check-commit"
-npm run check-commit
-
 echo "[TEST ALL] lint"
 npm run lint
 
 if [ "$1" != "--skip-build" ]; then
+  echo "[TEST ALL] clean"
+  npm run clean
+
   echo "[TEST ALL] dist"
   npm run dist
 
