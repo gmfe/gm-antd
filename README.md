@@ -28,10 +28,11 @@ Fork自AntD仓库，仅做AntD组件二次开发的文档用。
 ## 开发流程
 在你 clone 了 antd 的代码并且使用 yarn install 安装完依赖后，你还可以运行下面几个常用的命令：
 - `yarn start` 在本地运行 Ant Design 的网站。
-- `yarn run lint` 检查代码风格。
+- `yarn lint` 检查代码风格。
 - `yarn test` 运行测试。(在运行测试前请确保 NODE_ENV 环境变量没有被设定，否则可能会引发一些问题)
-- `yarn run compile` 编译 TypeScript 代码到 lib 和 es 目录。
-- `yarn run dist` 构建 antd 的 UMD 版本到 dist 目录。
+- `yarn compile` 编译 TypeScript 代码到 lib 和 es 目录。
+- `yarn dist` 构建 antd 的 UMD 版本到 dist 目录。
+- `yarn site` 构建文档站到_site目录
 
 #### 配套开发工具
 - CSS in JS 样式提示插件：https://marketplace.visualstudio.com/items?itemName=shezhangzhang.antd-design-token

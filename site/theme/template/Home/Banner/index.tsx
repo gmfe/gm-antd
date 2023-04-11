@@ -27,7 +27,7 @@ const Banner = (props: { location: any }) => {
           </p>
 
           <div className="home-banner-content-operations">
-            <Link to='/components/overview-cn/'>
+            <Link to='/components/get-started-cn/'>
               <Button type="primary" shape="round">
                 <FormattedMessage id="app.home.getting-started" />
               </Button>
