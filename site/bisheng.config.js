@@ -32,6 +32,7 @@ const port = process.env.DEV_PORT || 8001;
 module.exports = {
   port,
   hash: true,
+  root: isDev ? '/' : '/gm-antd/',
   source: {
     components: './components',
     docs: './docs',
