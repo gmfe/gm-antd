@@ -32,7 +32,7 @@ Fork自AntD仓库，仅做AntD组件二次开发的文档用。
 - `yarn test` 运行测试。(在运行测试前请确保 NODE_ENV 环境变量没有被设定，否则可能会引发一些问题)
 - `yarn compile` 编译 TypeScript 代码到 lib 和 es 目录。
 - `yarn dist` 构建 antd 的 UMD 版本到 dist 目录。
-- `yarn site` 构建文档站到_site目录
+- `yarn site` 构建静态文档站到_site目录
 
 #### 配套开发工具
 - CSS in JS 样式提示插件：https://marketplace.visualstudio.com/items?itemName=shezhangzhang.antd-design-token
