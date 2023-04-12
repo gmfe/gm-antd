@@ -34,7 +34,6 @@ module.exports = {
     'app.demo.code.hide': 'Hide code',
     'app.demo.codepen': 'Open in CodePen',
     'app.demo.codesandbox': 'Open in CodeSandbox',
-    'app.demo.stackblitz': 'Open in Stackblitz',
     'app.demo.riddle': 'Open in Riddle',
     'app.home.introduce':
       'A design system for enterprise-level products. Create an efficient and enjoyable work experience.',

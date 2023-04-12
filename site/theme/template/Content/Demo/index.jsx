@@ -1,6 +1,5 @@
 /* eslint jsx-a11y/no-noninteractive-element-interactions: 0 */
-import { CheckOutlined, SnippetsOutlined, ThunderboltOutlined } from '@ant-design/icons';
-import stackblitzSdk from '@stackblitz/sdk';
+import { CheckOutlined, SnippetsOutlined } from '@ant-design/icons';
 import { Alert, Badge, Tooltip } from 'antd';
 import classNames from 'classnames';
 import LZString from 'lz-string';
@@ -189,16 +188,6 @@ class Demo extends React.Component {
   </body>
 </html>`;
 
-    const tsconfig = `{
-  "compilerOptions": {
-    "jsx": "react-jsx",
-    "target": "esnext",
-    "module": "esnext",
-    "esModuleInterop": true,
-    "moduleResolution": "node",
-  }
-}`;
-
     const [sourceCode, sourceCodeTyped] = this.getSourceCode();
     const suffix = codeType === 'tsx' ? 'tsx' : 'js';
 
@@ -346,20 +335,6 @@ createRoot(document.getElementById('container')).render(<Demo />);
         },
       },
     };
-    const stackblitzPrefillConfig = {
-      title: `${localizedTitle} - antd@${dependencies.antd}`,
-      template: 'create-react-app',
-      dependencies,
-      files: {
-        'index.css': indexCssContent,
-        [`index.${suffix}`]: indexJsContent,
-        [`demo.${suffix}`]: demoJsContent,
-        'index.html': html,
-      },
-    };
-    if (suffix === 'tsx') {
-      stackblitzPrefillConfig.files['tsconfig.json'] = tsconfig;
-    }
 
     let codeBox = (
       <section className={codeBoxClass} id={meta.id}>
@@ -440,19 +415,6 @@ createRoot(document.getElementById('container')).render(<Demo />);
                 <CodePenIcon className="code-box-codepen" />
               </Tooltip>
             </form>
-            <Tooltip title={<FormattedMessage id="app.demo.stackblitz" />}>
-              <span
-                className="code-box-code-action"
-                onClick={() => {
-                  this.track({ type: 'stackblitz', demo: meta.id });
-                  stackblitzSdk.openProject(stackblitzPrefillConfig, {
-                    openFile: [`demo.${suffix}`],
-                  });
-                }}
-              >
-                <ThunderboltOutlined className="code-box-stackblitz" />
-              </span>
-            </Tooltip>
             <CopyToClipboard text={sourceCodeTyped} onCopy={() => this.handleCodeCopied(meta.id)}>
               <Tooltip
                 open={copyTooltipOpen}

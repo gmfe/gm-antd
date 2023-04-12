@@ -34,7 +34,6 @@ module.exports = {
     'app.demo.code.hide': '收起代码',
     'app.demo.codepen': '在 CodePen 中打开',
     'app.demo.codesandbox': '在 CodeSandbox 中打开',
-    'app.demo.stackblitz': '在 Stackblitz 中打开',
     'app.demo.riddle': '在 Riddle 中打开',
     'app.home.introduce': '企业级产品设计体系，创造高效愉悦的工作体验',
     'app.home.recommend': '精彩推荐',
