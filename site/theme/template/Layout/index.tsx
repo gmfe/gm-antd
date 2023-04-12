@@ -58,8 +58,8 @@ const RESPONSIVE_MOBILE = 768;
 // for dark.css timestamp to remove cache
 const timestamp = Date.now();
 const themeMap = {
-  dark: `/dark.css?${timestamp}`,
-  compact: `/compact.css?${timestamp}`,
+  dark: `/gm-antd/dark.css?${timestamp}`,
+  compact: `/gm-antd/compact.css?${timestamp}`,
 };
 const themeConfig = {
   themeMap,
