@@ -8,7 +8,7 @@
 
 <div align="center">
 
-Fork自AntD仓库，仅做AntD组件二次开发的文档用。[在线文档](https://gmfe.github.io/gm-antd/index-cn)
+Fork自antd@2.24.0，做AntD组件二次开发及文档使用。[在线文档](https://gmfe.github.io/gm-antd/index-cn)
 
 </div>
 
