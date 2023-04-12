@@ -38,9 +38,9 @@ jobs:
         uses: actions/configure-pages@v3
       - name: Build
         run: |
-          yarn
-          yarn run version
-          yarn predeploy
+          npm i
+          npm run version
+          npm run predeploy
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
         with:
