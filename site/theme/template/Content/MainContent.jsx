@@ -400,14 +400,14 @@ class MainContent extends Component {
             theme={theme}
             setIframeTheme={setIframeTheme}
           />
-          {this.renderContributors()}
+          {/* {this.renderContributors()} */}
         </>
       );
     }
     return (
       <>
         <Article {...this.props} content={localizedPageData} />
-        {this.renderContributors()}
+        {/* {this.renderContributors()} */}
       </>
     );
   }

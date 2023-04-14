@@ -46,10 +46,5 @@ Fork自antd@2.24.0，做AntD组件二次开发及文档使用。[在线文档](h
 - 将package.json中的name改为`gm-antd`，在完成发布后再改回来。（这是因为build使用的antd-tools脚手架没有相关文档且其依赖package.json的name为antd，而npm发包只能用package的name为名，暂时先这样手动处理）
 - 运行`yarn publish`发布;
 
-## 更新日志
-- [2023-04-10] 新增Table Hooks
-
 ## 如何贡献代码
-- 涉及发包的改动需要在记录在更新日志中；
-- 对AntD组件的改动，需要在对应组件的MD文档顶部增加二级标题的ChangeLogs，列出改动点和演示代码；
 - antd官方贡献指南：https://ant.design/docs/react/contributing-cn

@@ -75,12 +75,12 @@ function spaceChildren(children: React.ReactNode, needInserted: boolean) {
   );
 }
 
-const ButtonTypes = tuple('default', 'primary', 'ghost', 'dashed', 'link', 'text');
-export type ButtonType = typeof ButtonTypes[number];
+const ButtonTypes = tuple('default', 'primary', 'ghost', 'dashed', 'link', 'text', 'second');
+export type ButtonType = (typeof ButtonTypes)[number];
 const ButtonShapes = tuple('default', 'circle', 'round');
-export type ButtonShape = typeof ButtonShapes[number];
+export type ButtonShape = (typeof ButtonShapes)[number];
 const ButtonHTMLTypes = tuple('submit', 'button', 'reset');
-export type ButtonHTMLType = typeof ButtonHTMLTypes[number];
+export type ButtonHTMLType = (typeof ButtonHTMLTypes)[number];
 
 export type LegacyButtonType = ButtonType | 'danger';
 export function convertLegacyProps(type?: LegacyButtonType): ButtonProps {
