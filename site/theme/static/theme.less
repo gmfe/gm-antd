@@ -8,23 +8,23 @@
 @site-header-box-shadow: 0 2px 8px rgba(240, 241, 242, 65);
 @site-markdown-code-bg: #f2f4f5;
 
-@primary-color: #0363ff; // 全局主色
-@success-color: #52c41a; // 成功色
-@warning-color: #faad14; // 警告色
-@error-color: #f5222d; // 错误色
+@primary: #0363ff; // 全局主色
+@success: #52c41a; // 成功色
+@warning: #faad14; // 警告色
+@error: #f5222d; // 错误色
 
 html {
-  --ant-primary-color: @primary-color;
-  // --ant-primary-color-hover: darken(@primary-color, 20%);
-  --ant-primary-color-hover: @primary-color;
-  --ant-primary-color-active: @primary-color;
+  --ant-primary-color: @primary;
+  // --ant-primary-color-hover: darken(@primary, 20%);
+  --ant-primary-color-hover: @primary;
+  --ant-primary-color-active: @primary;
   --ant-primary-color-outline: rgba(24, 144, 255, 0.2);
   --ant-primary-1: #c3daff;
   --ant-primary-2: #bae7ff;
   --ant-primary-3: #91d5ff;
   --ant-primary-4: #69c0ff;
   --ant-primary-5: #40a9ff;
-  --ant-primary-6: @primary-color;
+  --ant-primary-6: @primary;
   --ant-primary-7: #096dd9;
   --ant-primary-color-deprecated-pure: darken(#0363ff, 20%);
   --ant-primary-color-deprecated-l-35: #cbe6ff;
@@ -34,25 +34,25 @@ html {
   --ant-primary-color-deprecated-f-12: rgba(24, 144, 255, 0.12);
   --ant-primary-color-active-deprecated-f-30: rgba(230, 247, 255, 0.3);
   --ant-primary-color-active-deprecated-d-02: #dcf4ff;
-  --ant-success-color: @success-color;
+  --ant-success-color: @success;
   --ant-success-color-hover: lighten(#52c41a, 20%);
   --ant-success-color-active: darken(#52c41a, 20%);
   --ant-success-color-outline: rgba(82, 196, 26, 0.2);
   --ant-success-color-deprecated-bg: #f6ffed;
   --ant-success-color-deprecated-border: #b7eb8f;
-  --ant-error-color: @error-color;
+  --ant-error-color: @error;
   --ant-error-color-hover: lighten(#d9363e, 20%);
   --ant-error-color-active: darken(#d9363e, 20%);
   --ant-error-color-outline: rgba(255, 77, 79, 0.2);
   --ant-error-color-deprecated-bg: #fef1f1;
   --ant-error-color-deprecated-border: #fdd5d2;
-  --ant-warning-color: @warning-color;
+  --ant-warning-color: @warning;
   --ant-warning-color-hover: lighten(#faad14, 20%);
   --ant-warning-color-active: darken(#faad14, 20%);
   --ant-warning-color-outline: rgba(250, 173, 20, 0.2);
   --ant-warning-color-deprecated-bg: #fef5eb;
   --ant-warning-color-deprecated-border: #fbebcb;
-  --ant-info-color: @primary-color;
+  --ant-info-color: @primary;
   --ant-info-color-deprecated-bg: #e6efff;
   --ant-info-color-deprecated-border: #e1ecff;
 }
@@ -64,35 +64,35 @@ html {
   --gm-color-default: #000923; // 主内容
   --gm-color-secondary: rgba(36, 51, 81, 0.8); // 次要内容
   --gm-color-desc: #798294; // 描述内容
-  --gm-color-primary: @primary-color;
+  --gm-color-primary: @primary;
   --gm-color-disabled: rgba(0, 0, 0, 0.5);
   --gm-color-white: white;
   --gm-color-black: black;
   // bg
   --gm-color-bg-white: white;
   --gm-color-bg-back: #f7f8fa; // 背景色
-  --gm-color-bg-primary: @primary-color;
+  --gm-color-bg-primary: @primary;
   --gm-color-bg-primary-light: #d7e8fc;
   --gm-color-bg-primary-more-light: #edf3f9;
   // active
   --gm-color-primary-active: darken(#0363ff, 10%);
   --gm-color-bg-primary-active: darken(#0363ff, 10%);
   // border
-  --gm-color-border-primary: @primary-color;
+  --gm-color-border-primary: @primary;
   --gm-color-border-special: rgba(216, 222, 231, 0.5);
   // table
   --gm-color-table-td-active: #b2d5ff;
   // color
   --gm-color-placeholder: #b2b2b2;
-  --gm-color-success: @success-color;
-  --gm-color-danger: @error-color;
-  --gm-color-link: @primary-color;
-  --gm-color-red: @error-color;
+  --gm-color-success: @success;
+  --gm-color-danger: @error;
+  --gm-color-link: @primary;
+  --gm-color-red: @error;
   --gm-color-true-white: white; // 一定是白色
   --gm-color-true-black: black; // 一定是黑色
   --gm-color-border: fade(#d8dee7, 50%);
   // bg
-  --gm-color-bg-success: @success-color;
+  --gm-color-bg-success: @success;
   --gm-color-bg-danger: #fa5151;
   --gm-color-bg-switch: #afb5c0;
   --gm-color-bg-disabled: #f0f1f3;
@@ -138,7 +138,7 @@ html {
   // label 标签
   --gm-label-color-gray: #e8eaf0;
   --gm-label-color-inactive: #a5a8ad;
-  --gm-label-color-danger: @error-color;
+  --gm-label-color-danger: @error;
   // checkbox radio
   --gm-checkbox-radio-color-disabled: #d4d8d8;
   --gm-antd-padding-lg: 24px;
