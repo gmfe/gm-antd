@@ -102,9 +102,10 @@ module.exports = {
     'react/no-find-dom-node': 0,
     'react/no-unused-prop-types': 0,
     'react/default-props-match-prop-types': 0,
-    'react-hooks/rules-of-hooks': 2, // Checks rules of Hooks
+    'react-hooks/rules-of-hooks': 'off', // Checks rules of Hooks
     'react/function-component-definition': 0,
     'react/no-unused-class-component-methods': 0,
+    'react/jsx-no-useless-fragment': 0,
     'import/extensions': 0,
     'import/no-cycle': 0,
     'import/no-extraneous-dependencies': [
@@ -158,8 +159,8 @@ module.exports = {
     // https://github.com/typescript-eslint/typescript-eslint/issues/2540#issuecomment-692866111
     'no-use-before-define': 0,
     '@typescript-eslint/no-use-before-define': 2,
-    'no-shadow': 0,
-    '@typescript-eslint/no-shadow': [2, { ignoreTypeValueShadow: true }],
+    'no-shadow': 'off',
+    '@typescript-eslint/no-shadow': 'off',
     // https://github.com/typescript-eslint/typescript-eslint/issues/2528#issuecomment-689369395
     'no-undef': 0,
   },

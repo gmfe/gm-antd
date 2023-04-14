@@ -39,12 +39,12 @@ Fork自antd@2.24.0，做AntD组件二次开发及文档使用。[在线文档](h
 - 组件属性提示插件：https://github.com/fi3ework/vscode-antd-rush
 
 ## 发包
-1. 提交代码；
-2. 按照语义化更新版本号；
-3. 运行`yarn test`检测你改动到的组件测试用例是否通过，假设你改动了Button组件，则使用`yarn test /button/`指定运行button的测试用例；
-4. 运行`yarn build`打包;
-5. 将package.json中的name改为`gm-antd`，在完成发布后再改回来。（这是因为build使用的antd-tools脚手架没有相关文档且其依赖package.json的name为antd，而npm发包只能用package的name为名，暂时先这样手动处理）
-5. 运行`yarn publish`发布;
+- 提交代码；
+- 按照语义化更新版本号；
+- 运行`yarn test`检测你改动到的组件测试用例是否通过，假设你改动了Button组件，则使用`yarn test /button/`指定运行button的测试用例；
+- 运行`yarn build`打包, link后可以在上层项目中测试;
+- 将package.json中的name改为`gm-antd`，在完成发布后再改回来。（这是因为build使用的antd-tools脚手架没有相关文档且其依赖package.json的name为antd，而npm发包只能用package的name为名，暂时先这样手动处理）
+- 运行`yarn publish`发布;
 
 ## 更新日志
 - [2023-04-10] 新增Table Hooks

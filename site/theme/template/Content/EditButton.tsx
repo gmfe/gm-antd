@@ -2,7 +2,7 @@ import React from 'react';
 import { Tooltip } from 'antd';
 import { EditOutlined } from '@ant-design/icons';
 
-const branchUrl = 'https://github.com/gmfe/gm-ant-design/edit/master/';
+const branchUrl = 'https://github.com/gmfe/gm-antd/edit/main/';
 
 export interface EditButtonProps {
   title: React.ReactNode;

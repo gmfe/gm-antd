@@ -1,0 +1,17 @@
+.ant-table-selection-column {
+  padding-left: 0 !important;
+  .table-selection {
+    &.mode-all,
+    &.mode-child {
+      visibility: visible;
+    }
+    &.mode-parent {
+      visibility: hidden;
+    }
+  }
+}
+.ant-table-row-level-0 > .ant-table-selection-column {
+  .table-selection {
+    visibility: visible !important;
+  }
+}

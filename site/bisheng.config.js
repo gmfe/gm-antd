@@ -2,8 +2,13 @@ const path = require('path');
 const replaceLib = require('@ant-design/tools/lib/replaceLib');
 const getWebpackConfig = require('@ant-design/tools/lib/getWebpackConfig');
 const { ESBuildMinifyPlugin } = require('esbuild-loader');
+const rucksack = require('rucksack-css');
+const autoprefixer = require('autoprefixer');
+const tailwindcss = require('tailwindcss');
+const { existsSync } = require('fs');
 const { version } = require('../package.json');
 const themeConfig = require('./themeConfig');
+const defaultTailwindConfig = require('./tailwind.config.js');
 
 const { webpack } = getWebpackConfig;
 
@@ -25,6 +30,16 @@ function alertBabelConfig(rules) {
       alertBabelConfig(rule.use);
     }
   });
+}
+
+function getTailwindConfig() {
+  if (existsSync(path.join(process.cwd(), 'tailwind.config.js'))) {
+    // eslint-disable-next-line import/no-dynamic-require, global-require
+    const appTailwindConfig = require(path.join(process.cwd(), 'tailwind.config.js'));
+    return Object.assign(defaultTailwindConfig, appTailwindConfig);
+  }
+  // eslint-disable-next-line compat/compat
+  return defaultTailwindConfig;
 }
 
 const port = process.env.DEV_PORT || 8001;
@@ -201,5 +216,15 @@ module.exports = {
 
   htmlTemplateExtraData: {
     isDev,
+  },
+
+  postcssConfig: {
+    plugins: [
+      rucksack(),
+      autoprefixer({
+        browsers: ['last 2 versions', 'Firefox ESR', '> 1%', 'ie >= 8', 'iOS >= 8', 'Android >= 4'],
+      }),
+      tailwindcss(),
+    ],
   },
 };

@@ -16,7 +16,7 @@ const ComponentInMarkdown = React.memo(({ content, utils }) =>
 class ComponentDoc extends React.Component {
   state = {
     expandAll: false,
-    visibleAll: process.env.NODE_ENV !== 'production',
+    visibleAll: true,
     showRiddleButton: false,
   };
 
@@ -144,6 +144,7 @@ class ComponentDoc extends React.Component {
           title={localizeTitle}
           className={classNames({
             'toc-debug': demo.meta.debug,
+            'toc-gm': demo.meta.gm,
           })}
         >
           <a href={`#${demo.meta.id}`}>{localizeTitle}</a>

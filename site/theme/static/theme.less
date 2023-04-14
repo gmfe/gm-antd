@@ -7,3 +7,174 @@
 @site-border-color-split: @border-color-split;
 @site-header-box-shadow: 0 2px 8px rgba(240, 241, 242, 65);
 @site-markdown-code-bg: #f2f4f5;
+
+@primary-color: #0363ff; // 全局主色
+@success-color: #52c41a; // 成功色
+@warning-color: #faad14; // 警告色
+@error-color: #f5222d; // 错误色
+
+html {
+  --ant-primary-color: @primary-color;
+  // --ant-primary-color-hover: darken(@primary-color, 20%);
+  --ant-primary-color-hover: @primary-color;
+  --ant-primary-color-active: @primary-color;
+  --ant-primary-color-outline: rgba(24, 144, 255, 0.2);
+  --ant-primary-1: #c3daff;
+  --ant-primary-2: #bae7ff;
+  --ant-primary-3: #91d5ff;
+  --ant-primary-4: #69c0ff;
+  --ant-primary-5: #40a9ff;
+  --ant-primary-6: @primary-color;
+  --ant-primary-7: #096dd9;
+  --ant-primary-color-deprecated-pure: darken(#0363ff, 20%);
+  --ant-primary-color-deprecated-l-35: #cbe6ff;
+  --ant-primary-color-deprecated-l-20: #7ec1ff;
+  --ant-primary-color-deprecated-t-20: #46a6ff;
+  --ant-primary-color-deprecated-t-50: #8cc8ff;
+  --ant-primary-color-deprecated-f-12: rgba(24, 144, 255, 0.12);
+  --ant-primary-color-active-deprecated-f-30: rgba(230, 247, 255, 0.3);
+  --ant-primary-color-active-deprecated-d-02: #dcf4ff;
+  --ant-success-color: @success-color;
+  --ant-success-color-hover: lighten(#52c41a, 20%);
+  --ant-success-color-active: darken(#52c41a, 20%);
+  --ant-success-color-outline: rgba(82, 196, 26, 0.2);
+  --ant-success-color-deprecated-bg: #f6ffed;
+  --ant-success-color-deprecated-border: #b7eb8f;
+  --ant-error-color: @error-color;
+  --ant-error-color-hover: lighten(#d9363e, 20%);
+  --ant-error-color-active: darken(#d9363e, 20%);
+  --ant-error-color-outline: rgba(255, 77, 79, 0.2);
+  --ant-error-color-deprecated-bg: #fef1f1;
+  --ant-error-color-deprecated-border: #fdd5d2;
+  --ant-warning-color: @warning-color;
+  --ant-warning-color-hover: lighten(#faad14, 20%);
+  --ant-warning-color-active: darken(#faad14, 20%);
+  --ant-warning-color-outline: rgba(250, 173, 20, 0.2);
+  --ant-warning-color-deprecated-bg: #fef5eb;
+  --ant-warning-color-deprecated-border: #fbebcb;
+  --ant-info-color: @primary-color;
+  --ant-info-color-deprecated-bg: #e6efff;
+  --ant-info-color-deprecated-border: #e1ecff;
+}
+
+// gm-pc主题
+:root,
+html {
+  // color
+  --gm-color-default: #000923; // 主内容
+  --gm-color-secondary: rgba(36, 51, 81, 0.8); // 次要内容
+  --gm-color-desc: #798294; // 描述内容
+  --gm-color-primary: @primary-color;
+  --gm-color-disabled: rgba(0, 0, 0, 0.5);
+  --gm-color-white: white;
+  --gm-color-black: black;
+  // bg
+  --gm-color-bg-white: white;
+  --gm-color-bg-back: #f7f8fa; // 背景色
+  --gm-color-bg-primary: @primary-color;
+  --gm-color-bg-primary-light: #d7e8fc;
+  --gm-color-bg-primary-more-light: #edf3f9;
+  // active
+  --gm-color-primary-active: darken(#0363ff, 10%);
+  --gm-color-bg-primary-active: darken(#0363ff, 10%);
+  // border
+  --gm-color-border-primary: @primary-color;
+  --gm-color-border-special: rgba(216, 222, 231, 0.5);
+  // table
+  --gm-color-table-td-active: #b2d5ff;
+  // color
+  --gm-color-placeholder: #b2b2b2;
+  --gm-color-success: @success-color;
+  --gm-color-danger: @error-color;
+  --gm-color-link: @primary-color;
+  --gm-color-red: @error-color;
+  --gm-color-true-white: white; // 一定是白色
+  --gm-color-true-black: black; // 一定是黑色
+  --gm-color-border: fade(#d8dee7, 50%);
+  // bg
+  --gm-color-bg-success: @success-color;
+  --gm-color-bg-danger: #fa5151;
+  --gm-color-bg-switch: #afb5c0;
+  --gm-color-bg-disabled: #f0f1f3;
+  // active
+  --gm-color-success-active: darken(#52c41a, 10%);
+  --gm-color-danger-active: darken(#fa5151, 10%);
+  --gm-color-bg-success-active: darken(#52c41a, 10%);
+  --gm-color-bg-danger-active: darken(#fa5151, 10%);
+  // 字体尺寸
+  --gm-size-line-height: 1.33;
+  --gm-size-text-12: 12px;
+  --gm-size-text-14: 14px;
+  --gm-size-text-16: 16px;
+  --gm-size-text-18: 18px;
+  --gm-size-text-20: 20px;
+  // 大小
+  --gm-size-form-height: 30px;
+  --gm-size-border-radius: 2px;
+  // 层级
+  --gm-z-index-affix: 950;
+  --gm-z-index-mask: 1000;
+  --gm-z-index-right-side-modal-mask: 1040;
+  --gm-z-index-right-side-modal: 1041;
+  --gm-z-index-modal-mask: 1050;
+  --gm-z-index-modal: 1051;
+  --gm-z-index-tips: 7000;
+
+  // 具体业务
+  // nav
+  --gm-nav-size-width: 136px;
+  // modal
+  --gm-modal-size-title-height: 40px;
+  // switch
+  --gm-switch-size-height: 22px;
+  // border
+  --gm-table-color-bg-head: #e8eaf0;
+  // head 上的动作，比如排序
+  --gm-table-color-bg-head-action: #ccc;
+  --gm-table-color-bg-head-action-active: #999;
+  --gm-table-size-height-action-bar: 50px;
+  // card 标签
+  --gm-card-bg-inactive: #d4d8d8;
+  // label 标签
+  --gm-label-color-gray: #e8eaf0;
+  --gm-label-color-inactive: #a5a8ad;
+  --gm-label-color-danger: @error-color;
+  // checkbox radio
+  --gm-checkbox-radio-color-disabled: #d4d8d8;
+  --gm-antd-padding-lg: 24px;
+  --gm-antd-padding-md: 16px;
+  --gm-antd-padding-sm: 12px;
+  --gm-antd-padding-xs: 8px;
+  --gm-antd-padding-xxs: 4px;
+  --gm-antd-margin-lg: 24px;
+  --gm-antd-margin-md: 16px;
+  --gm-antd-margin-sm: 12px;
+  --gm-antd-margin-xs: 8px;
+  --gm-antd-margin-xxs: 4px;
+  --gm-antd-radius-base: 4px;
+  --gm-antd-radius-md: 8px;
+  // font
+  --gm-font-pingfang: pingfangsc-regular, pingfang sc, segoe ui, lucida grande, helvetica, arial,
+    microsoft yahei, freesans, arimo, droid sans, wenquanyi micro hei, hiragino sans gb,
+    hiragino sans gb w3, fontawesome, sans-serif;
+}
+
+.os-windows {
+  & *::-webkit-scrollbar {
+    width: 9px;
+    height: 9px;
+  }
+
+  & *::-webkit-scrollbar-track {
+    background-color: #fafafa;
+    border-radius: 8px;
+  }
+
+  & *::-webkit-scrollbar-thumb {
+    background-color: rgba(123, 123, 125, 0.7);
+    // 双盒双滚动条靠在一起的场景通过border分隔一下
+    border-right: 1px solid white;
+    border-bottom: 1px solid white;
+    border-radius: 8px;
+  }
+}

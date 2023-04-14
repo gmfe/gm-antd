@@ -1,0 +1,36 @@
+tr {
+  td.use-table-theme {
+    overflow: hidden;
+
+    &.ant-table-cell-fix-left,
+    &.ant-table-cell-fix-right {
+      overflow: initial;
+    }
+    // 展开/收起隐藏时不需要占空间
+    .ant-table-row-expand-icon-spaced {
+      display: none;
+    }
+  }
+}
+
+.ant-table-thead.use-table-theme {
+  background-color: #fafafa;
+
+  tr {
+    height: 48px;
+
+    th {
+      padding: 0 16px;
+      color: #333;
+      line-height: 48px;
+      background-color: #fafafa;
+      user-select: none;
+    }
+  }
+}
+
+.hide-scroll-bar {
+  .virtual-table::-webkit-scrollbar {
+    display: none;
+  }
+}

@@ -64,7 +64,14 @@ const Home = (props: { location: any }) => {
       <style dangerouslySetInnerHTML={{ __html: getStyle() }} />
       <Banner location={location} />
 
-      <div style={{ maxWidth: 1256, margin: '0 auto', filter: 'opacity(0.2) grayscale(1)' }}>
+      <div
+        style={{
+          maxWidth: 1256,
+          margin: '0 auto',
+          filter: 'opacity(0.2) grayscale(1)',
+          pointerEvents: 'none',
+        }}
+      >
         <BlockContent title={<FormattedMessage id="app.home.design-and-framework" />}>
           <DesignPage location={location} />
         </BlockContent>

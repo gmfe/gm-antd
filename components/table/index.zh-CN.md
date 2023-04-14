@@ -235,6 +235,7 @@ const columns = [
 | text     | 选择项显示的文字           | ReactNode                   | -      |
 | onSelect | 选择项点击回调             | function(changeableRowKeys) | -      |
 
+
 ## 在 TypeScript 中使用
 
 ```tsx

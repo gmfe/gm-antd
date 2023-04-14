@@ -136,7 +136,15 @@ export { default as Steps } from './steps';
 export type { StepProps, StepsProps } from './steps';
 export { default as Switch } from './switch';
 export type { SwitchProps } from './switch';
-export { default as Table } from './table';
+export {
+  default as Table,
+  useTableDIY,
+  useTableExpandable,
+  useTableSelection,
+  useTableTheme,
+  useTableVirtual,
+  useTable
+} from './table';
 export type {
   ColumnGroupType as TableColumnGroupType,
   ColumnProps as TableColumnProps,

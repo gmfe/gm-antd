@@ -1,0 +1,116 @@
+.use-table-diy {
+  display: flex;
+  align-items: center;
+
+  &-setting-icon {
+    flex-grow: 1;
+    width: 50px;
+    padding-left: 15px;
+    text-align: center;
+  }
+}
+
+.usetable-diy-panel {
+  position: fixed;
+  top: 0;
+  left: 0;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+
+  .diy-panel {
+    max-width: 800px;
+    background-color: white;
+    box-shadow: 0 20px 6px -4px rgb(0 0 0 / 0.12), 0 20px 16px 0 rgb(0 0 0 / 0.08),
+      0 20px 28px 8px rgb(0 0 0 / 0.05);
+  }
+
+  .ant-popover-inner-content {
+    padding: 0;
+  }
+
+  .ant-popover-title {
+    display: none;
+  }
+
+  .diy-panel-left {
+    // tw-flex tw-flex-col tw-flex-grow tw-w-full
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    width: 100%;
+  }
+
+  .diy-panel-right {
+    // tw-flex tw-flex-col
+    display: flex;
+    flex-direction: column;
+  }
+
+  .diy-panel-left-head,
+  .diy-panel-right-head {
+    // tw-px-3 tw-py-2
+    padding: 10px 15px;
+    background: var(--gm-color-bg-back);
+    border-top: 1px solid var(--gm-color-border);
+    border-right: 1px solid var(--gm-color-border);
+    border-bottom: 1px solid var(--gm-color-border);
+  }
+
+  .diy-panel-left-content {
+    // tw-p-3 tw-flex-grow tw-overflow-auto
+    flex-grow: 1;
+    height: 40vh;
+    padding: 15px;
+    overflow: auto;
+    border-right: 1px solid var(--gm-color-border);
+  }
+
+  .diy-panel-right-content {
+    height: 40vh;
+    overflow: auto;
+    
+    .sortable-active {
+      opacity: 0.7;
+    }
+  }
+
+  .diy-panel-bottom {
+    // tw-flex tw-p-2.5
+    display: flex;
+    padding: 12px;
+    border-top: 1px solid var(--gm-color-border);
+  }
+}
+
+.use-table-diy-cell {
+  display: flex;
+
+  &-no {
+    width: 50px;
+    padding-left: 15px;
+    text-align: center;
+  }
+}
+
+.ant-table-selection-column {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  // 母表展示字表不展示序号
+  .use-table-diy-cell-no {
+    visibility: hidden;
+  }
+}
+
+.ant-table-row-level-0 > .ant-table-selection-column {
+  .use-table-diy-cell-no {
+    visibility: visible !important;
+  }
+}
+
+.ant-table-cell.placeholder {
+  &::before {
+    display: none;
+  }
+}

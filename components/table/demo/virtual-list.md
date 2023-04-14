@@ -72,7 +72,7 @@ const VirtualTable = (props: Parameters<typeof Table>[0]) => {
     return (
       <Grid
         ref={gridRef}
-        className="virtual-grid"
+        className="v-grid"
         columnCount={mergedColumns.length}
         columnWidth={(index: number) => {
           const { width } = mergedColumns[index];
@@ -98,8 +98,8 @@ const VirtualTable = (props: Parameters<typeof Table>[0]) => {
           style: React.CSSProperties;
         }) => (
           <div
-            className={classNames('virtual-table-cell', {
-              'virtual-table-cell-last': columnIndex === mergedColumns.length - 1,
+            className={classNames('v-table-cell', {
+              'v-table-cell-last': columnIndex === mergedColumns.length - 1,
             })}
             style={style}
           >
@@ -118,7 +118,7 @@ const VirtualTable = (props: Parameters<typeof Table>[0]) => {
     >
       <Table
         {...props}
-        className="virtual-table"
+        className="v-table"
         columns={mergedColumns}
         pagination={false}
         components={{
@@ -149,17 +149,17 @@ export default App;
 ```
 
 <style>
-  .virtual-table .ant-table-container:before,
-  .virtual-table .ant-table-container:after {
+  .v-table .ant-table-container:before,
+  .v-table .ant-table-container:after {
     display: none;
   }
-  .virtual-table-cell {
+  .v-table-cell {
     box-sizing: border-box;
     padding: 16px;
     border-bottom: 1px solid #e8e8e8;
     background: #FFF;
   }
- [data-theme="dark"]  .virtual-table-cell {
+ [data-theme="dark"]  .v-table-cell {
     box-sizing: border-box;
     padding: 16px;
     border-bottom: 1px solid #303030;

@@ -13,6 +13,8 @@ import CodePenIcon from './CodePenIcon';
 import CodePreview from './CodePreview';
 import CodeSandboxIcon from './CodeSandboxIcon';
 import RiddleIcon from './RiddleIcon';
+// eslint-disable-next-line import/no-unresolved
+// import 'antd/components/style/reset_ant_design.less';
 
 const { ErrorBoundary } = Alert;
 
@@ -474,6 +476,14 @@ createRoot(document.getElementById('container')).render(<Demo />);
     if (meta.version) {
       codeBox = (
         <Badge.Ribbon text={meta.version} color={meta.version.includes('<') ? 'red' : null}>
+          {codeBox}
+        </Badge.Ribbon>
+      );
+    }
+
+    if (meta.gm) {
+      codeBox = (
+        <Badge.Ribbon text="GMFE" color="orange">
           {codeBox}
         </Badge.Ribbon>
       );
