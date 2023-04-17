@@ -125,6 +125,9 @@ module.exports = {
     config.plugins.push(
       new webpack.DefinePlugin({
         antdReproduceVersion: JSON.stringify(version),
+        /** Gm-common 需要 */
+        __PRODUCTION__: JSON.stringify(!isDev),
+        __NAME__: JSON.stringify('antd'),
       }),
     );
 
@@ -212,6 +215,12 @@ module.exports = {
   devServerConfig: {
     public: `${process.env.DEV_HOST || 'localhost'}:${port}`,
     disableHostCheck: !!process.env.DEV_HOST,
+    historyApiFallback: true,
+    proxy: {
+      context: ['/ceres'],
+      target: 'https://q.guanmai.cn/', // 线上环境
+      changeOrigin: true,
+    },
   },
 
   htmlTemplateExtraData: {

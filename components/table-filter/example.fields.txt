@@ -1,0 +1,825 @@
+/** 仅作为参考例子，不要引入此文件，以免引入报错 */
+
+import { handleQuotationList } from '@/common/components/sale_menu_filter'
+import TYPE_ENTERPRISE_CUSTOMER from '@/common/components/table_filter/components/SelectFilter/datasource/TYPE_ENTERPRISE_CUSTOMER'
+import {
+  FieldDateTypeItem,
+  FieldInputItem,
+  FieldItem,
+  FieldSelectItem,
+  MixinFieldItem,
+} from '@/common/components/table_filter/types'
+import { fetchTreeData } from '@/common/service'
+import { formatCascaderData } from '@/common/util'
+import { useMealList } from '@/pages/order/components/meal_info_select'
+import { fetchMealList } from '@/pages/order/components/meal_info_select/use_meal_list'
+import {
+  appType,
+  list_price_type,
+  lockStateData,
+  orderPayState,
+  orderState,
+  sortTypes,
+} from '@/pages/order/enum'
+import globalStore from '@/stores/global'
+import { ListDataItem, MoreSelectGroupDataItem } from '@gm-pc/react'
+// import { page } from '@/types/page'
+import { t } from 'gm-i18n'
+import { Filters_Bool } from 'gm_api/src/common'
+import { ListRoute } from 'gm_api/src/delivery'
+import {
+  Customer_Status,
+  Customer_Type,
+  ListCustomer,
+  ListGroupUser,
+  Role_Type,
+} from 'gm_api/src/enterprise'
+import {
+  ListQuotationV2,
+  Quotation_Status,
+  Quotation_Type,
+  Sku_SupplierCooperateModelType,
+} from 'gm_api/src/merchandise'
+import {
+  ListCustomizeSplitType,
+  ListCustomizeType,
+  ListOrderDetailRequest_AcceptState,
+  Order_PayState,
+} from 'gm_api/src/order'
+import { get, isNil } from 'lodash'
+import moment from 'moment'
+
+const fields: {
+  fields: FieldItem[]
+  mixins: MixinFieldItem[]
+} = {
+  fields: [
+    {
+      group: 'date_range',
+      key: 'order_time_from_time',
+      label: '按下单日期',
+      type: 'date',
+      range: true,
+      alwaysUsed: true,
+      maxWidth: 380,
+      defaultValue: [moment().startOf('day'), moment().endOf('day')],
+      disabledDate: (m) => m > moment().endOf('day'),
+      toParam(value) {
+        const from = get(value, '0') && (+get(value, '0')!).toString()
+        const to = get(value, '1') && (+get(value, '1')!).toString()
+        if (!from || !to) return {}
+        return {
+          common_list_order: {
+            order_time_from_time: from,
+            order_time_to_time: to,
+          },
+        }
+      },
+    },
+    {
+      group: 'date_range',
+      key: 'order_receive_from_time',
+      label: '按收货日期',
+      type: 'date',
+      range: true,
+      alwaysUsed: true,
+      maxWidth: 380,
+      defaultValue: [moment().startOf('day'), moment().endOf('day')],
+      disabledDate: (m) => m > moment().add(30, 'day').endOf('day'),
+      toParam(value) {
+        const from = get(value, '0') && (+get(value, '0')!).toString()
+        const to = get(value, '1') && (+get(value, '1')!).toString()
+        if (!from || !to) return {}
+        return {
+          common_list_order: {
+            order_receive_from_time: from,
+            order_receive_to_time: to,
+          },
+        }
+      },
+    },
+    {
+      key: 'search_all',
+      type: 'input',
+      label: '商品/订单号/客户/下单员',
+      hideLabel: true,
+      placeholder: '按商品/订单号/客户/下单员搜索',
+      minWidth: 250,
+      alwaysUsed: true,
+      // TODO: islite
+      toParam(value) {
+        if (!value) return {}
+        return {
+          common_list_order: {
+            search_all: value,
+          },
+        }
+      },
+    },
+    {
+      key: 'category',
+      type: 'cascader',
+      label: '商品分类',
+      placeholder: '选择商品分类',
+      async options() {
+        const { categoryTreeData } = await fetchTreeData()
+        return formatCascaderData(categoryTreeData)
+      },
+      toParam(value) {
+        if (!value) return {}
+        const categories: Record<string, string> = {}
+        value.map((item, index) => {
+          switch (index) {
+            case 0: {
+              categories.category_id_1 = item
+              break
+            }
+            case 1: {
+              categories.category_id_2 = item
+              break
+            }
+            case 2: {
+              categories.category_id_3 = item
+              break
+            }
+            default: {
+              // Tip.danger(t('商品分类不应超过三级'))
+              throw new Error('SPU CATEGORY ERROR')
+            }
+          }
+        })
+        return categories
+      },
+    },
+    {
+      key: 'status',
+      type: 'select',
+      placeholder: '选择订单状态',
+      label: '订单状态',
+      defaultValue: 0,
+      get hide() {
+        return globalStore.isLite
+      },
+      options() {
+        const orderStateSelectData = globalStore.isLite
+          ? [
+              { value: 1, text: t('未出库') },
+              { value: 3, text: t('已出库') },
+            ]
+          : orderState
+        return [{ value: 0, text: t('全部状态') }, ...orderStateSelectData]
+      },
+      toParam(value) {
+        if (!value) return {}
+        return {
+          common_list_order: {
+            states: [value as number],
+          },
+        }
+      },
+    },
+    {
+      key: 'pay_status',
+      type: 'select',
+      placeholder: '选择支付状态',
+      label: '支付状态',
+      defaultValue: 0,
+      options() {
+        return [
+          { value: 0, text: t('全部状态') },
+          ...orderPayState.filter((item) =>
+            globalStore.isLite
+              ? [
+                  Order_PayState.PAYSTATE_NOTPAY,
+                  Order_PayState.PAYSTATE_PAID,
+                ].includes(item.value)
+              : true,
+          ),
+        ]
+      },
+      toParam(value) {
+        if (!value) return {}
+        return {
+          common_list_order: {
+            pay_states: [value],
+          },
+        }
+      },
+    },
+    {
+      key: 'is_out_stock',
+      type: 'select',
+      label: '缺货状态',
+      placeholder: '选择缺货状态',
+      defaultValue: -1,
+      get hide() {
+        return globalStore.isLite
+      },
+      options: [
+        { value: -1, text: t('全部状态') },
+        { value: 1, text: t('是') },
+        { value: 0, text: t('否') },
+      ],
+      toParam(value) {
+        if ([undefined, -1].includes(value as number)) return {}
+        return {
+          common_list_order: {
+            is_out_stock: value,
+          },
+        }
+      },
+    },
+    {
+      key: 'sale_menus',
+      type: 'select',
+      multiple: true,
+      label: '报价单/菜谱',
+      placeholder: '全部报价单',
+      minWidth: 250,
+      get hide() {
+        return globalStore.isLite
+      },
+      async options() {
+        const quotations = await ListQuotationV2({
+          paging: { limit: 999 },
+          filter_params: {
+            quotation_types: [
+              Quotation_Type.WITHOUT_TIME,
+              Quotation_Type.PERIODIC,
+            ],
+            quotation_status: Quotation_Status.STATUS_VALID,
+          },
+        }).then((json) => json.response.quotations)
+        const list = handleQuotationList(quotations)
+        const datas = list.map((quotation) => ({
+          // ...quotation,
+          value: quotation?.quotation_id || '',
+          text: quotation?.inner_name || '',
+        }))
+        return datas
+      },
+      toParam(value) {
+        return {
+          common_list_order: {
+            quotation_ids: value as string[],
+          },
+        }
+      },
+    },
+    {
+      key: 'customers',
+      type: 'select',
+      multiple: true,
+      label: '客户筛选',
+      placeholder: '全部客户',
+      async options() {
+        return ListCustomer({
+          paging: { limit: 999 },
+          need_service_periods: true,
+          is_bill_target: Filters_Bool.ALL,
+          is_ship_target: Filters_Bool.ALL,
+          type: Customer_Type.TYPE_SOCIAL,
+        }).then((json) => {
+          const list = (json.response.customers || [])
+            .filter(
+              (v) =>
+                (+v.status! & 512) === Customer_Status.STATUS_IS_SHIP_TARGET,
+            )
+            .map((v) => {
+              return {
+                value: v.customer_id!,
+                text: `${v.name!}(${v.customized_code})`,
+              }
+            })
+          return list
+        })
+      },
+      toParam(value) {
+        return {
+          common_list_order: {
+            receive_customer_ids: value as string[],
+          },
+        }
+      },
+    },
+    {
+      key: 'route',
+      type: 'select',
+      remote: true,
+      multiple: true,
+      label: '线路筛选',
+      placeholder: '全部线路',
+      get hide() {
+        return globalStore.isLite
+      },
+      async options(q) {
+        return ListRoute({
+          paging: { limit: 999 },
+          q,
+        }).then((json) => {
+          const list = (json.response.routes || []).map((v) => {
+            return {
+              value: v.route_id,
+              text: v.route_name,
+            }
+          })
+          return list
+        })
+      },
+      toParam(value) {
+        return {
+          common_list_order: {
+            route_ids: value as string[],
+          },
+        }
+      },
+    },
+    {
+      key: 'drivers',
+      type: 'select',
+      multiple: true,
+      label: '司机筛选',
+      placeholder: '全部司机',
+      get hide() {
+        return globalStore.isLite
+      },
+      async options() {
+        const req = {
+          paging: { limit: 999 },
+          role_types: [Role_Type.BUILT_IN_DRIVER],
+          need_distribution_contractor: true,
+        }
+        return ListGroupUser(req).then((json) => {
+          return json.response.group_users.map((item) => {
+            return {
+              text: item.name!,
+              value: item.group_user_id,
+            }
+          })
+        })
+      },
+      toParam(value) {
+        return {
+          common_list_order: {
+            driver_ids: value as string[],
+          },
+        }
+      },
+    },
+    {
+      key: 'sku_is_weight',
+      type: 'select',
+      placeholder: '选择计重类型',
+      label: '计重类型',
+      defaultValue: Filters_Bool.ALL,
+      get hide() {
+        return globalStore.isLite
+      },
+      options: [
+        { value: Filters_Bool.ALL, text: t('全部计重类型') },
+        { value: Filters_Bool.FALSE, text: t('不计重任务') },
+        { value: Filters_Bool.TRUE, text: t('计重任务') },
+      ],
+    },
+    {
+      key: 'sorting_status',
+      type: 'select',
+      placeholder: '选择分拣状态',
+      label: '分拣状态',
+      defaultValue: 0,
+      get hide() {
+        return globalStore.isLite
+      },
+      options: [{ value: 0, text: t('全部分拣类型') }, ...sortTypes],
+    },
+    {
+      // TODO: 只有一个“全部”选项，似乎并没有存在的必要
+      key: 'sorting_remark',
+      type: 'select',
+      placeholder: '选择分拣备注',
+      label: '分拣备注',
+      get hide() {
+        return globalStore.isLite
+      },
+      options: [{ value: '', text: t('全部分拣备注') }],
+      toParam(sorting_remark) {
+        return {
+          common_list_order: {
+            sorting_remark: sorting_remark || undefined,
+          },
+        }
+      },
+    } as FieldSelectItem<{ multiple: false }>,
+    {
+      key: 'customize_type_ids',
+      type: 'select',
+      multiple: true,
+      label: '订单类型',
+      placeholder: '全部订单类型',
+      get hide() {
+        return globalStore.isLite
+      },
+      async options() {
+        return ListCustomizeType().then((res) => {
+          return res.response.customize_types.map((item) => {
+            return {
+              text: item.name!,
+              value: item.customize_type_id,
+            }
+          })
+        })
+      },
+      toParam(value) {
+        return {
+          common_list_order: {
+            customize_type_ids: value as string[],
+          },
+        }
+      },
+    },
+    {
+      key: 'app_id',
+      type: 'select',
+      label: '订单来源',
+      placeholder: '全部订单来源',
+      get hide() {
+        return globalStore.isLite
+      },
+      options: [{ value: '', text: t('全部来源') }, ...appType],
+      toParam(value) {
+        const appOp = (value as string).split('_')
+        return {
+          common_list_order: {
+            app_types: appOp[0] ? [appOp[0]] : undefined,
+            order_op: appOp[1] ? [appOp[1]] : undefined,
+          },
+        }
+      },
+    },
+    {
+      key: 'is_create_production_task',
+      type: 'select',
+      label: '是否发布生产计划',
+      minWidth: 200,
+      placeholder: '全部状态',
+      get hide() {
+        return globalStore.isLite
+      },
+      options: [
+        { value: Filters_Bool.ALL, text: t('全部状态') },
+        { value: Filters_Bool.TRUE, text: t('已发布') },
+        { value: Filters_Bool.FALSE, text: t('未发布') },
+      ],
+    },
+    {
+      key: 'is_create_purchase_task',
+      type: 'select',
+      label: '是否发布采购计划',
+      minWidth: 200,
+      placeholder: '全部状态',
+      get hide() {
+        return globalStore.isLite
+      },
+      options: [
+        { value: Filters_Bool.ALL, text: t('全部状态') },
+        { value: Filters_Bool.TRUE, text: t('已发布') },
+        { value: Filters_Bool.FALSE, text: t('未发布') },
+      ],
+    },
+    {
+      key: 'menu_period_group_ids',
+      type: 'select',
+      multiple: true,
+      label: '餐次',
+      placeholder: '全部餐次',
+      minWidth: 200,
+      get hide() {
+        return globalStore.isLite
+      },
+      async options() {
+        const list = await fetchMealList()
+        const { menu, student } = list
+        const result = [
+          ...student.map((item) => {
+            return {
+              ...item,
+              group: '学生餐餐次',
+            }
+          }),
+          ...menu.map((item) => {
+            return {
+              ...item,
+              group: '净菜餐次',
+            }
+          }),
+        ]
+        return result
+      },
+      toParam(value) {
+        return {
+          common_list_order: {
+            menu_period_group_ids: value as string[],
+          },
+        }
+      },
+    },
+    {
+      key: 'accept_state',
+      type: 'select',
+      label: '验收状态',
+      placeholder: '全部状态',
+      defaultValue:
+        ListOrderDetailRequest_AcceptState.ACCEPT_STATUS_UNSPECIFIED,
+      get hide() {
+        return globalStore.isLite
+      },
+      options: [
+        {
+          value: ListOrderDetailRequest_AcceptState.ACCEPT_STATUS_UNSPECIFIED,
+          text: t('全部状态'),
+        },
+        {
+          value: ListOrderDetailRequest_AcceptState.ACCEPT_STATUS_NONE,
+          text: t('未验收'),
+        },
+        {
+          value: ListOrderDetailRequest_AcceptState.ACCEPT_STATUS_DONE,
+          text: t('已验收'),
+        },
+      ],
+    },
+    {
+      key: 'supplier_cooperate_model_type',
+      type: 'select',
+      label: '供应商协作模式',
+      minWidth: 200,
+      placeholder: '全部模式',
+      get hide() {
+        return globalStore.isLite
+      },
+      options: [
+        {
+          value: Sku_SupplierCooperateModelType.SCMT_UNSPECIFIED,
+          text: t('全部状态'),
+        },
+        {
+          value: Sku_SupplierCooperateModelType.SCMT_JUST_PROVIDE_GOODS,
+          text: t('仅供货'),
+        },
+        {
+          value: Sku_SupplierCooperateModelType.SCMT_WITH_SORTING,
+          text: t('代分拣'),
+        },
+        {
+          value: Sku_SupplierCooperateModelType.SCMT_WITH_DELIVERY,
+          text: t('代配送'),
+        },
+      ],
+    },
+    {
+      key: 'manual_purchase',
+      type: 'select',
+      label: '是否库存状态',
+      minWidth: 200,
+      placeholder: '全部状态',
+      get hide() {
+        return globalStore.isLite
+      },
+      options: [
+        {
+          value: Filters_Bool.ALL,
+          text: t('全部状态'),
+        },
+        {
+          value: Filters_Bool.TRUE,
+          text: t('是'),
+        },
+        {
+          value: Filters_Bool.FALSE,
+          text: t('否'),
+        },
+      ],
+    },
+    {
+      key: 'unit_current_prices',
+      type: 'select',
+      label: '价格类型',
+      placeholder: '全部类型',
+      get hide() {
+        return globalStore.isLite
+      },
+      options: list_price_type,
+    },
+    {
+      key: 'lock_state',
+      type: 'select',
+      label: '锁定状态',
+      placeholder: '全部状态',
+      get hide() {
+        return globalStore.isLite
+      },
+      options: lockStateData,
+    },
+    {
+      key: 'split_order_type',
+      type: 'select',
+      label: '自定义分单类型',
+      minWidth: 200,
+      placeholder: '全部类型',
+      get hide() {
+        return globalStore.isLite
+      },
+      async options() {
+        return ListCustomizeSplitType({
+          paging: {
+            all: true,
+            // 使用 all 之后不需要 limit 参数，这是类型错误
+            limit: undefined as any,
+          },
+        }).then((json) => {
+          const ALL_OPTION = { value: '', text: t('全部类型') }
+          const NOT_TYPE = { value: '0', text: t('不分单') }
+          const rawList = json.response?.order_customize_split_types || []
+          const list: ListDataItem<string>[] = [ALL_OPTION, NOT_TYPE]
+          rawList.forEach((item) => {
+            if (isNil(item.name) || item.name === '') return
+            list.push({
+              value: item.order_customize_split_type_id,
+              text: item.name,
+            })
+          })
+          return list
+        })
+      },
+    },
+  ],
+  mixins: [
+    {
+      alias: ['CustomerType'],
+      type: 'select',
+      label: '客户类型',
+    },
+    {
+      alias: ['order_date'],
+      group: 'date_type',
+      label: '按下单日期',
+      type: 'date',
+      alwaysUsed: true,
+      range: true,
+    },
+    {
+      alias: ['receive_date'],
+      group: 'date_type',
+      label: '按收货日期',
+      type: 'date',
+      alwaysUsed: true,
+      range: true,
+    },
+    {
+      alias: ['OrderId'],
+      type: 'input',
+      label: '按订单号',
+      placeholder: '请输入订单号',
+    },
+    {
+      alias: ['customer_id'],
+      type: 'input',
+      label: '按客户号',
+    },
+    {
+      alias: ['product_name'],
+      type: 'input',
+      label: '按商品名',
+    },
+    {
+      alias: ['buyer'],
+      type: 'input',
+      label: '按下单员',
+    },
+    {
+      alias: ['category'],
+      type: 'cascader',
+      label: '商品分类',
+    },
+    {
+      alias: ['OutstockState'],
+      type: 'select',
+      label: '订单状态',
+      get options() {
+        const orderStateSelectData = globalStore.isLite
+          ? [
+              { value: 1, text: t('未出库') },
+              { value: 3, text: t('已出库') },
+            ]
+          : orderState
+        return [{ value: 0, text: t('全部状态') }, ...orderStateSelectData]
+      },
+    },
+    {
+      alias: ['payment_state'],
+      type: 'select',
+      label: '支付状态',
+    },
+    {
+      alias: ['stock_state'],
+      type: 'select',
+      label: '缺货状态',
+    },
+    {
+      alias: ['basic_price_name'],
+      type: 'select',
+      multiple: true,
+      label: '报价单',
+    },
+    {
+      alias: ['BillCustomerId'],
+      type: 'select',
+      multiple: true,
+      label: '客户筛选',
+      placeholder: '请选择客户',
+      options: TYPE_ENTERPRISE_CUSTOMER,
+    },
+    {
+      alias: ['routing_name'],
+      type: 'select',
+      multiple: true,
+      label: '线路筛选',
+    },
+    {
+      alias: ['driver_name'],
+      type: 'select',
+      multiple: true,
+      label: '司机筛选',
+    },
+    {
+      alias: ['weight_type'],
+      type: 'select',
+      multiple: true,
+      label: '计重类型',
+    },
+    {
+      alias: ['sorting_type'],
+      type: 'select',
+      label: '分拣类型',
+    },
+    {
+      alias: ['sorting_type'],
+      type: 'select',
+      label: '分拣类型',
+    },
+    {
+      alias: ['sorting_remark'],
+      type: 'select',
+      label: '分拣备注',
+    },
+    {
+      alias: ['order_type'],
+      type: 'select',
+      multiple: true,
+      label: '订单类型',
+    },
+    {
+      alias: ['order_from'],
+      type: 'select',
+      label: '订单来源',
+    },
+    {
+      alias: ['published_production'],
+      type: 'select',
+      label: '是否发布生产计划',
+    },
+    {
+      alias: ['published_purchase'],
+      type: 'select',
+      label: '是否发布采购计划',
+    },
+    {
+      alias: ['menu_period_group_ids'],
+      type: 'select',
+      multiple: true,
+      label: '餐次',
+    },
+    {
+      alias: ['accept_state'],
+      type: 'select',
+      label: '验收状态',
+    },
+    {
+      alias: ['supplier_cooperate_model_type'],
+      type: 'select',
+      label: '供应商协作模式',
+    },
+    {
+      alias: ['manual_purchase'],
+      type: 'select',
+      label: '是否库存状态',
+    },
+    {
+      alias: ['unit_current_prices'],
+      type: 'select',
+      label: '价格类型',
+    },
+  ],
+}
+
+export default fields

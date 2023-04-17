@@ -143,7 +143,7 @@ export {
   useTableSelection,
   useTableTheme,
   useTableVirtual,
-  useTable
+  useTable,
 } from './table';
 export type {
   ColumnGroupType as TableColumnGroupType,
@@ -178,3 +178,5 @@ export type { TypographyProps } from './typography';
 export { default as Upload } from './upload';
 export type { UploadFile, UploadProps } from './upload';
 export { default as version } from './version';
+export { default as TableFilter } from './table-filter';
+export type { FieldItem } from './table-filter/types';

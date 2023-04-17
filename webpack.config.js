@@ -124,7 +124,7 @@ if (process.env.RUN_ENV === 'PRODUCTION') {
     //   }
     //   return prev;
     // }, {});
-  ignoreMomentLocale(config);
+    ignoreMomentLocale(config);
     externalMoment(config);
     addLocales(config);
     // Reduce non-minified dist files size

@@ -1,0 +1,99 @@
+.table-filter {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  padding-top: 12px;
+  padding-bottom: 12px;
+
+  .labeled {
+    display: inline-flex;
+    align-items: center;
+    padding-left: 10px;
+    overflow: hidden;
+    border: 1px solid #d6d6d6;
+    border-radius: 4px;
+    cursor: default;
+
+    & input,
+    .ant-select-selection-item,
+    .ant-select-selection-placeholder {
+      font-size: 14px;
+    }
+
+    & input,
+    .ant-select-selection-item {
+      color: black;
+    }
+    // .ant-select-selector {
+    //   padding-right: 0 !important;
+    //   padding-left: 0 !important;
+    //   .ant-select-selection-search {
+    //     left: 0 !important;
+    //   }
+    // }
+    .labeled-group {
+      position: relative;
+
+      &::after {
+        position: absolute;
+        top: -4px;
+        right: 0;
+        width: 1px;
+        height: 34px;
+        background-color: #d6d6d6;
+        content: '';
+      }
+    }
+
+    &-focused {
+      border-color: var(--ant-primary-color) !important;
+      outline: 0;
+      box-shadow: 0 0 0 2px rgba(9, 109, 217, 0.2);
+    }
+
+    input[type='number'] {
+      appearance: textfield;
+    }
+
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+      appearance: none;
+    }
+
+    &.disabled {
+      background-color: #f5f5f5;
+      border-color: #d6d6d6 !important;
+      box-shadow: none !important;
+      cursor: not-allowed !important;
+
+      div {
+        filter: opacity(0.8);
+        pointer-events: none !important;
+      }
+    }
+  }
+
+  .filter-btn-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    color: rgb(113, 113, 112);
+    border: 1px solid #d6d6d6;
+    border-radius: 4px;
+    cursor: pointer;
+
+    &:hover {
+      color: var(--ant-primary-color);
+      background-color: #dce9ff;
+    }
+  }
+}
+
+.overlay-setting {
+  .ant-popover-inner-content {
+    min-width: 210px;
+    padding: 0;
+  }
+}

@@ -30,8 +30,8 @@ module.exports = {
       rules: {
         '@typescript-eslint/no-unused-vars': [2, { args: 'none' }],
         'no-unused-expressions': 'off',
-        '@typescript-eslint/no-unused-expressions': 2,
         '@typescript-eslint/consistent-type-imports': [2, { disallowTypeAnnotations: false }],
+        '@typescript-eslint/no-unused-expressions': 0,
       },
     },
     {
@@ -163,6 +163,7 @@ module.exports = {
     '@typescript-eslint/no-shadow': 'off',
     // https://github.com/typescript-eslint/typescript-eslint/issues/2528#issuecomment-689369395
     'no-undef': 0,
+    'class-methods-use-this': 0,
   },
   globals: {
     gtag: true,
