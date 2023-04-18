@@ -35,7 +35,7 @@ const App: React.FC = () => (
             下载模板
           </a>
         ),
-        uploadFn(fileType: number, file: File) {
+        uploadFn(file: File) {
           /** MOCK上传逻辑 */
           return Promise.resolve({
             data: {

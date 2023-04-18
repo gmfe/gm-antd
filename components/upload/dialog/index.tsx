@@ -24,9 +24,7 @@ export interface UploadFileProps extends HTMLAttributes<HTMLDivElement> {
   /** 10M */
   maxSize?: 10;
   multiple?: boolean;
-  /** 上传类型，默认为客户网站资源`FileType.FILE_TYPE_ENTERPRISE_COMPANY_WEBSITE` */
-  fileType?: number;
-  uploadFn: (file_type: number, file: File) => Promise<{ data: { url: string } }>;
+  uploadFn: (file: File) => Promise<{ data: { url: string } }>;
 }
 
 const initialState = {
@@ -54,7 +52,6 @@ const Component = forwardRef<UploadFileMethods, UploadFileProps>(
       extra,
       maxSize = 10,
       multiple = false,
-      fileType = 26,
       uploadFn,
     },
     ref,
@@ -116,7 +113,7 @@ const Component = forwardRef<UploadFileMethods, UploadFileProps>(
         let newFileList: UploadFileType[] = [...fileList, file];
         if (!multiple) newFileList = [file];
         assignState({ uploading: true, fileList: newFileList });
-        uploadFn(fileType, file as File)
+        uploadFn(file as File)
           .then(({ data: { url } }) => {
             newFileList = cloneDeep(newFileList);
             const item = newFileList.find(f => f.uid === file.uid)!;
