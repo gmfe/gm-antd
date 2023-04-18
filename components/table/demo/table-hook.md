@@ -271,7 +271,7 @@ const App: React.FC = () => {
         <div className="flex-grow" />
         <Button type="primary">新增</Button>
       </BatchActions>
-      <Table {...props} />
+      <Table {...props} pagination={false} />
     </div>
   );
 };

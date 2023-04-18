@@ -481,7 +481,7 @@ createRoot(document.getElementById('container')).render(<Demo />);
 
     if (meta.gm) {
       codeBox = (
-        <Badge.Ribbon text="GM" color="orange">
+        <Badge.Ribbon text="GM" color="primary">
           {codeBox}
         </Badge.Ribbon>
       );

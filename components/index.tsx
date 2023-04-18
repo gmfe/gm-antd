@@ -180,3 +180,5 @@ export type { UploadFile, UploadProps } from './upload';
 export { default as version } from './version';
 export { default as TableFilter } from './table-filter';
 export type { FieldItem } from './table-filter/types';
+
+export { default as TablePagination } from './table-pagination';
