@@ -35,6 +35,7 @@ const App: React.FC = () => (
             下载模板
           </a>
         ),
+        // uploadFn: file => uploadQiniuFile(FileType.FILE_TYPE_ENTERPRISE_COMPANY_WEBSITE, file),
         uploadFn(file: File) {
           /** MOCK上传逻辑 */
           return Promise.resolve({

@@ -269,10 +269,10 @@ const DiyPanel: FC<DiyPanelProps> = ({
           style={{ display: 'flex', gap: 12 }}
         >
           {/* TODO: */}
-          <Button className="lightgrey" type="primary" onClick={() => onReset()}>
+          <Button type="second" onClick={() => onReset()}>
             重置
           </Button>
-          <Button className="lightgrey" type="primary" onClick={() => onCancel()}>
+          <Button type="second" onClick={() => onCancel()}>
             取消
           </Button>
           <Button type="primary" onClick={() => _onSave()}>
