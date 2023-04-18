@@ -1,6 +1,7 @@
 import Dragger from './Dragger';
 import type { UploadProps } from './Upload';
 import InternalUpload, { LIST_IGNORE } from './Upload';
+import Dialog from './dialog';
 
 export { DraggerProps } from './Dragger';
 export { RcFile, UploadChangeParam, UploadFile, UploadListProps, UploadProps } from './interface';
@@ -12,10 +13,12 @@ interface UploadInterface<T = any> extends InternalUploadType {
   ): React.ReactElement;
   Dragger: typeof Dragger;
   LIST_IGNORE: string;
+  open: typeof Dialog.open;
 }
 
 const Upload = InternalUpload as UploadInterface;
 Upload.Dragger = Dragger;
 Upload.LIST_IGNORE = LIST_IGNORE;
+Upload.open = Dialog.open;
 
 export default Upload;
