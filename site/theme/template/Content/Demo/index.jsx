@@ -13,8 +13,6 @@ import CodePenIcon from './CodePenIcon';
 import CodePreview from './CodePreview';
 import CodeSandboxIcon from './CodeSandboxIcon';
 import RiddleIcon from './RiddleIcon';
-// eslint-disable-next-line import/no-unresolved
-// import 'antd/components/style/reset_ant_design.less';
 
 const { ErrorBoundary } = Alert;
 
