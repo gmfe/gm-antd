@@ -1,19 +1,20 @@
-import { Moment } from 'moment';
-import { HTMLAttributes, ReactNode } from 'react';
-import { RangeValue, PickerMode } from 'rc-picker/lib/interface';
-// import { ModelField } from 'gm_api/src/metadata'
+import type { Moment } from 'moment';
+import type { HTMLAttributes, ReactNode } from 'react';
+import type { RangeValue, PickerMode } from 'rc-picker/lib/interface';
+// import type { ModelField } from 'gm_api/src/metadata'
 // import TableListSourceMap from './sources'
-// import { UsePaginationResult } from '@gm-common/hooks'
-import { RangePickerProps } from '../date-picker';
-import { PickerDateProps, RangePickerDateProps } from '../date-picker/generatePicker';
-import { generateListOptions } from './helper';
+import type { UsePaginationResult as GMUsePaginationResult } from '@gm-common/hooks';
+import type { RangePickerProps } from '../date-picker';
+import type { PickerDateProps, RangePickerDateProps } from '../date-picker/generatePicker';
+import type { generateListOptions } from './helper';
 import CascaderFilter from './components/CascaderFilter';
 
 // export type TableListSourceMapType = typeof TableListSourceMap
-export type UsePaginationResult = {
-  [key: string]: any;
-  run: (params?: P) => Promise<D>;
-};
+// export type UsePaginationResult = {
+//   [key: string]: any;
+//   run: (params?: P) => Promise<D>;
+// };
+export type UsePaginationResult = GMUsePaginationResult;
 
 interface TableFilterProps extends Pick<HTMLAttributes<HTMLDivElement>, 'className' | 'style'> {
   /** 配合usePagination使用 */
