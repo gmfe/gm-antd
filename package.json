@@ -78,7 +78,7 @@
     "test-image": "jest --config .jest.image.js --no-cache -i -u",
     "argos": "node ./scripts/argos-upload.js",
     "version": "node ./scripts/generate-version",
-    "add-ts-no-check": "add-ts-nocheck --patterns 'node_modules/{@gm-common,gm-api}/**/!(*.d).ts,src/**/!(*.d).ts'"
+    "add-ts-no-check": "add-ts-nocheck --patterns 'node_modules/@gm-common/**/!(*.d).ts,node_modules/@gm-common/**/!(*.d).tsx,node_modules/gm-api/**/!(*.d).ts,src/**/!(*.d).ts,node_modules/gm-api/**/!(*.d).ts,src/**/!(*.d).tsx'"
   },
   "browserslist": [
     "> 0.5%",

@@ -8,7 +8,7 @@
 
 <div align="center">
 
-Fork自antd@2.24.0，做AntD组件二次开发及文档使用。[在线文档](https://gmfe.github.io/gm-antd/index-cn)
+Fork 自antd@2.24.0，做 AntD 组件二次开发及文档使用。[在线文档](https://gmfe.github.io/gm-antd/index-cn)
 
 </div>
 
@@ -26,25 +26,36 @@ Fork自antd@2.24.0，做AntD组件二次开发及文档使用。[在线文档](h
 ```
 
 ## 开发流程
+
 在你 clone 了 antd 的代码并且使用 yarn install 安装完依赖后，你还可以运行下面几个常用的命令：
+
 - `yarn start` 在本地运行 Ant Design 的网站。
 - `yarn lint` 检查代码风格。
 - `yarn test` 运行测试。(在运行测试前请确保 NODE_ENV 环境变量没有被设定，否则可能会引发一些问题)
 - `yarn compile` 编译 TypeScript 代码到 lib 和 es 目录。
 - `yarn dist` 构建 antd 的 UMD 版本到 dist 目录。
-- `yarn site` 构建静态文档站到_site目录
+- `yarn site` 构建静态文档站到\_site 目录
 
 #### 配套开发工具
+
 - CSS in JS 样式提示插件：https://marketplace.visualstudio.com/items?itemName=shezhangzhang.antd-design-token
 - 组件属性提示插件：https://github.com/fi3ework/vscode-antd-rush
 
 ## 发包
+
 - 提交代码；
-- 运行`yarn test`检测你改动到的组件测试用例是否通过，假设你改动了Button组件，则使用`yarn test /button/`指定运行button的测试用例；
-- 运行`yarn build`打包, link后可以在上层项目中测试;
-- 按照语义化更新版本号(`yarn version -h`)；
-- 将package.json中的name改为`gm-antd`。（在完成发布后再改回来,这是因为build使用的antd-tools脚手架没有相关文档且其依赖package.json的name为antd，而npm发包只能用package的name为名，暂时先这样手动处理）
+- 运行`yarn test`检测你改动到的组件测试用例是否通过，假设你改动了 Button 组件，则使用`yarn test /button/`指定运行 button 的测试用例；
+- 按照语义化更新版本号(feature:`yarn version --minor`,fix:`yarn version --patch`)；
+- 运行`yarn build`打包, link 后可以在上层项目中测试;
+- 将 package.json 中的 name 改为`gm-antd`。（在完成发布后再改回来,这是因为 build 使用的 antd-tools 脚手架没有相关文档且其依赖 package.json 的 name 为 antd，而 npm 发包只能用 package 的 name 为名，暂时先这样手动处理）
 - 运行`yarn publish`发布;
 
+如果是以下形式替换项目中的 antd 为 gm-antd，在发布完成后直接更改 package.json 中的对应版本号然后 `yarn` 以下就行了，如果 `yarn` 失败提示 "not found"，访问 https://npmmirror.com/package/gm-antd 点击SYNC同步镜像，然后重试即可。
+
+```
+"antd": "https://registry.npmmirror.com/gm-antd/-/gm-antd-1.1.0.tgz"
+```
+
 ## 其他
-- antd官方贡献指南：https://ant.design/docs/react/contributing-cn
+
+- antd 官方贡献指南：https://ant.design/docs/react/contributing-cn
