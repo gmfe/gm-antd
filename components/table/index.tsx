@@ -9,5 +9,6 @@ export { default as useTableTheme } from './hooks/useTableTheme';
 export { default as useTableExpandable } from './hooks/useTableExpandable';
 export { default as useTableVirtual } from './hooks/useTableVirtual';
 export { default as useTable } from './hooks/useTable';
+export { default as useTableResizable } from './hooks/useTableResizable';
 
 export default Table;

@@ -145,7 +145,7 @@ const Component: FC<ContentWrapperProps> = ({
           ref={ref}
           className={classNames('content-wrapper-viewbox', { 'hide-scrollbar': !state.scrollbar })}
           style={{
-            paddingBottom: bottom ? 64 : 0,
+            paddingBottom: bottom ? 49 : 0,
             paddingLeft: left ? leftWidth : 0,
             //  tw-overflow-y-auto tw-overflow-x-hidden tw-h-full tw-rounded
             overflowY: 'auto',
@@ -157,7 +157,7 @@ const Component: FC<ContentWrapperProps> = ({
           <ResizeObserver
             onResize={({ height }) =>
               setState(state => {
-                height = height * 2 - (bottom ? 64 : 0) - 15 * 2; // 减去上边距15
+                height = height * 2 - (bottom ? 49 : 0) - 15 * 2; // 减去上边距15
                 return { ...state, height };
               })
             }
@@ -240,8 +240,10 @@ const Component: FC<ContentWrapperProps> = ({
                 // tw-absolute tw-top-0 tw-left-0 tw-pl-3 tw-pt-3 tw-h-full
                 position: 'absolute',
                 top: 0,
+                left: 0,
                 paddingLeft: 15,
                 paddingTop: 15,
+                paddingBottom: 15,
                 height: '100%',
               }}
             >
@@ -268,8 +270,8 @@ const Component: FC<ContentWrapperProps> = ({
                 bottom: 0,
                 left: 0,
                 width: '100%',
-                paddingLeft: 18,
-                paddingRight: 25,
+                paddingLeft: 15,
+                paddingRight: 15,
                 zIndex: 10,
               }}
             >

@@ -152,7 +152,7 @@ function Component(options: TableFilterProps) {
               //   'tw-hidden': trigger === 'onChange',
               // })}
               style={{
-                display: trigger === 'onChange' ? 'hidden' : undefined,
+                display: trigger === 'onChange' ? 'none' : undefined,
               }}
               type="second"
               onClick={() => {
@@ -167,7 +167,7 @@ function Component(options: TableFilterProps) {
               //   'tw-hidden': trigger === 'onChange',
               // })}
               style={{
-                display: trigger === 'onChange' ? 'hidden' : undefined,
+                display: trigger === 'onChange' ? 'none' : undefined,
               }}
               type="primary"
               key={
