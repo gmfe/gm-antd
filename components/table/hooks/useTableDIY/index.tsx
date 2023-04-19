@@ -126,7 +126,7 @@ const ColumnTitle = (
                 item => item.state.checked,
               );
               const sortedColumns = getSortedColumns(checkedColumns).map(item => item.column);
-              onUpdate(sortedColumns);
+              setTimeout(() => onUpdate(sortedColumns), 0);
             }}
             onCancel={() => {
               const groups = initGroups({
@@ -140,12 +140,12 @@ const ColumnTitle = (
                 item => item.state.checked,
               );
               const sortedColumns = getSortedColumns(checkedColumns).map(item => item.column);
-              onUpdate(sortedColumns);
+              setTimeout(() => onUpdate(sortedColumns), 0);
               setOpen(false);
             }}
             onFinish={columns => {
               setOpen(false);
-              onUpdate(columns);
+              setTimeout(() => onUpdate(columns), 0);
             }}
           />
         </div>,

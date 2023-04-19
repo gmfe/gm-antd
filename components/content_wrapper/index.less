@@ -1,0 +1,35 @@
+.content-wrapper {
+  height: calc(100vh - var(--gm-framework-size-top-right-height));
+  font-weight: normal;
+  font-size: 14px;
+  line-height: normal;
+  background-color: #f5f5f5;
+
+  .content-wrapper-viewbox-left {
+    background-color: #f5f5f5;
+  }
+
+  .content-wrapper-viewbox::-webkit-scrollbar {
+    width: 8px;
+    padding-right: 2px;
+  }
+
+  .content-wrapper-viewbox::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 4px;
+  }
+
+  .content-wrapper-viewbox::-webkit-scrollbar-track {
+    background: #f5f5f5;
+    border-radius: 4px;
+  }
+
+  .hide-scrollbar::-webkit-scrollbar-thumb,
+  .hide-scrollbar::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.075);
+  }
+
+  .content-wrapper-gap {
+    background-color: #f5f5f5;
+  }
+}
