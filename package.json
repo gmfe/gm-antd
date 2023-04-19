@@ -1,12 +1,12 @@
 {
   "name": "gm-antd",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "An enterprise-class UI design language and React components implementation",
   "title": "GM Ant Design",
-  "homepage": "https://ant.design",
+  "homepage": "https://gmfe.github.io/gm-antd/index-cn",
   "repository": {
     "type": "git",
-    "url": "https://github.com/gmfe/gm-ant-design"
+    "url": "https://github.com/gmfe/antd"
   },
   "license": "MIT",
   "contributors": [
@@ -28,12 +28,12 @@
   "unpkg": "dist/antd.min.js",
   "typings": "lib/index.d.ts",
   "scripts": {
-    "start": "antd-tools run clean && cross-env NODE_ENV=development concurrently \"bisheng start -c ./site/bisheng.config.js\"",
+    "start": "yarn add-ts-no-check && antd-tools run clean && cross-env NODE_ENV=development concurrently \"bisheng start -c ./site/bisheng.config.js\"",
     "prepare": "husky install",
-    "compile": "antd-tools run compile",
+    "compile": "yarn add-ts-no-check && antd-tools run compile",
     "build": "npm run compile && NODE_OPTIONS='--max-old-space-size=4096' npm run dist",
     "changelog": "node ./scripts/print-changelog",
-    "dist": "antd-tools run dist",
+    "dist": "yarn add-ts-no-check && antd-tools run dist",
     "dist:esbuild": "ESBUILD=true npm run dist",
     "dist:esbuild-no-dup-check": "ESBUILD=true NO_DUP_CHECK=true npm run dist",
     "pub": "npm run version && antd-tools run pub",
@@ -78,8 +78,7 @@
     "test-image": "jest --config .jest.image.js --no-cache -i -u",
     "argos": "node ./scripts/argos-upload.js",
     "version": "node ./scripts/generate-version",
-    "add-ts-no-check": "add-ts-nocheck --patterns 'node_modules/{@gm-common,gm-api}/**/!(*.d).ts,src/**/!(*.d).ts'",
-    "postinstall": "add-ts-nocheck"
+    "add-ts-no-check": "add-ts-nocheck --patterns 'node_modules/{@gm-common,gm-api}/**/!(*.d).ts,src/**/!(*.d).ts'"
   },
   "browserslist": [
     "> 0.5%",

@@ -19,3 +19,7 @@ type: 开始
 - 新增业务组件，比如列表页的条件筛选组件TableFilter;
 - 表格定制;
 - ...
+
+## 设计
+
+- [观麦设计组件库](https://www.sketch.com/s/7a23eecb-5a16-4ae3-961b-55855edabf35/)
