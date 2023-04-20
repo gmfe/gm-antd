@@ -200,3 +200,5 @@ Component.get = (id?: string) => {
  */
 const TableFilter = observer(Component);
 export default TableFilter;
+
+export * from './types'

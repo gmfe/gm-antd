@@ -180,7 +180,7 @@ export { default as Upload } from './upload';
 export type { UploadFile, UploadProps } from './upload';
 export { default as version } from './version';
 export { default as TableFilter } from './table-filter';
-export type { FieldItem } from './table-filter/types';
+export type { FieldItem } from './table-filter';
 export { default as TablePagination } from './table-pagination';
 export { default as ContentWrapper } from './content-wrapper';
 export { default as ContentWrapperContext } from './content-wrapper/context';

@@ -1,13 +1,11 @@
 import type { Moment } from 'moment';
-import type { HTMLAttributes, ReactNode } from 'react';
+import type { HTMLAttributes } from 'react';
 import type { RangeValue, PickerMode } from 'rc-picker/lib/interface';
 // import type { ModelField } from 'gm_api/src/metadata'
 // import TableListSourceMap from './sources'
 import type { UsePaginationResult as GMUsePaginationResult } from '@gm-common/hooks';
 import type { RangePickerProps } from '../date-picker';
 import type { PickerDateProps, RangePickerDateProps } from '../date-picker/generatePicker';
-import type { generateListOptions } from './helper';
-import CascaderFilter from './components/CascaderFilter';
 
 // export type TableListSourceMapType = typeof TableListSourceMap
 // export type UsePaginationResult = {
@@ -17,7 +15,8 @@ import CascaderFilter from './components/CascaderFilter';
 export type UsePaginationResult = Partial<GMUsePaginationResult> &
   Pick<GMUsePaginationResult, 'run'>;
 
-interface TableFilterProps extends Pick<HTMLAttributes<HTMLDivElement>, 'className' | 'style'> {
+export interface TableFilterProps
+  extends Pick<HTMLAttributes<HTMLDivElement>, 'className' | 'style'> {
   /** 配合usePagination使用 */
   paginationResult: UsePaginationResult;
   /** 全局唯一id, 缓存标识，默认使用路由路径作为id因此同路由下使用1个以上这个组件需要指定唯一id */
@@ -25,7 +24,7 @@ interface TableFilterProps extends Pick<HTMLAttributes<HTMLDivElement>, 'classNa
   /** 前端编码的字段 */
   fields?: Array<FieldItem>;
   /** 如果指定了model_type，则会通过ListModelField把对应模型的所有云字段也加载进来 */
-  model_type?: keyof TableListSourceMapType;
+  // model_type?: keyof TableListSourceMapType;
   /** 当某些场景下某些云字段不完善，可以使用mixin对其进行补充，用alias进行匹配 */
   // mixins?: Array<MixinFieldItem>;
   /** 就绪时立即run一次搜索 */
@@ -43,7 +42,7 @@ interface TableFilterProps extends Pick<HTMLAttributes<HTMLDivElement>, 'classNa
 /** 表单项 */
 export interface FieldBaseItem {
   /** 元属性 */
-  readonly attributes?: Readonly<ModelField>;
+  readonly attributes?: Readonly<any>;
   key: string;
   /** 字段标签 */
   label?: string;
@@ -228,10 +227,7 @@ export interface CachedSetting {
 
 export type CachedFields = Array<
   {
-    attributes?: Pick<
-      ModelField,
-      'field_name' | 'field_desc' | 'model_field_id' | 'field_value_type'
-    >;
+    attributes?: any;
     visible?: boolean;
   } & Pick<FieldItem, 'key' | 'label' | 'type'>
 >;
