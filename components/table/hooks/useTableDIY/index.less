@@ -3,10 +3,12 @@
   align-items: center;
 
   &-setting-icon {
+    display: flex;
     flex-grow: 1;
+    align-items: center;
+    justify-content: center;
     width: 50px;
     padding-left: 15px;
-    text-align: center;
   }
 }
 
@@ -70,7 +72,7 @@
   .diy-panel-right-content {
     height: 40vh;
     overflow: auto;
-    
+
     .sortable-active {
       opacity: 0.7;
     }
@@ -95,8 +97,8 @@
 }
 
 .ant-table-selection-column {
-  padding-left: 0 !important;
   padding-right: 0 !important;
+  padding-left: 0 !important;
   // 母表展示字表不展示序号
   .use-table-diy-cell-no {
     visibility: hidden;

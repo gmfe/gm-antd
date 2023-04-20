@@ -17,6 +17,7 @@ TODO
 import { TableFilter } from 'antd';
 import type { FieldItem } from 'antd';
 import React from 'react';
+import { usePagination } from '@gm-common/hooks'
 
 const FIELDS: FieldItem[] = [
   {
@@ -81,17 +82,11 @@ const FIELDS: FieldItem[] = [
 ];
 
 const App: React.FC = () => {
-  // const paginationResult = usePagination(store.fetch, {
-  //   defaultPaging: {
-  //     limit: 999,
-  //   },
-  // })
-  /** 这是mok的paginationResult，实际项目中通常配合usePagination使用 */
-  const paginationResult = {
-    async run(params) {
-      alert(JSON.stringify(params, undefined, 2));
+  const paginationResult = usePagination(alert, {
+    defaultPaging: {
+      limit: 999,
     },
-  };
+  })
   return (
     <>
       <TableFilter paginationResult={paginationResult} fields={FIELDS} />

@@ -20,7 +20,7 @@ import React from 'react';
 import { usePagination } from '@gm-common/hooks'
 
 const App: React.FC = () => {
-  const paginationResult = usePagination(store.fetch, {
+  const paginationResult = usePagination(console.log, {
     defaultPaging: {
       limit: 999,
     },

@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import type { CSSProperties, FC, HTMLAttributes, ReactNode } from 'react';
+import type { FC, HTMLAttributes, ReactNode } from 'react';
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import ResizeObserver from 'rc-resize-observer';
 import { Divider } from '../index';

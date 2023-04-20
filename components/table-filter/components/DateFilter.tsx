@@ -61,8 +61,9 @@ const DateFilter: FC<DateFilterProps> = ({ field }) => {
             bordered={false}
             ranges={field.ranges ?? defaultRanges}
             value={value!}
-            onChange={moment => {
-              store.set(field, moment);
+            onChange={moments => {
+              if (moments?.[1]) moments[1] = moments[1].endOf('day');
+              store.set(field, moments);
               if (['onChange', 'both'].includes(store.trigger!)) {
                 store.search();
               }

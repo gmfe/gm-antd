@@ -14,7 +14,8 @@ import CascaderFilter from './components/CascaderFilter';
 //   [key: string]: any;
 //   run: (params?: P) => Promise<D>;
 // };
-export type UsePaginationResult = GMUsePaginationResult;
+export type UsePaginationResult = Partial<GMUsePaginationResult> &
+  Pick<GMUsePaginationResult, 'run'>;
 
 interface TableFilterProps extends Pick<HTMLAttributes<HTMLDivElement>, 'className' | 'style'> {
   /** 配合usePagination使用 */
