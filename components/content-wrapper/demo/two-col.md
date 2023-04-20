@@ -67,16 +67,14 @@ const App: React.FC = () => {
             
             <ContentWrapper
               left={
-                <ul className='bg-white'>
-                  <li>第一</li>
-                  <li>第二</li>
-                  <li>第二</li>
-                </ul>
+                <div className='bg-white'>
+                  {Array(100).fill(null).map((_,i)=><div key={i}>{i}</div>)}
+                </div>
               }
             >
               <TableFilter paginationResult={paginationResult} fields={FIELDS} />
               <ContentWrapper.Gap />
-              body
+              <div className='h-screen'>body</div>
             </ContentWrapper>
 
         </Layout>

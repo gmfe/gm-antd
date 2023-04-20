@@ -103,7 +103,7 @@ const Component: FC<ContentWrapperProps> = ({
       }
       setState(state => {
         const { height } = el.getBoundingClientRect();
-        let scrollBottom = el.scrollHeight - (el.scrollTop + height) - (bottom ? 64 : 0);
+        let scrollBottom = el.scrollHeight - (el.scrollTop + height);
         // 向下滑 // windows上抽风
         scrollBottom = scrollBottom <= 1.5 ? 0 : scrollBottom;
         const { scrollTop } = el;
@@ -132,21 +132,40 @@ const Component: FC<ContentWrapperProps> = ({
 
   return (
     <ContentWrapperContext.Provider value={state}>
-      <div
-        className={classNames('content-wrapper', className)}
-        style={{
-          ...style,
-          // tw-relative tw-p-3
-          position: 'relative',
-          padding: 15,
-        }}
-      >
+      <div className={classNames('content-wrapper', className)} style={style}>
+        {left && (
+          <div
+            className="content-wrapper-left"
+            style={{
+              width: leftWidth,
+              // tw-absolute tw-top-0 tw-left-0 tw-pl-3 tw-pt-3 tw-h-full
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              padding: 15,
+              paddingRight: 0,
+              height: '100%',
+            }}
+          >
+            <div
+              // className="tw-rounded tw-bg-white tw-h-full tw-p-2 tw-h-full tw-overflow-y-auto"
+              style={{
+                borderRadius: 4,
+                backgroundColor: '#fff',
+                padding: 10,
+                height: '100%',
+                overflowY: 'auto',
+              }}
+            >
+              {left}
+            </div>
+          </div>
+        )}
         <div
           ref={ref}
           className={classNames('content-wrapper-viewbox', { 'hide-scrollbar': !state.scrollbar })}
           style={{
-            paddingBottom: bottom ? 49 : 0,
-            paddingLeft: left ? `calc(${leftWidth} + 15px)` : 0,
+            marginLeft: left ? `calc(${leftWidth} + 8px)` : 0,
             //  tw-overflow-y-auto tw-overflow-x-hidden tw-h-full tw-rounded
             overflowY: 'auto',
             overflowX: 'hidden',
@@ -158,7 +177,7 @@ const Component: FC<ContentWrapperProps> = ({
           <ResizeObserver
             onResize={({ height }) =>
               setState(state => {
-                height = height * 2 - (bottom ? 49 : 0) - 15 * 2; // 减去上边距15
+                height = height * 2 - 15 * 2; // 减去上边距15
                 return { ...state, height };
               })
             }
@@ -234,40 +253,13 @@ const Component: FC<ContentWrapperProps> = ({
               </div>
             </>
           )}
-          {left && (
-            <div
-              className="content-wrapper-viewbox-left"
-              style={{
-                width: leftWidth,
-                // tw-absolute tw-top-0 tw-left-0 tw-pl-3 tw-pt-3 tw-h-full
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                // paddingTop: 15,
-                // paddingBottom: 15,
-                height: '100%',
-              }}
-            >
-              <div
-                // className="tw-rounded tw-bg-white tw-h-full tw-p-2 tw-h-full tw-overflow-y-auto"
-                style={{
-                  borderRadius: 4,
-                  backgroundColor: '#fff',
-                  padding: 10,
-                  height: '100%',
-                  overflowY: 'auto',
-                }}
-              >
-                {left}
-              </div>
-            </div>
-          )}
+
           {bottom && (
             <div
               className="content-wrapper-viewbox-bottom"
               // tw-absolute tw-bottom-0 tw-left-0 tw-w-full tw-pl-3.5 tw-pr-5 tw-z-10
               style={{
-                position: 'absolute',
+                position: 'sticky',
                 bottom: 0,
                 left: 0,
                 width: '100%',

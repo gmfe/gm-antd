@@ -73,11 +73,17 @@ const App: React.FC = () => {
             >
               <TableFilter paginationResult={paginationResult} fields={FIELDS} trigger="onChange" />
               <ContentWrapperContext.Consumer>
-                {({ width, container, height }) => {
+                {({ width, container, height, scrollTop, scrollBottom }) => {
                   return (
                     <div>
-                      <div>{width}</div>
-                      <div>{height}</div>
+                      <div className='h-20 sticky top-5'>scrollTop: {scrollTop}</div>
+                      <div className='h-20 sticky top-10'>scrollBottom: {scrollBottom}</div>
+                      <div className='h-20 sticky top-0'>width: {width}</div>
+                      <div className='h-20'>height: {height}</div>
+                      <div className='h-20'>{height}</div>
+                      <div className='h-20'>{height}</div>
+                      <div className='h-20'>{height}</div>
+                      <div className='h-20'>{height}</div>
                       <div>{container?.className}</div>
                     </div>
                   );
