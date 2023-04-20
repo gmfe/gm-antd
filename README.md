@@ -43,13 +43,13 @@ Fork 自antd@2.24.0，做 AntD 组件二次开发及文档使用。[在线文档
 
 ## 发包
 
-- 提交代码；
 - 运行`yarn test`检测你改动到的组件测试用例是否通过，假设你改动了 Button 组件，则使用`yarn test /button/`指定运行 button 的测试用例；
+- 提交代码；
 - 按照语义化更新版本号(feature:`yarn version --minor`,fix:`yarn version --patch`)；
 - **更改package.json的name为"antd"**, 然后运行`yarn build`打包, link 后可以在上层项目中测试;
 - **将 package.json 中的 name 改为`gm-antd`**, 运行`yarn publish`发布;（这是因为 build 使用的 antd-tools 需要name为"antd"，而npm需要name为"gm-antd"，暂时先这样手动处理）
 
-如果是以下形式替换项目中的 antd 为 gm-antd，在发布完成后直接更改 package.json 中的对应版本号然后 `yarn` 以下就行了，如果 `yarn` 失败提示 "not found"，访问 https://npmmirror.com/package/gm-antd 点击SYNC同步镜像，然后重试即可。
+如果是以下形式替换项目中的 antd 为 gm-antd，在发布完成后直接更改 package.json 中的对应版本号然后 `yarn` 一下就行了，如果 `yarn` 失败提示 "not found"，访问 https://npmmirror.com/package/gm-antd 点击SYNC同步镜像，然后重试即可。
 
 ```
 "antd": "https://registry.npmmirror.com/gm-antd/-/gm-antd-1.1.0.tgz"

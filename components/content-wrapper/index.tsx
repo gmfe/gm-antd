@@ -13,7 +13,7 @@ export interface ContentWrapperProps extends HTMLAttributes<HTMLDivElement> {
   /** 左侧栏插槽，实现双栏布局的列表页 */
   left?: ReactNode;
   /** Left宽度，默认25% */
-  leftWidth?: CSSProperties['width'];
+  leftWidth?: string;
   /** 头部插槽 */
   top?: ReactNode;
   /** 底部固定插槽，保存、取消之类的动作 */
@@ -146,12 +146,13 @@ const Component: FC<ContentWrapperProps> = ({
           className={classNames('content-wrapper-viewbox', { 'hide-scrollbar': !state.scrollbar })}
           style={{
             paddingBottom: bottom ? 49 : 0,
-            paddingLeft: left ? leftWidth : 0,
+            paddingLeft: left ? `calc(${leftWidth} + 15px)` : 0,
             //  tw-overflow-y-auto tw-overflow-x-hidden tw-h-full tw-rounded
             overflowY: 'auto',
             overflowX: 'hidden',
             height: '100%',
             borderRadius: 4,
+            position: 'relative',
           }}
         >
           <ResizeObserver
@@ -200,6 +201,7 @@ const Component: FC<ContentWrapperProps> = ({
                   backgroundColor: '#fff',
                   padding: '0 15px',
                   minHeight: '100%',
+                  // marginLeft: 15,
                 }}
               >
                 {children}
@@ -241,9 +243,8 @@ const Component: FC<ContentWrapperProps> = ({
                 position: 'absolute',
                 top: 0,
                 left: 0,
-                paddingLeft: 15,
-                paddingTop: 15,
-                paddingBottom: 15,
+                // paddingTop: 15,
+                // paddingBottom: 15,
                 height: '100%',
               }}
             >
@@ -270,8 +271,6 @@ const Component: FC<ContentWrapperProps> = ({
                 bottom: 0,
                 left: 0,
                 width: '100%',
-                paddingLeft: 15,
-                paddingRight: 15,
                 zIndex: 10,
               }}
             >

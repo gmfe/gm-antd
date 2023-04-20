@@ -72,7 +72,6 @@ const App: React.FC = () => {
               }
             >
               <TableFilter paginationResult={paginationResult} fields={FIELDS} trigger="onChange" />
-              <ContentWrapper.Gap />
               <ContentWrapperContext.Consumer>
                 {({ width, container, height }) => {
                   return (
