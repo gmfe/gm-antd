@@ -84,6 +84,8 @@ export interface UseTableSelectionController<DataType = any> {
   toggleTotal(): void;
   /** 重置 */
   reset(): void;
+  /** 设置已选择的 key */
+  setSelected: React.Dispatch<React.SetStateAction<(string | number)[]>>;
 }
 
 /** 表格多选支持 */
@@ -121,7 +123,7 @@ function useTableSelection<DataType extends { [key: string]: any }>(
     return parents.concat(children);
   })();
 
-  const selectedResult = (() => {
+  const selectedResult = useMemo(() => {
     switch (mode) {
       case 'all':
         return selected;
@@ -145,7 +147,7 @@ function useTableSelection<DataType extends { [key: string]: any }>(
       default:
         break;
     }
-  })();
+  }, [childrenColumnName, dataSource, keyName, mode, selected]);
 
   /** 是否已全部勾选 */
   const checkedAll =
@@ -153,9 +155,15 @@ function useTableSelection<DataType extends { [key: string]: any }>(
     selectedResult!.length > 0 &&
     (mode === 'parent' ? selectedResult! : selected).length === enabledData.length;
 
-  const selectedRows = selectedResult!.map(key =>
-    dataSource.find((item: DataType, index) => (keyName ? item[keyName] === key : index === key)),
-  ) as Array<DataType>;
+  const selectedRows = useMemo(
+    () =>
+      selectedResult!.map(key =>
+        dataSource.find((item: DataType, index) =>
+          keyName ? item[keyName] === key : index === key,
+        ),
+      ) as Array<DataType>,
+    [dataSource, keyName, selectedResult],
+  );
 
   const controller: UseTableSelectionController = {
     dataSource,
@@ -177,6 +185,7 @@ function useTableSelection<DataType extends { [key: string]: any }>(
       }
       return selected.includes(key);
     },
+    setSelected,
     selectAll() {
       setSelected(() => {
         const list: string[] = [];
@@ -302,7 +311,7 @@ function useTableSelection<DataType extends { [key: string]: any }>(
           style={{
             display: 'flex',
             alignItems: 'center',
-            paddingLeft: '15px',
+            justifyContent: 'center',
             width: '50px',
           }}
         >
@@ -331,7 +340,7 @@ function useTableSelection<DataType extends { [key: string]: any }>(
             style={{
               display: 'flex',
               alignItems: 'center',
-              paddingLeft: '15px',
+              justifyContent: 'center',
               width: '50px',
             }}
           >

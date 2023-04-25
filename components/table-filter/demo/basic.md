@@ -18,7 +18,7 @@ TODO
 import { TableFilter } from 'antd';
 import type { FieldItem } from 'antd';
 import React from 'react';
-import { usePagination } from '@gm-common/hooks'
+import { usePagination } from '@gm-common/hooks';
 
 const FIELDS: FieldItem[] = [
   {
@@ -95,11 +95,11 @@ const FIELDS: FieldItem[] = [
 ];
 
 const App: React.FC = () => {
-  const paginationResult = usePagination(alert, {
+  const paginationResult = usePagination(params => alert(JSON.stringify(params, undefined, 2)), {
     defaultPaging: {
       limit: 999,
     },
-  })
+  });
   return (
     <>
       <TableFilter paginationResult={paginationResult} fields={FIELDS} />

@@ -165,24 +165,32 @@ const App: React.FC = () => {
       <Layout>
         <Sider />
         <Layout>
-          
-            <ContentWrapper>
-              <TableFilter paginationResult={paginationResult} fields={FIELDS} />
-              <ContentWrapper.Gap />
-              <BatchActions stickyTop={0}>
-                <BatchActions.Button
-                  disabled={!selectedRowKeys.length}
-                  onClick={() => alert(`删除：${selectedRowKeys.join(',')}`)}
-                >
-                  删除
-                </BatchActions.Button>
-                <div className="flex-grow" />
-                <Button type="primary">新增</Button>
-              </BatchActions>
-              <Table {...props} pagination={false} loading={dataSource.length === 0} />
-              <TablePagination paginationResult={paginationResult} showSizeChanger />
-            </ContentWrapper>
-            
+
+          <ContentWrapper>
+            <TableFilter paginationResult={paginationResult} fields={FIELDS} />
+            <ContentWrapper.Gap />
+            <BatchActions stickyTop={0}>
+              <BatchActions.Button
+                disabled={!selectedRowKeys.length}
+                onClick={() => alert(`删除：${selectedRowKeys.join(',')}`)}
+              >
+                删除
+              </BatchActions.Button>
+              <div className="flex-grow" />
+              <Button type="primary">新增</Button>
+            </BatchActions>
+            <Table
+              {...props}
+              pagination={false}
+              loading={dataSource.length === 0}
+              sticky={{
+                offsetHeader: 52,
+                offsetScroll: 0,
+              }}
+            />
+            <TablePagination paginationResult={paginationResult} showSizeChanger />
+          </ContentWrapper>
+
         </Layout>
       </Layout>
     </>
