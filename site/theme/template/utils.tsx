@@ -9,6 +9,7 @@ interface Meta {
   title?: any;
   order?: number;
   children?: Meta[];
+  tag?: any;
 }
 
 interface ModuleDataItem {

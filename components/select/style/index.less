@@ -233,6 +233,13 @@
     &-empty {
       color: @disabled-color;
     }
+
+    &-multiple {
+      .@{select-prefix-cls}-item-option {
+        flex-direction: row-reverse;
+        gap: 12px;
+      }
+    }
   }
 
   // ========================= Options =========================

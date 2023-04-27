@@ -5,6 +5,7 @@ type: 业务
 title: TableFilter
 subtitle: 过滤查询
 cover: https://gw.alipayobjects.com/zos/alicdn/f-SbcX2Lx/Table.svg
+tag: New
 ---
 
 常用于列表页的条件过滤

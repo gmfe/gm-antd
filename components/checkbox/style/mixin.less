@@ -203,18 +203,18 @@
   // 半选状态
   .@{checkbox-prefix-cls}-indeterminate {
     .@{checkbox-inner-prefix-cls} {
-      background-color: @checkbox-check-bg;
-      border-color: @border-color-base;
+      background-color: @primary-color;
+      border-color: transparent;
     }
     .@{checkbox-inner-prefix-cls}::after {
       @indeterminate-width: @checkbox-size - 8px;
-      @indeterminate-height: @checkbox-size - 8px;
+      @indeterminate-height: @checkbox-size - 14px;
 
       top: 50%;
       left: 50%;
       width: @indeterminate-width;
       height: @indeterminate-height;
-      background-color: @checkbox-color;
+      background-color: @checkbox-check-color;
       border: 0;
       transform: translate(-50%, -50%) scale(1);
       opacity: 1;

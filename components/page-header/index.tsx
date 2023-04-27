@@ -91,22 +91,24 @@ const renderTitle = (
           {backIconDom}
           {avatar && <Avatar {...avatar} />}
           {title && (
-            <span
-              className={`${headingPrefixCls}-title`}
-              title={typeof title === 'string' ? title : undefined}
-            >
-              {title}
-            </span>
+            <div className={`${headingPrefixCls}-title`}>
+              <span
+                className={`${headingPrefixCls}-main-title`}
+                title={typeof title === 'string' ? title : undefined}
+              >
+                {title}
+                {tags && <span className={`${headingPrefixCls}-tags`}>{tags}</span>}
+              </span>
+              {subTitle && (
+                <span
+                  className={`${headingPrefixCls}-sub-title`}
+                  title={typeof subTitle === 'string' ? subTitle : undefined}
+                >
+                  {subTitle}
+                </span>
+              )}
+            </div>
           )}
-          {subTitle && (
-            <span
-              className={`${headingPrefixCls}-sub-title`}
-              title={typeof subTitle === 'string' ? subTitle : undefined}
-            >
-              {subTitle}
-            </span>
-          )}
-          {tags && <span className={`${headingPrefixCls}-tags`}>{tags}</span>}
         </div>
       )}
       {extra && (

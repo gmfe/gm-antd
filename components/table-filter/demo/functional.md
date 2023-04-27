@@ -46,14 +46,14 @@ const App: React.FC = () => {
     <>
       <Button
         onClick={() => {
-          const filter = TableFilter.get()
+          const filter = TableFilter.get('uniq')
           filter.set('subject_code_or_name', '更新后的值');
         }}
       >
         更新科目代码/名称
       </Button>
       <div className="mb-2" />
-      <TableFilter paginationResult={paginationResult} fields={FIELDS} />
+      <TableFilter id='uniq' paginationResult={paginationResult} fields={FIELDS} />
     </>
   );
 };

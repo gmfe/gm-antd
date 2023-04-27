@@ -38,7 +38,7 @@ const App: React.FC = () => {
       <Button type="primary" size={size}>
         Primary
       </Button>
-      <Button size={size}>Default</Button>
+      <Button type="second" size={size}>Updated</Button>
       <Button type="dashed" size={size}>
         Dashed
       </Button>

@@ -1,6 +1,6 @@
 import React, { cloneElement, Component } from 'react';
 import { Link, browserHistory } from 'bisheng/router';
-import { Row, Col, Menu, Affix, Tooltip, Avatar, Dropdown, Drawer } from 'antd';
+import { Row, Col, Menu, Affix, Tooltip, Avatar, Dropdown, Drawer, Tag } from 'antd';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import {
   LeftOutlined,
@@ -25,10 +25,10 @@ function getModuleData(props) {
   const moduleName = /^\/?components/.test(pathname)
     ? 'components'
     : pathname
-        .split('/')
-        .filter(item => item)
-        .slice(0, 2)
-        .join('/');
+      .split('/')
+      .filter(item => item)
+      .slice(0, 2)
+      .join('/');
   const excludedSuffix = utils.isZhCN(props.location.pathname) ? 'en-US.md' : 'zh-CN.md';
   let data;
   switch (moduleName) {
@@ -249,11 +249,11 @@ class MainContent extends Component {
     const text = isTop
       ? title
       : [
-          <span key="english">{title}</span>,
-          <span className="chinese" key="chinese">
-            {item.subtitle}
-          </span>,
-        ];
+        <span key="english">{title}</span>,
+        <span className="chinese" key="chinese">
+          {item.subtitle}
+        </span>,
+      ];
     const { disabled } = item;
     const url = item.filename.replace(/(\/index)?((\.zh-cn)|(\.en-us))?\.md$/i, '').toLowerCase();
 
@@ -268,6 +268,7 @@ class MainContent extends Component {
       >
         {before}
         {text}
+        {item.tag && <Tag className='ml-2' color="processing">{ item.tag }</Tag>}
         {after}
       </Link>
     ) : (

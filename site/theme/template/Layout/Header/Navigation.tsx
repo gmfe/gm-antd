@@ -46,6 +46,30 @@ export default ({
       ),
       key: 'components',
     },
+    {
+      label: (
+        <a
+          href="https://github.com/gmfe/gm-antd"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Github
+        </a>
+      ),
+      key: 'github',
+    },
+    {
+      label: (
+        <a
+          href="https://www.sketch.com/s/7a23eecb-5a16-4ae3-961b-55855edabf35/"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          设计体系
+        </a>
+      ),
+      key: 'designSystem',
+    },
   ];
 
   return (

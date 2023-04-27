@@ -128,6 +128,7 @@ module.exports = {
         /** Gm-common 需要 */
         __PRODUCTION__: JSON.stringify(!isDev),
         __NAME__: JSON.stringify('antd'),
+        __AUTO_ROUTER_REG__: '/index\\.page\\./',
       }),
     );
 

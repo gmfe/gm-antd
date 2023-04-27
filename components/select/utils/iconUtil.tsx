@@ -4,6 +4,7 @@ import CloseOutlined from '@ant-design/icons/CloseOutlined';
 import DownOutlined from '@ant-design/icons/DownOutlined';
 import LoadingOutlined from '@ant-design/icons/LoadingOutlined';
 import SearchOutlined from '@ant-design/icons/SearchOutlined';
+import Checkbox from '../../checkbox';
 import type { ReactNode } from 'react';
 import * as React from 'react';
 
@@ -64,7 +65,9 @@ export default function getIcons({
   if (menuItemSelectedIcon !== undefined) {
     mergedItemIcon = menuItemSelectedIcon;
   } else if (multiple) {
-    mergedItemIcon = <CheckOutlined />;
+    mergedItemIcon = ({ isSelected }: { isSelected: boolean }) => {
+      return <Checkbox checked={isSelected}></Checkbox>;
+    };
   } else {
     mergedItemIcon = null;
   }

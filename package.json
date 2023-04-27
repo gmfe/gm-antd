@@ -6,7 +6,7 @@
   "homepage": "https://gmfe.github.io/gm-antd/index-cn",
   "repository": {
     "type": "git",
-    "url": "https://github.com/gmfe/antd"
+    "url": "https://github.com/gmfe/gm-antd"
   },
   "license": "MIT",
   "contributors": [
@@ -78,7 +78,9 @@
     "test-image": "jest --config .jest.image.js --no-cache -i -u",
     "argos": "node ./scripts/argos-upload.js",
     "version": "node ./scripts/generate-version",
-    "add-ts-no-check": "add-ts-nocheck --patterns 'node_modules/@gm-common/**/!(*.d).ts,node_modules/@gm-common/**/!(*.d).tsx,node_modules/gm-api/**/!(*.d).ts,src/**/!(*.d).ts,node_modules/gm-api/**/!(*.d).ts,src/**/!(*.d).tsx'"
+    "add-ts-no-check": "add-ts-nocheck --patterns 'node_modules/@gm-common/**/!(*.d).ts,node_modules/@gm-common/**/!(*.d).tsx,node_modules/gm_api/**/!(*.d).ts,node_modules/gm_api/**/!(*.d).tsx,node_modules/@gm-pc/**/!(*.d).ts,node_modules/@gm-pc/**/!(*.d).tsx'",
+    "update_api": "node ./node_modules/gm_api_script/scripts/update_gm_api.js",
+    "api:lite": "yarn update_api lite-master; yarn;"
   },
   "browserslist": [
     "> 0.5%",
@@ -145,6 +147,13 @@
     "@gm-common/hooks": "^2.14.4",
     "@gm-common/qiniup": "^2.14.4",
     "@gm-common/x-request": "2.14.4",
+    "@gm-pc/business": "1.21.0",
+    "@gm-pc/frame": "1.21.0",
+    "@gm-pc/keyboard": "1.21.0",
+    "@gm-pc/react": "1.21.0",
+    "@gm-pc/sortable": "1.21.0",
+    "@gm-pc/table-x": "1.21.0",
+    "@gm-pc/vision": "1.21.0",
     "@hisho/add-ts-nocheck": "^0.0.1",
     "@qixian.cs/github-contributors-list": "^1.0.3",
     "@size-limit/file": "^8.0.0",
@@ -278,7 +287,8 @@
     "typescript": "~4.8.4",
     "webpack-bundle-analyzer": "^4.1.0",
     "xhr-mock": "^2.4.1",
-    "yaml-front-matter": "^4.0.0"
+    "yaml-front-matter": "^4.0.0",
+    "gm_api": "git+https://code.guanmai.cn/fe-x/gm_api.git#caf668268d69ef8e08b241f6d53211cbac14d732"
   },
   "peerDependencies": {
     "@gm-common/hooks": "^2.14.4",

@@ -24,8 +24,8 @@ const App: React.FC = () => (
       Primary(disabled)
     </Button>
     <br />
-    <Button>Default</Button>
-    <Button disabled>Default(disabled)</Button>
+    <Button type="second">Default</Button>
+    <Button type="second" disabled>Default(disabled)</Button>
     <br />
     <Button type="dashed">Dashed</Button>
     <Button type="dashed" disabled>

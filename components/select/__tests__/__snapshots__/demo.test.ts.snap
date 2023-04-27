@@ -1057,7 +1057,7 @@ exports[`renders ./components/select/demo/debug.md correctly 1`] = `
     AntDesign
   </span>
   <button
-    class="ant-btn ant-btn-default"
+    class="ant-btn ant-btn-second"
     type="button"
   >
     <span>

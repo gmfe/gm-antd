@@ -79,7 +79,12 @@ interface DataType {
 
 const columns: ColumnsType<DataType> = [
   {
-    title: '科目代码',
+    title: (
+      <div>
+        <span>科目代码</span>
+        <span>*</span>
+      </div>
+    ),
     dataIndex: 'subject_code',
     width: 150,
     fixed: 'left',
@@ -225,41 +230,43 @@ const App: React.FC = () => {
   });
   return (
     <div>
-      <Button onClick={() => setState({ ...state, disableDIY: !state.disableDIY })}>
-        表头自定义(DIY)：{state.disableDIY ? '禁用' : '启用'}
-      </Button>
-      <Button onClick={() => setState({ ...state, disableSelection: !state.disableSelection })}>
-        批量操作(selection)：{state.disableSelection ? '禁用' : '启用'}
-      </Button>
-      <Button
-        onClick={() => {
-          setState(state => {
-            let mode = 'parent';
-            if (state.mode === 'parent') mode = 'child';
-            if (state.mode === 'child') mode = 'all';
-            if (state.mode === 'all') mode = 'parent';
-            return {
-              ...state,
-              mode,
-            };
-          });
-        }}
-      >
-        批量操作(模式)：{state.mode}
-      </Button>
-      <Button onClick={() => setState({ ...state, resizable: !state.resizable })}>
-        拖拽宽度(resizable)：{!state.resizable ? '禁用' : '启用'}
-      </Button>
-      <Button onClick={() => setState({ ...state, theme: !state.theme })}>
-        主题(theme)：{!state.theme ? '禁用' : '启用'}
-      </Button>
-      <Button onClick={() => setState({ ...state, virtual: !state.virtual })}>
-        虚拟列表(virtual)：{!state.virtual ? '禁用' : '启用'}
-      </Button>
-      <Button onClick={() => setState({ ...state, allPage: !state.allPage })}>
-        全选所有页(selection)：{!state.allPage ? '禁用' : '启用'}
-      </Button>
-      <div className="mb-2" />
+      <div className="flex flex-wrap gap-2">
+        <Button onClick={() => setState({ ...state, disableDIY: !state.disableDIY })}>
+          表头自定义(DIY)：{state.disableDIY ? '禁用' : '启用'}
+        </Button>
+        <Button onClick={() => setState({ ...state, disableSelection: !state.disableSelection })}>
+          批量操作(selection)：{state.disableSelection ? '禁用' : '启用'}
+        </Button>
+        <Button
+          onClick={() => {
+            setState(state => {
+              let mode = 'parent';
+              if (state.mode === 'parent') mode = 'child';
+              if (state.mode === 'child') mode = 'all';
+              if (state.mode === 'all') mode = 'parent';
+              return {
+                ...state,
+                mode,
+              };
+            });
+          }}
+        >
+          批量操作(模式)：{state.mode}
+        </Button>
+        <Button onClick={() => setState({ ...state, resizable: !state.resizable })}>
+          拖拽宽度(resizable)：{!state.resizable ? '禁用' : '启用'}
+        </Button>
+        <Button onClick={() => setState({ ...state, theme: !state.theme })}>
+          主题(theme)：{!state.theme ? '禁用' : '启用'}
+        </Button>
+        <Button onClick={() => setState({ ...state, virtual: !state.virtual })}>
+          虚拟列表(virtual)：{!state.virtual ? '禁用' : '启用'}
+        </Button>
+        <Button onClick={() => setState({ ...state, allPage: !state.allPage })}>
+          全选所有页(selection)：{!state.allPage ? '禁用' : '启用'}
+        </Button>
+      </div>
+      <div className="mb-2 " />
 
       <BatchActions>
         <BatchActions.Button
