@@ -266,9 +266,7 @@ class TableFilterStore {
     Object.keys(this.attributes).forEach(key => {
       delete this.attributes[key];
     }, {});
-    Object.keys(this.groups).forEach(key => {
-      this.groups.delete(key);
-    }, {});
+    this.groups.clear();
   }
 
   /** 重置实例 */

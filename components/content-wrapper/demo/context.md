@@ -7,7 +7,7 @@ title:
 
 ## zh-CN
 
-使用bottom插槽
+使用 bottom 插槽
 
 使用 useContext(ContentWrapperContext)
 
@@ -62,35 +62,33 @@ const App: React.FC = () => {
       <Layout>
         <Sider />
         <Layout>
-
-            <ContentWrapper
-              bottom={
-                <>
-                  <Button type="second">取消</Button>
-                  <Button type="primary">保存</Button>
-                </>
-              }
-            >
-              <TableFilter paginationResult={paginationResult} fields={FIELDS} trigger="onChange" />
-              <ContentWrapperContext.Consumer>
-                {({ width, container, height, scrollTop, scrollBottom }) => {
-                  return (
-                    <div>
-                      <div className='h-20 sticky top-5'>scrollTop: {scrollTop}</div>
-                      <div className='h-20 sticky top-10'>scrollBottom: {scrollBottom}</div>
-                      <div className='h-20 sticky top-0'>width: {width}</div>
-                      <div className='h-20'>height: {height}</div>
-                      <div className='h-20'>{height}</div>
-                      <div className='h-20'>{height}</div>
-                      <div className='h-20'>{height}</div>
-                      <div className='h-20'>{height}</div>
-                      <div>{container?.className}</div>
-                    </div>
-                  );
-                }}
-              </ContentWrapperContext.Consumer>
-            </ContentWrapper>
-            
+          
+          <ContentWrapper
+            bottom={
+              <>
+                <Button type="second">取消</Button>
+                <Button type="primary">保存</Button>
+              </>
+            }
+          >
+            <TableFilter paginationResult={paginationResult} fields={FIELDS} trigger="onChange" />
+            <ContentWrapperContext.Consumer>
+              {({ width, container, height, scrollTop, scrollBottom }) => (
+                <div>
+                  <div className="h-20 sticky top-5">scrollTop: {scrollTop}</div>
+                  <div className="h-20 sticky top-10">scrollBottom: {scrollBottom}</div>
+                  <div className="h-20 sticky top-0">width: {width}</div>
+                  <div className="h-20 sticky top-16">height: {height}</div>
+                  <div className="h-20">/</div>
+                  <div className="h-20">/</div>
+                  <div className="h-20">/</div>
+                  <div className="h-20">/</div>
+                  <div>{container?.className}</div>
+                </div>
+              )}
+            </ContentWrapperContext.Consumer>
+          </ContentWrapper>
+          
         </Layout>
       </Layout>
     </>

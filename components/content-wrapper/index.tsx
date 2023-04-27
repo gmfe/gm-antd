@@ -176,10 +176,7 @@ const Component: FC<ContentWrapperProps> = ({
         >
           <ResizeObserver
             onResize={({ height }) =>
-              setState(state => {
-                height = height * 2 - 15 * 2; // 减去上边距15
-                return { ...state, height };
-              })
+              setState(state => ({ ...state, height: height * 2 }))
             }
           >
             <div
