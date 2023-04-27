@@ -95,7 +95,7 @@ const FIELDS: FieldItem[] = [
 ];
 
 const App: React.FC = () => {
-  const paginationResult = usePagination(params => alert(JSON.stringify(params, undefined, 2)), {
+  const paginationResult = usePagination(async params => alert(JSON.stringify(params, undefined, 2)), {
     defaultPaging: {
       limit: 999,
     },
