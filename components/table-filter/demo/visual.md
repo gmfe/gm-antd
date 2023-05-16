@@ -1,9 +1,8 @@
 ---
 order: 1
 title:
-  zh-CN: 可视化
+  zh-CN: 可视化配置
   en-US: TODO
-gm: true
 ---
 
 ## zh-CN
@@ -72,7 +71,7 @@ const App: React.FC = () => {
     GetUserInfo().then(console.log).catch(console.error);
   }, []);
 
-  return <>TODO:</>;
+  return <div className='bg-orange text-white'>TODO:</div>;
 };
 
 export default App;
