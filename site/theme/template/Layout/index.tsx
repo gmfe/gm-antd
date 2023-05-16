@@ -5,6 +5,8 @@ import classNames from 'classnames';
 import { IntlProvider } from 'react-intl';
 import { presetPalettes, presetDarkPalettes } from '@ant-design/colors';
 import themeSwitcher from 'theme-switcher';
+import { initAuth, instance, setAccessToken } from '@gm-common/x-request';
+import { Token } from 'gm_api/src/oauth';
 import type { TwoToneColor } from '@ant-design/icons';
 import { setTwoToneColor } from '@ant-design/icons';
 import { Helmet, HelmetProvider } from 'react-helmet-async';
@@ -19,6 +21,14 @@ import enLocale from '../../en-US';
 import cnLocale from '../../zh-CN';
 import * as utils from '../utils';
 import 'moment/locale/zh-cn';
+
+initAuth(Token.url, 'access_token');
+instance.interceptors.request.use(config => {
+  if (!location.host.includes('localhost') && config.url?.startsWith('/')) {
+    config.url = `https://q.guanmai.cn${config.url}`;
+  }
+  return config;
+});
 
 if (typeof window !== 'undefined' && navigator.serviceWorker) {
   navigator.serviceWorker.getRegistrations().then(registrations => {
@@ -51,6 +61,11 @@ if (typeof window !== 'undefined') {
       e.stopImmediatePropagation();
     }
   });
+
+  // @ts-ignore
+  window.setAccessToken = (token: string) => {
+    setAccessToken(token);
+  };
 }
 
 const RESPONSIVE_MOBILE = 768;
