@@ -22,7 +22,9 @@ import cnLocale from '../../zh-CN';
 import * as utils from '../utils';
 import 'moment/locale/zh-cn';
 
+// 初始化gm_api
 initAuth(Token.url, 'access_token');
+// 兼容github page
 instance.interceptors.request.use(config => {
   if (!location.host.includes('localhost') && config.url?.startsWith('/')) {
     config.url = `https://q.guanmai.cn${config.url}`;
