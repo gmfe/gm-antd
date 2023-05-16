@@ -14,13 +14,13 @@ title:
 TODO
 
 ```tsx
-// import { TableFilter } from 'antd';
+import { Select } from 'antd';
 // import type { FieldItem } from 'antd';
 import React from 'react';
 // import { usePagination } from '@gm-common/hooks';
 import { GetUserInfo } from 'gm_api/src/oauth';
 
-const r = require.context('gm_api/src', true, /.*\/index\.ts$/);
+const r = require.context('gm_api/src', true, /.*\/(index|methods)\.ts$/);
 const api: {
   [key: string]: { [key: string]: (params: any, code?: any) => Promise<any> };
 } = {};
@@ -68,10 +68,30 @@ const App: React.FC = () => {
   // );
 
   React.useEffect(() => {
+    console.log(api);
     GetUserInfo().then(console.log).catch(console.error);
   }, []);
 
-  return <div className='bg-orange text-white'>TODO:</div>;
+  return (
+    <>
+      <Select
+        showSearch
+        placeholder="选择接口"
+        filterOption={(input, option) =>
+          (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+        }
+        options={Object.keys(api['methods.ts']).map(name => {
+          console.log(name)
+          return {
+            value: name,
+            text: name,
+          };
+        })}
+        onChange={console.log}
+      />
+      <div className="bg-orange text-white">TODO:</div>
+    </>
+  );
 };
 
 export default App;
