@@ -38,7 +38,10 @@ Fork 自antd@2.24.0，做 AntD 组件二次开发及文档使用。[在线文档
 
 ### gm_api
 
-Demo中使用gm_api接口需要先window.setAccessToken('xxxxxx')设置token
+Demo 中使用 gm_api 接口需要先初始化:
+```
+window.init_gm_api('测试环境','TOKEN')
+```
 
 #### 配套开发工具
 

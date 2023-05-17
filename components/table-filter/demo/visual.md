@@ -88,8 +88,9 @@ const App: React.FC = () => {
           };
         })}
         onChange={console.log}
+        className='w-full'
       />
-      <div className="bg-orange text-white">TODO:</div>
+      <div>TODO:</div>
     </>
   );
 };

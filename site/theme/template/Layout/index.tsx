@@ -22,16 +22,6 @@ import cnLocale from '../../zh-CN';
 import * as utils from '../utils';
 import 'moment/locale/zh-cn';
 
-// 初始化gm_api
-initAuth(Token.url, 'access_token');
-// 兼容github page
-instance.interceptors.request.use(config => {
-  if (!location.host.includes('localhost') && config.url?.startsWith('/')) {
-    config.url = `https://q.guanmai.cn${config.url}`;
-  }
-  return config;
-});
-
 if (typeof window !== 'undefined' && navigator.serviceWorker) {
   navigator.serviceWorker.getRegistrations().then(registrations => {
     registrations.forEach(registration => registration.unregister());
@@ -65,9 +55,22 @@ if (typeof window !== 'undefined') {
   });
 
   // @ts-ignore
-  window.setAccessToken = (token: string) => {
+  window.init_gm_api = (baseURL: string, token: string) => {
+    localStorage.setItem('init_gm_api', JSON.stringify({ baseurl: baseURL, token }));
+    // 初始化gm_api
+    initAuth(Token.url, 'access_token');
     setAccessToken(token);
+    // 兼容github page
+    instance.interceptors.request.use(config => {
+      if (!config.baseURL) config.baseURL = baseURL;
+      return config;
+    });
   };
+  if (localStorage.getItem('init_gm_api')) {
+    const { baseurl, token } = JSON.parse(localStorage.getItem('init_gm_api') || '{}');
+    // @ts-ignore
+    window.init_gm_api(baseurl, token);
+  }
 }
 
 const RESPONSIVE_MOBILE = 768;
