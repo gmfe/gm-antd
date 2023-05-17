@@ -29,13 +29,10 @@ const ConfigPanel: FC<ConfigPanelProps> = ({ form }) => {
       label: moduleName,
       children: Object.keys(api[moduleName])
         .filter(method => /^(List|Get)/.test(method))
-        .map((method: string) => {
-          const definition = api[moduleName].definitions?.[`${method}Request`];
-          return {
-            value: method,
-            label: method,
-          };
-        }),
+        .map((method: string) => ({
+          value: method,
+          label: method,
+        })),
     }));
   }, []);
   const definitions: Array<{
@@ -48,7 +45,7 @@ const ConfigPanel: FC<ConfigPanelProps> = ({ form }) => {
     // eslint-disable-next-line compat/compat
     return Object.entries(definition)
       .filter(item => !item[0].startsWith('_'))
-      .map(([key, value]) => ({
+      .map(([key, value]: any) => ({
         value: key,
         label: `${key}(${value.description || '-'})`,
         origin: value,
