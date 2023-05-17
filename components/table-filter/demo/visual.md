@@ -7,7 +7,7 @@ title:
 
 ## zh-CN
 
-生成配置
+生成配置，调用接口需要先初始化gm_api: `window.init_gm_api('server', 'token')`
 
 ## en-US
 
