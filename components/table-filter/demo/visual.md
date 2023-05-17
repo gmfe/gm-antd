@@ -1,96 +1,54 @@
 ---
 order: 1
 title:
-  zh-CN: 可视化配置
+  zh-CN: 生成配置
   en-US: TODO
 ---
 
 ## zh-CN
 
-可视化配置
+生成配置
 
 ## en-US
 
 TODO
 
 ```tsx
-import { Select } from 'antd';
-// import type { FieldItem } from 'antd';
+import { TableFilter, Divider, Form, message } from 'antd';
 import React from 'react';
-// import { usePagination } from '@gm-common/hooks';
-import { GetUserInfo } from 'gm_api/src/oauth';
-
-const r = require.context('gm_api/src', true, /.*\/(index|methods)\.ts$/);
-const api: {
-  [key: string]: { [key: string]: (params: any, code?: any) => Promise<any> };
-} = {};
-r.keys().forEach((key: string) => {
-  const module = key.split('/')[2];
-  api[module] = Object.assign(api[module] || {}, r(key));
-});
-
-// const FIELDS: FieldItem[] = [
-//   {
-//     key: 'subject_type_id',
-//     type: 'select',
-//     alwaysUsed: true,
-//     label: '科目类别',
-//     minWidth: 250,
-//     async options() {
-//       return new Promise((resolve, reject) => {
-//         setTimeout(
-//           () =>
-//             resolve([
-//               {
-//                 value: 1,
-//                 text: '类别1',
-//               },
-//               {
-//                 value: 2,
-//                 text: '类别2',
-//               },
-//             ]),
-//           1000,
-//         );
-//       });
-//     },
-//   },
-// ];
+import { usePagination } from '@gm-common/hooks';
+import ConfigPanel from './ConfigPanel';
 
 const App: React.FC = () => {
-  // const paginationResult = usePagination(
-  //   async params => alert(JSON.stringify(params, undefined, 2)),
-  //   {
-  //     defaultPaging: {
-  //       limit: 999,
-  //     },
-  //   },
-  // );
+  const [form] = Form.useForm();
+  const fields = Form.useWatch('fields', form);
 
-  React.useEffect(() => {
-    console.log(api);
-    GetUserInfo().then(console.log).catch(console.error);
-  }, []);
+  const paginationResult = usePagination(
+    async params => {
+      const apiMethod = form.getFieldValue('apiMethod');
+      if (!apiMethod) return;
+      return apiMethod(params).catch(err => {
+        message.error(JSON.stringify(err.message || err, undefined, 2));
+      });
+    },
+    {
+      defaultPaging: {
+        limit: 999,
+      },
+    },
+  );
 
   return (
     <>
-      <Select
-        showSearch
-        placeholder="选择接口"
-        filterOption={(input, option) =>
-          (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
-        }
-        options={Object.keys(api['methods.ts']).map(name => {
-          console.log(name)
-          return {
-            value: name,
-            text: name,
-          };
-        })}
-        onChange={console.log}
-        className='w-full'
+      <ConfigPanel form={form} />
+      <Divider />
+      <TableFilter
+        id={JSON.stringify(fields)}
+        paginationResult={paginationResult}
+        fields={fields}
       />
-      <div>TODO:</div>
+      <Divider />
+      <code>{JSON.stringify(fields, undefined, 2)}</code>
     </>
   );
 };

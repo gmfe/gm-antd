@@ -79,6 +79,7 @@
     "argos": "node ./scripts/argos-upload.js",
     "version": "node ./scripts/generate-version",
     "add-ts-no-check": "add-ts-nocheck --patterns 'node_modules/@gm-common/**/!(*.d).ts,node_modules/@gm-common/**/!(*.d).tsx,node_modules/gm_api/**/!(*.d).ts,node_modules/gm_api/**/!(*.d).tsx,node_modules/@gm-pc/**/!(*.d).ts,node_modules/@gm-pc/**/!(*.d).tsx'",
+    "update_api": "node ./node_modules/gm_api_script/scripts/update_gm_api.js",
     "api:lite": "yarn update_api lite-master; yarn;"
   },
   "browserslist": [
@@ -287,7 +288,7 @@
     "webpack-bundle-analyzer": "^4.1.0",
     "xhr-mock": "^2.4.1",
     "yaml-front-matter": "^4.0.0",
-    "gm_api": "git+https://code.guanmai.cn/fe-x/gm_api.git#1ca30dc6739ccbe71b2c557718b7ad6f43e50a85"
+    "gm_api": "git+https://code.guanmai.cn/fe-x/gm_api.git#caf668268d69ef8e08b241f6d53211cbac14d732"
   },
   "peerDependencies": {
     "@gm-common/hooks": "^2.14.4",

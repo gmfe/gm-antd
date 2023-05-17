@@ -65,6 +65,7 @@ if (typeof window !== 'undefined') {
       if (!config.baseURL) config.baseURL = baseURL;
       return config;
     });
+    return '初始化成功，请刷新页面'
   };
   if (localStorage.getItem('init_gm_api')) {
     const { baseurl, token } = JSON.parse(localStorage.getItem('init_gm_api') || '{}');
