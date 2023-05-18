@@ -46,6 +46,18 @@ export default ({
       ),
       key: 'components',
     },
+    {
+      label: (
+        <a
+          href="https://github.com/gmfe/gm-antd"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Github
+        </a>
+      ),
+      key: 'github',
+    },
   ];
 
   return (
