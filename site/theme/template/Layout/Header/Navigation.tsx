@@ -65,7 +65,7 @@ export default ({
           target="_blank"
           rel="noopener noreferrer"
         >
-          Github
+          设计体系
         </a>
       ),
       key: 'github',
