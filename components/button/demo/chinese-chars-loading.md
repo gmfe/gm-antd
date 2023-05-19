@@ -25,20 +25,20 @@ const Text3 = () => 'Submit';
 
 const App = () => (
   <>
-    <Button loading>部署</Button>
-    <Button loading>
+    <Button type="second" loading>部署</Button>
+    <Button type="second" loading>
       <Text1 />
     </Button>
-    <Button loading>
+    <Button type="second" loading>
       <Text2 />
     </Button>
-    <Button loading>
+    <Button type="second" loading>
       <Text3 />
     </Button>
-    <Button loading icon={<PoweroffOutlined />}>
+    <Button type="second" loading icon={<PoweroffOutlined />}>
       <Text1 />
     </Button>
-    <Button loading>按钮</Button>
+    <Button type="second" loading>按钮</Button>
   </>
 );
 

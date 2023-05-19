@@ -58,6 +58,18 @@ export default ({
       ),
       key: 'github',
     },
+    {
+      label: (
+        <a
+          href="https://www.sketch.com/s/7a23eecb-5a16-4ae3-961b-55855edabf35/"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Github
+        </a>
+      ),
+      key: 'github',
+    },
   ];
 
   return (

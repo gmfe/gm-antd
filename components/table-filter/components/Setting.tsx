@@ -1,11 +1,14 @@
 import type { FC, HTMLAttributes } from 'react';
 import React, { useContext, useState } from 'react';
+import classNames from 'classnames';
 import { restoreFieldItemsForSetting, stashFieldItems } from '../utils';
-import type { CachedSetting } from '../types';
 import TableFilterContext from '../context';
 import Divider from '../../divider';
 import Button from '../../button';
 import Checkbox from '../../checkbox';
+import Sortable from '../../sortable/sortable';
+import type { CachedSetting } from '../types';
+import type { SortableDataItem } from '../../sortable/types';
 
 export interface SettingProps extends HTMLAttributes<HTMLDivElement> {
   afterCancel?: () => void;
@@ -13,11 +16,24 @@ export interface SettingProps extends HTMLAttributes<HTMLDivElement> {
   afterSave?: () => void;
 }
 
+const SVGDragableIcon: React.FC<any> = props => (
+  <svg {...props} viewBox="0 0 1024 1024" width="14" height="14">
+    <path
+      d="M634.311111 0c-34.133333 0-59.733333 25.6-59.733333 59.733333s28.444444 59.733333 59.733333 59.733334c34.133333 0 59.733333-25.6 59.733333-59.733334 2.844444-34.133333-25.6-59.733333-59.733333-59.733333z m0 301.511111c-34.133333 0-59.733333 25.6-59.733333 59.733333s28.444444 59.733333 59.733333 59.733334c34.133333 0 59.733333-25.6 59.733333-59.733334 2.844444-34.133333-25.6-59.733333-59.733333-59.733333z m0 301.511111c-34.133333 0-59.733333 25.6-59.733333 59.733334s28.444444 59.733333 59.733333 59.733333c34.133333 0 59.733333-25.6 59.733333-59.733333 2.844444-34.133333-25.6-59.733333-59.733333-59.733334-31.288889 0 0 0 0 0z m0 301.511111c-34.133333 0-59.733333 25.6-59.733333 59.733334 0 34.133333 28.444444 59.733333 59.733333 59.733333 34.133333 0 59.733333-25.6 59.733333-59.733333 2.844444-34.133333-25.6-59.733333-59.733333-59.733334-31.288889 0 0 0 0 0zM372.622222 0C341.333333 0 312.888889 25.6 312.888889 59.733333s28.444444 59.733333 59.733333 59.733334c34.133333 0 59.733333-25.6 59.733334-59.733334 2.844444-34.133333-25.6-59.733333-59.733334-59.733333z m0 301.511111c-34.133333 0-59.733333 25.6-59.733333 59.733333s28.444444 59.733333 59.733333 59.733334c34.133333 0 59.733333-25.6 59.733334-59.733334 2.844444-34.133333-25.6-59.733333-59.733334-59.733333z m0 301.511111c-34.133333 0-59.733333 25.6-59.733333 59.733334s28.444444 59.733333 59.733333 59.733333c34.133333 0 59.733333-25.6 59.733334-59.733333 2.844444-34.133333-25.6-59.733333-59.733334-59.733334z m0 301.511111c-34.133333 0-59.733333 25.6-59.733333 59.733334 0 34.133333 28.444444 59.733333 59.733333 59.733333 34.133333 0 59.733333-25.6 59.733334-59.733333 2.844444-34.133333-25.6-59.733333-59.733334-59.733334z"
+      fill="#a0a0a0"
+    />
+  </svg>
+);
+
 const Setting: FC<SettingProps> = ({ afterCancel, afterReset, afterSave }) => {
   const store = useContext(TableFilterContext);
   const [cachedSetting, setCachedSetting] = useState<CachedSetting>(
     restoreFieldItemsForSetting(store.id),
   );
+
+  const _onSort = (data: SortableDataItem[]): void => {
+    store.fields = data.map(item => store.fields.find(field => field.key === item.value)!);
+  };
 
   const _onCancel = () => {
     // ...
@@ -67,44 +83,66 @@ const Setting: FC<SettingProps> = ({ afterCancel, afterReset, afterSave }) => {
         // className="tw-flex-grow tw-overflow-scroll"
         style={{ maxHeight: '50vh', flexGrow: 1, overflow: 'scrol' }}
       >
-        {store.fields.map(item => {
-          const used = cachedSetting[item.key]?.visible;
-          return (
-            <div
-              key={item.key}
-              // className="tw-px-2 tw-text-black hover:tw-bg-blue-light"
-              style={{
-                paddingLeft: 10,
-                paddingRight: 10,
-                color: 'black',
-              }}
-            >
-              <Checkbox
-                key={item.key}
-                // className="tw-w-full tw-text-black tw-py-1.5"
+        <Sortable
+          data={store.fields.map(field => ({ value: field.key, text: field.label! }))}
+          onChange={_onSort}
+          options={{
+            direction: 'horizontal',
+            handle: '.sortable',
+            chosenClass: 'sortable-active',
+          }}
+          renderItem={(_, index) => {
+            const field = store.fields[index];
+            const used = cachedSetting[field.key]?.visible;
+            return (
+              <div
+                key={field.key}
+                // className="tw-px-2 tw-text-black hover:tw-bg-blue-light"
                 style={{
-                  width: '100%',
+                  paddingLeft: 10,
+                  paddingRight: 10,
                   color: 'black',
-                  paddingTop: 8,
-                  paddingBottom: 8,
-                }}
-                disabled={item.alwaysUsed}
-                checked={item.alwaysUsed || (used ?? item.defaultUsed)}
-                onChange={({ target }) => {
-                  setCachedSetting({
-                    ...cachedSetting,
-                    [item.key]: {
-                      ...(cachedSetting[item.key] || {}),
-                      visible: target.checked,
-                    },
-                  });
+                  display: 'flex',
+                  alignItems: 'center',
+                  userSelect: 'none',
                 }}
               >
-                {item.label}
-              </Checkbox>
-            </div>
-          );
-        })}
+                <SVGDragableIcon
+                  // 第一列不允许移动、不允许删除, 使其始终靠近多选框、展开/收起按钮
+                  className={classNames({
+                    sortable: index !== 0,
+                  })}
+                  style={{
+                    marginRight: 5,
+                    cursor: index !== 0 ? 'move' : 'not-allowed',
+                  }}
+                />
+                <Checkbox
+                  // className="tw-w-full tw-text-black tw-py-1.5"
+                  style={{
+                    width: '100%',
+                    color: 'black',
+                    paddingTop: 5,
+                    paddingBottom: 5,
+                  }}
+                  disabled={field.alwaysUsed}
+                  checked={field.alwaysUsed || (used ?? field.defaultUsed)}
+                  onChange={({ target }) => {
+                    setCachedSetting({
+                      ...cachedSetting,
+                      [field.key]: {
+                        ...(cachedSetting[field.key] || {}),
+                        visible: target.checked,
+                      },
+                    });
+                  }}
+                >
+                  {field.label}
+                </Checkbox>
+              </div>
+            );
+          }}
+        />
       </div>
 
       <div
@@ -124,11 +162,11 @@ const Setting: FC<SettingProps> = ({ afterCancel, afterReset, afterSave }) => {
           padding: '8px 10px',
         }}
       >
+        <Button size="small" type="link" onClick={() => _onReset()}>
+          重置
+        </Button>
         <Button size="small" type="second" onClick={() => _onCancel()}>
           取消
-        </Button>
-        <Button size="small" type="second" onClick={() => _onReset()}>
-          重置
         </Button>
         <Button size="small" type="primary" onClick={() => _onSave()}>
           保存设置

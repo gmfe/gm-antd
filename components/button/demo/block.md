@@ -22,7 +22,7 @@ const App: React.FC = () => (
     <Button type="primary" block>
       Primary
     </Button>
-    <Button block>Default</Button>
+    <Button type="second" block>Default</Button>
     <Button type="dashed" block>
       Dashed
     </Button>

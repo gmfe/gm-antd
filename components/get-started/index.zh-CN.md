@@ -22,4 +22,4 @@ type: 开始
 
 ## 设计
 
-- [观麦设计组件库](https://www.sketch.com/s/7a23eecb-5a16-4ae3-961b-55855edabf35/)
+- [设计体系](https://www.sketch.com/s/7a23eecb-5a16-4ae3-961b-55855edabf35/)

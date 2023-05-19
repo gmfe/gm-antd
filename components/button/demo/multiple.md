@@ -40,8 +40,8 @@ const items = [
 const App: React.FC = () => (
   <>
     <Button type="primary">primary</Button>
-    <Button>secondary</Button>
-    <Dropdown.Button menu={{ items, onClick: onMenuClick }}>Actions</Dropdown.Button>
+    <Button type="second">secondary</Button>
+    <Dropdown.Button type="second" menu={{ items, onClick: onMenuClick }}>Actions</Dropdown.Button>
   </>
 );
 

@@ -20,7 +20,7 @@ import React from 'react';
 const App: React.FC = () => (
   <>
     <Button type="primary">Primary Button</Button>
-    <Button>Default Button</Button>
+    <Button type="second">Default Button</Button>
     <Button type="dashed">Dashed Button</Button>
     <br />
     <Button type="text">Text Button</Button>
