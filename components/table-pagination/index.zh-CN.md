@@ -5,6 +5,7 @@ type: 数据展示
 title: TablePagination
 subtitle: 表格翻页
 cover: https://gw.alipayobjects.com/zos/alicdn/f-SbcX2Lx/Table.svg
+tag: New
 ---
 
 常用于列表页配合usePagination使用

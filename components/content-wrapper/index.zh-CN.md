@@ -4,6 +4,7 @@ type: 布局
 title: ContentWrapper
 subtitle: 内容容器
 cols: 1
+tag: New
 cover: https://gw.alipayobjects.com/zos/alicdn/hzEndUVEx/Layout.svg
 ---
 

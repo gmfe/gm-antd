@@ -5,6 +5,7 @@ type: 通用
 title: Icon
 toc: false
 cover: https://gw.alipayobjects.com/zos/alicdn/rrwbSt3FQ/Icon.svg
+tag: Updated
 ---
 
 语义化的矢量图形。使用图标组件，你需要安装 `@ant-design/icons` 图标组件包：

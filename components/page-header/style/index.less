@@ -55,11 +55,17 @@
     &-left {
       display: flex;
       align-items: center;
-      margin: (@margin-xs / 2) 0;
+      margin: (@margin-xs / 6) 0;
       overflow: hidden;
     }
 
     &-title {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    &-main-title {
       margin-right: @margin-sm;
       margin-bottom: 0;
       color: @heading-color;
