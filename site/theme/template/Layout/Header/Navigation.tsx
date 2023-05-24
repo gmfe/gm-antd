@@ -68,7 +68,7 @@ export default ({
           设计体系
         </a>
       ),
-      key: 'github',
+      key: 'designSystem',
     },
   ];
 
