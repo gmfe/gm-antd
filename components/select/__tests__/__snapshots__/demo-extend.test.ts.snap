@@ -2414,7 +2414,7 @@ exports[`renders ./components/select/demo/custom-tag-render.md extend context co
   </div>
   <div>
     <div
-      class="ant-select-dropdown"
+      class="ant-select-dropdown ant-select-dropdown-multiple"
       style="opacity:0"
     >
       <div>
@@ -2905,7 +2905,7 @@ exports[`renders ./components/select/demo/debug.md extend context correctly 1`] 
     </div>
     <div>
       <div
-        class="ant-select-dropdown"
+        class="ant-select-dropdown ant-select-dropdown-multiple"
         style="opacity:0"
       >
         <div>
@@ -3184,7 +3184,7 @@ exports[`renders ./components/select/demo/hide-selected.md extend context correc
   </div>
   <div>
     <div
-      class="ant-select-dropdown"
+      class="ant-select-dropdown ant-select-dropdown-multiple"
       style="opacity:0"
     >
       <div>
@@ -3638,7 +3638,7 @@ Array [
     </div>
     <div>
       <div
-        class="ant-select-dropdown"
+        class="ant-select-dropdown ant-select-dropdown-multiple"
         style="opacity:0"
       >
         <div>
@@ -4648,7 +4648,7 @@ Array [
     </div>
     <div>
       <div
-        class="ant-select-dropdown"
+        class="ant-select-dropdown ant-select-dropdown-multiple"
         style="opacity:0"
       >
         <div>
@@ -5823,7 +5823,7 @@ exports[`renders ./components/select/demo/option-label-prop.md extend context co
   </div>
   <div>
     <div
-      class="ant-select-dropdown"
+      class="ant-select-dropdown ant-select-dropdown-multiple"
       style="opacity:0"
     >
       <div>
@@ -6359,7 +6359,7 @@ exports[`renders ./components/select/demo/responsive.md extend context correctly
       </div>
       <div>
         <div
-          class="ant-select-dropdown"
+          class="ant-select-dropdown ant-select-dropdown-multiple"
           style="opacity:0"
         >
           <div>
@@ -7335,7 +7335,7 @@ exports[`renders ./components/select/demo/responsive.md extend context correctly
       </div>
       <div>
         <div
-          class="ant-select-dropdown"
+          class="ant-select-dropdown ant-select-dropdown-multiple"
           style="opacity:0"
         >
           <div>
@@ -8712,7 +8712,7 @@ exports[`renders ./components/select/demo/select-users.md extend context correct
   </div>
   <div>
     <div
-      class="ant-select-dropdown ant-select-dropdown-empty"
+      class="ant-select-dropdown ant-select-dropdown-multiple ant-select-dropdown-empty"
       style="opacity:0"
     >
       <div>
@@ -9469,7 +9469,7 @@ Array [
     </div>
     <div>
       <div
-        class="ant-select-dropdown"
+        class="ant-select-dropdown ant-select-dropdown-multiple"
         style="opacity:0"
       >
         <div>

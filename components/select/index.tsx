@@ -157,6 +157,7 @@ const InternalSelect = <OptionType extends BaseOptionType | DefaultOptionType = 
 
   const rcSelectRtlDropdownClassName = classNames(popupClassName || dropdownClassName, {
     [`${prefixCls}-dropdown-${direction}`]: direction === 'rtl',
+    [`${prefixCls}-dropdown-multiple`]: mode === 'multiple',
   });
 
   const mergedSize = compactSize || customizeSize || size;
