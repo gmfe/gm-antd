@@ -14,7 +14,7 @@ title:
 Multiple selection, selecting from existing items.
 
 ```tsx
-import { Select } from 'antd';
+import { Select, Checkbox } from 'antd';
 import React from 'react';
 import type { SelectProps } from 'antd';
 
