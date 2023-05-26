@@ -37,6 +37,18 @@ export interface TableFilterProps
    * - `both` 字段表单变化后查询，点击“查询”按钮后查询；
    */
   trigger?: 'onChange' | 'manual' | 'both';
+  /** 自定义模式 */
+  customMode?: ''
+  /** 是否显示展开收起按钮 */
+  isExpanded?: boolean
+  /** 是否更新 fields */
+  isUpdateFields?: boolean
+  /** 是否一直显示自定义按钮 */
+  isAlwaysShowCustom?: boolean
+  /** 在重置的时候跳过某些值的初始化 */
+  skipInitialValues?: string[]
+  /** 设置保存回调 */
+  onCustomSave?: () => void
 }
 
 /** 表单项 */
@@ -65,6 +77,8 @@ export interface FieldBaseItem {
   disabled?: boolean;
   /** Antd, 展示清空的icon按钮，默认为true */
   allowClear?: boolean;
+  /** 是否折叠 */
+  collapsed?: boolean
 }
 
 type API_Method = (r?: any, codes?: number[]) => Promise<any>;
