@@ -1,7 +1,7 @@
 ---
-order: 0
+order: 7
 title:
-  zh-CN: 基本使用
+  zh-CN: isExpand
   en-US: TODO
 gm: true
 ---
@@ -15,10 +15,11 @@ gm: true
 TODO
 
 ```tsx
-import { TableFilter } from 'antd';
+import { TableFilter, message } from 'antd';
 import type { FieldItem } from 'antd';
 import React from 'react';
 import { usePagination } from '@gm-common/hooks';
+import moment from 'moment'
 
 const FIELDS: FieldItem[] = [
   {
@@ -50,33 +51,40 @@ const FIELDS: FieldItem[] = [
     key: 'subject_code_or_name',
     type: 'input',
     alwaysUsed: true,
+    defaultValue: '默认值',
     label: '科目代码/名称',
   },
   {
     key: 'date',
     type: 'date',
-    alwaysUsed: true,
+    alwaysUsed: false,
+    collapsed: true,
+    defaultUsed: true,
     label: '日期',
+    defaultValue: moment(),
   },
   {
     key: 'time',
     type: 'date',
     showTime: true,
-    alwaysUsed: true,
+    alwaysUsed: false,
+    collapsed: true,
     label: '时间',
   },
   {
     key: 'month',
     type: 'date',
     picker: 'month',
-    alwaysUsed: true,
+    alwaysUsed: false,
+    collapsed: true,
     label: '月份',
   },
   {
     key: 'range',
     type: 'date',
     range: true,
-    alwaysUsed: true,
+    alwaysUsed: false,
+    collapsed: true,
     label: '时间范围',
     toParam(values) {
       return {
@@ -89,8 +97,9 @@ const FIELDS: FieldItem[] = [
     key: 'disable-range',
     type: 'input',
     label: '禁用',
-    alwaysUsed: true,
+    alwaysUsed: false,
     disabled: true,
+    collapsed: true,
   },
 ];
 
@@ -100,9 +109,25 @@ const App: React.FC = () => {
       limit: 999,
     },
   });
+
+  const onCustomSave = () => {
+    message.success('保存成功， 重新执行搜索接口',)
+    const handler = TableFilter.get('expand-tableFilter')
+    handler.search()
+    // paginationResult.run()
+  }
+
   return (
     <>
-      <TableFilter paginationResult={paginationResult} fields={FIELDS} />
+      <TableFilter 
+        id='expand-tableFilter'
+        paginationResult={paginationResult}
+        fields={FIELDS}
+        isExpanded
+        isAlwaysShowCustom
+        skipInitialValues={['date']}
+        onCustomSave={onCustomSave}
+      />
     </>
   );
 };
