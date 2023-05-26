@@ -262,8 +262,10 @@ class TableFilterStore {
   );
 
   /** 清空所有表单字段输入 */
-  reset() {
+  reset(skipFields: string[] = []) {
     Object.keys(this.attributes).forEach(key => {
+       // 跳过指定字段
+      if (skipFields.includes(key)) return
       delete this.attributes[key];
     }, {});
     this.groups.clear();
@@ -278,6 +280,22 @@ class TableFilterStore {
     // this._mixins = [];
     this._fixedFields = [];
     this._paginationResult = undefined;
+  }
+
+  updateFields(fields: FieldItem[] = []) {
+    this._fixedFields = fields
+    this.fields = fields
+      .map((field) => this._applyDefaultFieldValue(field))
+      .map((field) => this._applyCachedValueToDefault(field))
+      .filter((field) => !field.hide)
+  }
+
+  searchNow = () => {
+    this.loading = true
+    const params = this.toParams()
+    return this._paginationResult!.run(params).finally(() => {
+      this.loading = false
+    })
   }
 }
 

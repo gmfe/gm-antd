@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 import React, { useEffect, useRef, useState } from 'react';
-import { FilterOutlined } from '@ant-design/icons';
+import { DownOutlined, FilterOutlined, UpOutlined } from '@ant-design/icons';
 import { observer } from 'mobx-react';
 import ResizeObserver from 'rc-resize-observer';
 import TableFilterStore from './form.store';
@@ -27,6 +27,11 @@ function Component(options: TableFilterProps) {
     paginationResult,
     immediate,
     trigger,
+    isExpanded,
+    isUpdateFields,
+    isAlwaysShowCustom,
+    skipInitialValues,
+    onCustomSave,
   } = options;
   const id = options.id ?? new URL(location.href.replace('/#', '')).pathname;
 
@@ -34,6 +39,8 @@ function Component(options: TableFilterProps) {
   _controllerMap[id] = store;
   const [showSetting, setShowSetting] = useState(false);
   const [visibleFields, setVisibleFields] = useState(store.getVisibleFields());
+ 
+  const [expanded, setExpanded] = useState(false)
 
   // #region 自适应
   // const [expanded, setExpanded] = useState(false)
@@ -63,6 +70,18 @@ function Component(options: TableFilterProps) {
     };
   }, [id]);
 
+   // fields 变化时，重新设置
+   useEffect(() => {
+    if (!isUpdateFields) return
+    store.updateFields(fields)
+    setVisibleFields(store.getVisibleFields())
+  }, [fields])
+
+  const handleReset = () => {
+    store.reset(skipInitialValues)
+    setTimeout(() => store.search(), 50)
+  }
+
   return (
     <TableFilterContext.Provider value={store}>
       <ResizeObserver onResize={({ width }) => setState({ width })}>
@@ -73,6 +92,12 @@ function Component(options: TableFilterProps) {
               : [field];
             // 分组展示后一个字段就够了
             if (groupFields.indexOf(field) > 0) return null;
+
+            // 未展开时，隐藏收起的字段
+            if (isExpanded && !expanded && field.collapsed) {
+              return null
+            }
+
             return (
               <Labeled
                 key={field.key}
@@ -96,6 +121,7 @@ function Component(options: TableFilterProps) {
               // })}
               style={{
                 display:
+                  !isAlwaysShowCustom &&
                   store.fields.filter(field => !field.alwaysUsed).length === 0
                     ? 'none'
                     : undefined,
@@ -112,6 +138,7 @@ function Component(options: TableFilterProps) {
                     afterSave={() => {
                       setShowSetting(false);
                       setVisibleFields(store.getVisibleFields());
+                      onCustomSave?.()
                     }}
                   />
                 }
@@ -137,16 +164,19 @@ function Component(options: TableFilterProps) {
               // className="tw-flex-grow"
               style={{ flexGrow: 1 }}
             />
-            {/* <Button
-              className={classNames('tw--mr-2', {
-                'tw-hidden': false,
-              })}
-              type='link'
-              onClick={() => setExpanded(!expanded)}
-            >
-              <span>{expanded ? '收起' : '展开'}</span>
-              <span>{expanded ? <UpOutlined /> : <DownOutlined />}</span>
-            </Button> */}
+             {isExpanded && (
+              <Button
+                // className={classNames('tw--mr-2', {
+                //   'tw-hidden': false,
+                // })}
+                style={{marginRight: '-10px'}}
+                type='link'
+                onClick={() => setExpanded(!expanded)}
+              >
+                <span>{expanded ? '收起' : '展开'}</span>
+                <span>{expanded ? <UpOutlined /> : <DownOutlined />}</span>
+              </Button>
+            )}
             <Button
               // className={classNames({
               //   'tw-hidden': trigger === 'onChange',
@@ -155,10 +185,7 @@ function Component(options: TableFilterProps) {
                 display: trigger === 'onChange' ? 'none' : undefined,
               }}
               type="second"
-              onClick={() => {
-                store.reset();
-                setTimeout(() => store.search(), 50);
-              }}
+              onClick={handleReset}
             >
               重置
             </Button>
