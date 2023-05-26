@@ -1,6 +1,5 @@
 import type { FC, HTMLAttributes } from 'react';
 import React, { useContext, useState } from 'react';
-import classNames from 'classnames';
 import { restoreFieldItemsForSetting, stashFieldItems } from '../utils';
 import TableFilterContext from '../context';
 import Divider from '../../divider';
