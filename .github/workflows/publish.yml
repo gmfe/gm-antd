@@ -1,12 +1,14 @@
 # This workflow will run tests using node and then publish a package to GitHub Packages when a release is created
 # For more information see: https://docs.github.com/en/actions/publishing-packages/publishing-nodejs-packages
 
-name: Node.js Package
+name: publish
 
 on:
   push:
     tags:
       - 'v*'
+  
+  workflow_dispatch:
 
 jobs:
   publish:
@@ -21,11 +23,10 @@ jobs:
           node-version: 16
           registry-url: https://npm.pkg.github.com/
 
-      - name: setup
-        run: npm i -g @antfu/ni
-
-      - name: Install
-        run: nci
+      - name: install
+        run: |
+          git config --global --add url."https://${{ secrets.GITLAB_USERNAME }}:${{ secrets.GITLAB_PASSWORD }}@code.guanmai.cn".insteadOf "https://code.guanmai.cn"
+          yarn 
         
       - name: package.json info
         id: info
@@ -35,7 +36,7 @@ jobs:
       - run: echo "name - ${{ steps.info.outputs.name }}"
       
       - name: run build
-        run: nr build
+        run: yarn build
       
       - name: package.json gmAntd
         id: gmAntd
@@ -44,3 +45,14 @@ jobs:
           rename: 'gm-antd'
       - run: echo "name - ${{ steps.gmAntd.outputs.name }}"
       
+      - name: Release
+        run: |
+          if [[ ${{ github.ref }} == *refs/tags/*-beta* ]]; then
+            npm publish --tag beta
+          elif [[ ${{ github.ref }} == *refs/tags/*-alpha* ]]; then
+            npm publish --tag alpha
+          else
+            npm publish
+          fi
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
