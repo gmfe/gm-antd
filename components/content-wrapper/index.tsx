@@ -193,6 +193,7 @@ const Component: FC<ContentWrapperProps> = ({
           {top && (
             <>
               <div
+                className='content-wrapper-viewbox-top'
                 // className="tw-rounded tw-bg-white tw-px-3 tw-sticky tw-top-0 tw-z-[500]"
                 style={{
                   borderRadius: 4,
@@ -211,6 +212,7 @@ const Component: FC<ContentWrapperProps> = ({
           {children && (
             <>
               <div
+                className='content-wrapper-viewbox-children'
                 // className="tw-rounded tw-bg-white tw-px-3 tw-min-h-full"
                 style={{
                   borderRadius: 4,
