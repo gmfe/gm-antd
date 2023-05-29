@@ -34,9 +34,6 @@ jobs:
         with:
           rename: 'antd'
       - run: echo "name - ${{ steps.info.outputs.name }}"
-
-      - name: run version
-        run: yarn version
       
       - name: run build
         run: yarn build
