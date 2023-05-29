@@ -26,11 +26,22 @@ jobs:
         with:
           node-version: 16.x
           registry-url: 'https://registry.npmjs.org'
+      
+      - name: Cache node modules
+        uses: actions/cache@v2
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
 
       - name: install
         run: |
           git config --global --add url."https://${{ secrets.GITLAB_USERNAME }}:${{ secrets.GITLAB_PASSWORD }}@code.guanmai.cn".insteadOf "https://code.guanmai.cn"
           yarn 
+        # Use the cache from the previous step
+        # if available to speed up the build
+        if: steps.cache.outputs.cache-hit != 'true'
         
       - name: package.json info
         id: info
