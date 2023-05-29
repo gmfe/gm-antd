@@ -63,25 +63,22 @@ const Setting: FC<SettingProps> = ({ afterCancel, afterReset, afterSave }) => {
       <div
         // className="tw-mt-2.5 tw-mx-2 tw-text-gray tw-font-bold"
         style={{
-          marginTop: 12,
-          marginLeft: 10,
-          marginRight: 10,
           color: '#1f1f1f',
           fontWeight: 'bold',
         }}
       >
-        <div>全部筛选条件</div>
+        <div style={{padding: 8}}>全部筛选条件</div>
         <Divider
           // className="tw-m-0 tw-mt-1.5"
           style={{
             margin: 0,
-            marginTop: 8,
+            // marginTop: 8,
           }}
         />
       </div>
       <div
         // className="tw-flex-grow tw-overflow-scroll"
-        style={{ maxHeight: '50vh', flexGrow: 1, overflow: 'scrol' }}
+        style={{ maxHeight: '50vh', flexGrow: 1, overflow: 'scroll' }}
       >
         <Sortable
           data={store.fields.map(field => ({ value: field.key, text: field.label! }))}
@@ -122,8 +119,7 @@ const Setting: FC<SettingProps> = ({ afterCancel, afterReset, afterSave }) => {
                   style={{
                     width: '100%',
                     color: 'black',
-                    paddingTop: 5,
-                    paddingBottom: 5,
+                    padding: '4px 0'
                   }}
                   disabled={field.alwaysUsed}
                   checked={field.alwaysUsed || (used ?? field.defaultUsed)}
