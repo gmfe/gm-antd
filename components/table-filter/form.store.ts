@@ -53,7 +53,7 @@ class TableFilterStore {
 
   /** 可见(启用)的字段列表 */
   getVisibleFields() {
-    const cachedSetting = restoreFieldItemsForSetting(this.id);
+    const cachedSetting = restoreFieldItemsForSetting(this.id, this.fields);
     const visibleFields = this.fields.filter(item => {
       const used = cachedSetting[item.key]?.visible;
       return item.alwaysUsed || (used ?? item.defaultUsed);
