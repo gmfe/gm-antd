@@ -98,6 +98,28 @@ function Component(options: TableFilterProps) {
               return null
             }
 
+            if (field.render) {
+              return (
+                <div 
+                key={field.key}
+                  style={{
+                    width:
+                      field.type === 'date' && field.range
+                        ? fieldWidth * 2 + GAP // 时间范围占两个，加上少了的间距
+                        : fieldWidth,
+                  }}
+                > 
+                  {
+                    React.cloneElement(field.render as React.ReactElement, {
+                      field: field,
+                      key: field.key,
+                    })
+                  }
+                </div>
+              )
+             
+            }
+
             return (
               <Labeled
                 key={field.key}
@@ -148,12 +170,13 @@ function Component(options: TableFilterProps) {
                     // 'tw-bg-blue-light tw-text-blue': showSetting,
                   })}
                   style={{
-                    backgroundColor: showSetting ? 'var(--ant-info-color-deprecated-bg)' : undefined,
+                    borderColor: showSetting ? 'var(--ant-primary-color)' : undefined,
                     color: showSetting ? 'var(--ant-primary-color)' : undefined,
                   }}
                   onClick={() => setShowSetting(!showSetting)}
                 >
                   <FilterOutlined
+                    className='filter-icon'
                     // className="tw-text-base tw-leading-none"
                     style={{ transform: 'scaleX(0.9)', fontSize: 16, lineHeight: 'none' }}
                   />
@@ -229,3 +252,4 @@ const TableFilter = observer(Component);
 export default TableFilter;
 
 export * from './types'
+export { TableFilterContext }

@@ -178,7 +178,7 @@ export { default as Typography } from './typography';
 export type { TypographyProps } from './typography';
 export { default as Upload } from './upload';
 export type { UploadFile, UploadProps } from './upload';
-export { default as TableFilter } from './table-filter';
+export { default as TableFilter, TableFilterContext } from './table-filter';
 export type { FieldItem } from './table-filter';
 export { default as TablePagination } from './table-pagination';
 export { default as ContentWrapper } from './content-wrapper';
