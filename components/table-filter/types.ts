@@ -1,4 +1,3 @@
-import { render } from '@testing-library/react';
 import type { Moment } from 'moment';
 import type { HTMLAttributes } from 'react';
 import type { RangeValue, PickerMode } from 'rc-picker/lib/interface';
