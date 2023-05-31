@@ -44,12 +44,12 @@ export function restoreFieldItems(id: string) {
 }
 
 /** 恢复字段配置缓存，设置界面用 */
-export function restoreFieldItemsForSetting(id: string) {
-  const fields: CachedFields = JSON.parse(localStorage.getItem(CACHE_PREFIX + id) || '[]')
-  const setting: CachedSetting = fields.reduce((pre, item) => ({
+export function restoreFieldItemsForSetting(id: string, defaultFields: FieldItem[]) {
+  const fields: CachedFields = localStorage.getItem(CACHE_PREFIX + id) ? JSON.parse(localStorage.getItem(CACHE_PREFIX + id) || '[]') : defaultFields
+  const setting: CachedSetting = fields?.reduce((pre, item) => ({
       ...pre,
       [item.key]: {
-        visible: item.visible,
+        visible: item.visible || (item as FieldItem).defaultUsed || (item as FieldItem).alwaysUsed,
       },
     }), {})
   return setting

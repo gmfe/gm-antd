@@ -1,14 +1,15 @@
-import type { FC, HTMLAttributes } from 'react';
+import { FC, HTMLAttributes, useMemo } from 'react';
 import React, { useContext, useState } from 'react';
 import classNames from 'classnames';
 import { restoreFieldItemsForSetting, stashFieldItems } from '../utils';
 import TableFilterContext from '../context';
 import Divider from '../../divider';
 import Button from '../../button';
-import Checkbox from '../../checkbox';
+import Checkbox, { CheckboxChangeEvent } from '../../checkbox';
 import Sortable from '../../sortable/sortable';
 import type { CachedSetting } from '../types';
 import type { SortableDataItem } from '../../sortable/types';
+import { keyBy } from 'lodash';
 
 export interface SettingProps extends HTMLAttributes<HTMLDivElement> {
   afterCancel?: () => void;
@@ -28,7 +29,7 @@ const SVGDragableIcon: React.FC<any> = props => (
 const Setting: FC<SettingProps> = ({ afterCancel, afterReset, afterSave }) => {
   const store = useContext(TableFilterContext);
   const [cachedSetting, setCachedSetting] = useState<CachedSetting>(
-    restoreFieldItemsForSetting(store.id),
+    restoreFieldItemsForSetting(store.id, store.fields),
   );
 
   const _onSort = (data: SortableDataItem[]): void => {
@@ -45,10 +46,61 @@ const Setting: FC<SettingProps> = ({ afterCancel, afterReset, afterSave }) => {
   };
   const _onSave = () => {
     stashFieldItems(store.id, store.fields, cachedSetting);
-    setCachedSetting(restoreFieldItemsForSetting(store.id));
+    setCachedSetting(restoreFieldItemsForSetting(store.id, store.fields));
 
     afterSave && afterSave();
   };
+
+  const handleCheckAllFilterChange = (e: CheckboxChangeEvent) => {
+    const keyByKeyInFields = keyBy(store.fields, 'key')
+    const checked = e.target.checked;
+    const keys = Object.keys(keyByKeyInFields)
+    /** 勾选 */
+    if (checked) {
+      const newCachedSetting = keys.reduce((prev, current) => {
+        return {
+          ...prev,
+          [current]: {
+            ...(cachedSetting[current] || {}),
+            visible: true,
+          }
+        }
+      }, {} as Record<string, {
+        visible: boolean;
+      }>)
+      setCachedSetting(newCachedSetting)
+      return
+    }
+
+    /** 取消勾选，如果当前为alwaysUsed 那么不取消勾选 */
+    const newCachedSetting = keys.reduce((prev, current) => {
+      return {
+        ...prev,
+        [current]: {
+          ...(cachedSetting[current] || {}),
+          visible: keyByKeyInFields[current].alwaysUsed ? true : false,
+        }
+      }
+    }, {} as Record<string, {
+      visible: boolean;
+    }>)
+    setCachedSetting(newCachedSetting)
+  }
+
+  const isCheckAllOrIsIndeterminate = useMemo(() => {
+    const keys = Object.keys(cachedSetting)
+    const visibleKeys = keys.filter(key => cachedSetting[key].visible)
+    if (visibleKeys.length === store.fields?.length) {
+      return {
+        isCheckAll: true,
+        isIndeterminate: false
+      }
+    }
+    return {
+      isCheckAll: false,
+      isIndeterminate: visibleKeys.length > 0
+    }
+  }, [cachedSetting])
 
   return (
     <div
@@ -67,7 +119,15 @@ const Setting: FC<SettingProps> = ({ afterCancel, afterReset, afterSave }) => {
           fontWeight: 'bold',
         }}
       >
-        <div style={{padding: 8}}>全部筛选条件</div>
+        <div style={{padding: 8}}>
+          <Checkbox
+            indeterminate={isCheckAllOrIsIndeterminate.isIndeterminate}
+            checked={isCheckAllOrIsIndeterminate.isCheckAll}
+            onChange={handleCheckAllFilterChange}
+          >
+            全部筛选条件
+          </Checkbox>
+        </div>
         <Divider
           // className="tw-m-0 tw-mt-1.5"
           style={{
@@ -78,7 +138,7 @@ const Setting: FC<SettingProps> = ({ afterCancel, afterReset, afterSave }) => {
       </div>
       <div
         // className="tw-flex-grow tw-overflow-scroll"
-        style={{ maxHeight: '50vh', flexGrow: 1, overflow: 'scroll' }}
+        style={{ maxHeight: '50vh', flexGrow: 1, overflowY: 'scroll' }}
       >
         <Sortable
           data={store.fields.map(field => ({ value: field.key, text: field.label! }))}
