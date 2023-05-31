@@ -1,3 +1,4 @@
+import { render } from '@testing-library/react';
 import type { Moment } from 'moment';
 import type { HTMLAttributes } from 'react';
 import type { RangeValue, PickerMode } from 'rc-picker/lib/interface';
@@ -79,6 +80,8 @@ export interface FieldBaseItem {
   allowClear?: boolean;
   /** 是否折叠 */
   collapsed?: boolean
+  /** 自定义组件 */
+  render?: React.ReactNode;
 }
 
 type API_Method = (r?: any, codes?: number[]) => Promise<any>;
