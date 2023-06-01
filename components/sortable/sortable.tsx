@@ -39,8 +39,9 @@ const Sortable = ({
         <div
           key={value.value as any}
           data-id={JSON.stringify(value.value)}
+          data-disabled={value['disabled'] ?? false}
           {...itemProps}
-          className={classNames(itemProps.className)}
+          className={classNames(itemProps.className, value.className)}
           style={{
             cursor: !options.handle ? 'grab' : undefined,
           }}

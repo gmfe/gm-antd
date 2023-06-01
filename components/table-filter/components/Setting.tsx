@@ -46,7 +46,6 @@ const Setting: FC<SettingProps> = ({ afterCancel, afterReset, afterSave }) => {
   const _onSave = () => {
     stashFieldItems(store.id, store.fields, cachedSetting);
     setCachedSetting(restoreFieldItemsForSetting(store.id, store.fields));
-
     afterSave && afterSave();
   };
 
@@ -100,7 +99,7 @@ const Setting: FC<SettingProps> = ({ afterCancel, afterReset, afterSave }) => {
       isIndeterminate: visibleKeys.length > 0
     }
   }, [cachedSetting])
-
+  
   return (
     <div
       className="setting-panel"
@@ -140,18 +139,23 @@ const Setting: FC<SettingProps> = ({ afterCancel, afterReset, afterSave }) => {
         style={{ maxHeight: '50vh', flexGrow: 1, overflowY: 'scroll' }}
       >
         <Sortable
-          data={store.fields.map(field => ({ value: field.key, text: field.label! }))}
+          data={store.fields.map(field => ({ value: field.key, text: field.label!, disabled: field.alwaysUsed }))}
           onChange={_onSort}
           options={{
+            filter: '.selector',
             direction: 'horizontal',
             handle: '.sortable',
             chosenClass: 'sortable-active',
+            onMove: event => {
+              return event.related.dataset.disabled !== 'true'
+            }
           }}
           renderItem={(_, index) => {
             const field = store.fields[index];
             const used = cachedSetting[field.key]?.visible;
             return (
               <div
+                className={field.alwaysUsed ? 'selector' : ''}
                 key={field.key}
                 // className="tw-px-2 tw-text-black hover:tw-bg-blue-light"
                 style={{

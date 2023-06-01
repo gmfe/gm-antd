@@ -20,7 +20,7 @@ export function stashFieldItems(
   setting: CachedSetting,
 ) {
   // 只缓存必要数据,
-  const data: CachedFields = fields.map((item) => ({
+  const data: CachedFields = fields.map((item, index) => ({
       attributes:
         item.attributes &&
         pick(item.attributes, [
@@ -30,6 +30,7 @@ export function stashFieldItems(
         ]),
       ...pick(item, ['key', 'label', 'type']),
       visible: setting[item.key]?.visible,
+      sort: index,
     }))
   localStorage.setItem(CACHE_PREFIX + id, JSON.stringify(data.filter(Boolean)))
 }
