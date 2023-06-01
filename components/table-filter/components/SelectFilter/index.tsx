@@ -30,7 +30,12 @@ const SelectFilter: FC<SelectFilterProps> = ({ className, field }) => {
       if (typeof originOptions !== 'function') return;
       const res: any = originOptions(searchValue || undefined);
       if (res.then) {
-        res.then((data: SelectOptions) => setOptions(data));
+        res.then((data: SelectOptions) => {
+          if (store.isSaveOptions) {
+            store.setOptionData(field.key, data);
+          }
+          setOptions(data)
+        });
       } else {
         setOptions(res);
       }
@@ -39,12 +44,20 @@ const SelectFilter: FC<SelectFilterProps> = ({ className, field }) => {
   }, [originOptions]);
 
   useEffect(() => {
+    if (remote) {
+      fetch()
+      return 
+    }
+    /** 如果是启动了保存options 并且有值，就直接从里面取，避免每次展开收起时重新调接口 */
+    if (store.isSaveOptions && store.optionData[field.key]) {
+      setOptions(store.optionData[field.key] as SelectOptions)
+      return 
+    }
+
     if (first.current) {
       fetch();
       first.current = false;
-    } else if (remote) {
-      fetch();
-    }
+    } 
   }, [originOptions, searchValue]);
 
   return (
@@ -73,7 +86,7 @@ const SelectFilter: FC<SelectFilterProps> = ({ className, field }) => {
       onSearch={val => setSearchValue(val?.trim())}
       showSearch
       optionFilterProp="children"
-      allowClear
+      allowClear={field.allowClear}
       dropdownMatchSelectWidth={false}
       // dropdownAlign={{ offset: [-10, 2] }}
       filterOption={(input, option) =>

@@ -22,9 +22,18 @@ const CascaderFilter: FC<CascaderFilterProps> = ({ className, field }) => {
     if (!originOptions) return setOptions([]);
     if (Array.isArray(originOptions)) setOptions(originOptions);
     if (typeof originOptions !== 'function') return;
+    if (store.isSaveOptions && store.optionData[field.key]) { 
+      setOptions(store.optionData[field.key] as CasCaderOption[])
+      return
+    }
     const res: any = originOptions();
     if (res.then) {
-      res.then((data: CasCaderOption[]) => setOptions(data));
+      res.then((data: CasCaderOption[]) => {
+        if (store.isSaveOptions) {
+          store.setOptionData(field.key, data);
+        }
+        setOptions(data)
+      });
     } else {
       setOptions(res);
     }

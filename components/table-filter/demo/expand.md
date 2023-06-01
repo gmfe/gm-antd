@@ -8,7 +8,7 @@ gm: true
 
 ## zh-CN
 
-配置`fields`即可，无需手动控制任何状态
+`fields` 中的 `Item`  设置 `collapsed = true` 
 
 ## en-US
 

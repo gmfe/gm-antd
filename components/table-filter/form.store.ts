@@ -1,6 +1,6 @@
 // import type { QueryCriteriaGroup } from 'gm_api/src/common'
 // import { ListModelField } from 'gm_api/src/metadata'
-import { debounce, get, merge, pickBy, set } from 'lodash';
+import { debounce, get, merge, orderBy, pickBy, set } from 'lodash';
 import { makeAutoObservable, toJS } from 'mobx';
 import type { Moment } from 'moment';
 import type {
@@ -23,7 +23,18 @@ type Options = {
   // mixins?: Array<MixinFieldItem>;
   paginationResult: UsePaginationResult;
   trigger?: TableFilterProps['trigger'];
+  /** 是否在select Options 异步获取时保存他的option 值 */
+  isSaveOptions?: boolean
 };
+
+type OptionDataType = {
+  label?: string | React.ReactNode,
+  text?: string,
+  value: string | number,
+  children?: OptionDataType[]
+  [key: string]: any
+}
+
 
 class TableFilterStore {
   constructor() {
@@ -51,6 +62,13 @@ class TableFilterStore {
 
   loading = false;
 
+  /** 异步获取的options */
+  optionData: Record<string, OptionDataType[]> = {};
+
+  /** 是否在select Options 异步获取时保存他的option 值 */
+  isSaveOptions?: boolean = false
+
+
   /** 可见(启用)的字段列表 */
   getVisibleFields() {
     const cachedSetting = restoreFieldItemsForSetting(this.id, this.fields);
@@ -68,6 +86,7 @@ class TableFilterStore {
     // mixins = [],
     paginationResult,
     trigger,
+    isSaveOptions,
   }: Options) {
     this.id = id;
     // this._model_type = model_type
@@ -75,11 +94,17 @@ class TableFilterStore {
     this._fixedFields = fixedFields;
     this._paginationResult = paginationResult;
     this.trigger = trigger;
+    this.isSaveOptions = isSaveOptions ?? false
     // 使用缓存，避免跳动
-    this.fields = fixedFields
+    this.fields = orderBy(
+      fixedFields
       .map(field => this._applyDefaultFieldValue(field))
       .map(field => this._applyCachedValueToDefault(field))
-      .filter(field => !field.hide);
+      .filter(field => !field.hide), 
+      ['sort'], 
+      ['asc']
+    );
+    
 
     // 加载云字段
     // if (!this._model_type) return Promise.resolve()
@@ -296,6 +321,10 @@ class TableFilterStore {
     return this._paginationResult!.run(params).finally(() => {
       this.loading = false
     })
+  }
+
+  setOptionData(keyName: string, data: OptionDataType[]) {
+    this.optionData[keyName] = data
   }
 }
 

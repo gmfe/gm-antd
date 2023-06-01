@@ -7,7 +7,8 @@ gm: true
 ---
 
 ## zh-CN
-你完全可以自定义组件，看下面的例子
+你完全可以自定义组件，看下面的例子, field 中使用`render` 自定义组件，自定义组件 看`CustomerInput`,
+另外你可以增加`isSaveOptions` 属性，避免每次 展开收起都进行获取`options` 的请求, 注意下面的`jsonp`, 可以看到展开收起并没有再次请求
 
 ## en-US
 
@@ -20,7 +21,8 @@ import React, { useContext, useState, useRef, useCallback } from 'react';
 import { usePagination } from '@gm-common/hooks';
 import moment from 'moment'
 import { debounce } from 'lodash'
-import { useTimeoutFn } from 'react-use';
+import jsonp from 'fetch-jsonp';
+import qs from 'qs';
 
 interface CustomerInputProps {
   field: FieldItem
@@ -84,7 +86,7 @@ const CustomerInput = (props: CustomerInputProps) => {
     try {
       message.info('失去焦点时触发')
       if (['onChange', 'both'].includes(store.trigger!)) {
-        store.search()
+        debounced()
       }
     } finally {
       focusRef.current = false
@@ -110,7 +112,7 @@ const CustomerInput = (props: CustomerInputProps) => {
         onChange={(val) => handleChange('type', val)}
       />
       <div 
-        style={{borderLeft: '1px solid #d6d6d6'}}
+        style={{borderLeft: '1px solid #d6d6d6', flex: 1}}
       >
         <Input 
           value={innerValue.input}
@@ -139,7 +141,7 @@ const App: React.FC = () => {
         select: '1',
         input: '哈哈哈'
       },
-      label: '科目代码/名称',
+      label: '自定义组件',
       render: (
         <CustomerInput />
       ),
@@ -149,6 +151,41 @@ const App: React.FC = () => {
           inputData: value.input
         }
       }
+    },
+    {
+      key: 'select',
+      type: 'select',
+      alwaysUsed: true,
+      label: '科目代码/名称',
+      allowClear: false,
+      options: [{
+        label: '选项1',
+        value: 1
+      }],
+    },
+    {
+      key: 'select1',
+      type: 'select',
+      alwaysUsed: false,
+      label: '科目代码/名称123',
+      allowClear: false,
+      defaultUsed: true,
+      options: async () => {
+        const str = qs.stringify({
+          code: 'utf-8',
+          q: '14',
+        });
+        const res = await jsonp(`https://suggest.taobao.com/sug?${str}`)
+        const data = await res.json()
+        const options = data.result.map((_item) => {
+          return {
+            value: `${_item[0]}`,
+            label: `${_item[0]}`
+          }
+        })
+        return options
+      },
+      collapsed: true,
     },
   ]
 
@@ -167,6 +204,7 @@ const App: React.FC = () => {
         paginationResult={paginationResult}
         fields={fields}
         isExpanded
+        isSaveOptions
         isAlwaysShowCustom
         skipInitialValues={['date']}
         onCustomSave={onCustomSave}
