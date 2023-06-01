@@ -271,6 +271,13 @@ const App: React.FC = () => {
       <BatchActions>
         <BatchActions.Button
           disabled={!selectedRowKeys.length}
+          onClick={() => alert(`编辑：${selectedRowKeys.join(',')}`)}
+        >
+          编辑
+        </BatchActions.Button>
+        <BatchActions.Button
+          danger
+          disabled={!selectedRowKeys.length}
           onClick={() => alert(`删除：${selectedRowKeys.join(',')}`)}
         >
           删除

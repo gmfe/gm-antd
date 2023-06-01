@@ -1,8 +1,9 @@
-import { CloseOutlined } from '@ant-design/icons';
 import classNames from 'classnames';
 import type { FC, HTMLAttributes } from 'react';
 import React from 'react';
-import Button from '../../../button';
+import Checkbox from '../../../checkbox';
+import Divider from '../../../divider';
+import Space from '../../../space';
 import type { UseTableSelectionController } from '.';
 
 export interface TableBatchActionsProps extends HTMLAttributes<HTMLDivElement> {
@@ -22,7 +23,7 @@ const TableBatchActions: FC<TableBatchActionsProps> = ({
   stickyTop,
   ...rest
 }) => {
-  const { selectedRowKeys, isSelectedAll, isSelectedTotal } = controller;
+  const { selectedRowKeys, isSelectedTotal, setIsSelectedTotal } = controller;
   return (
     <div
       className={classNames(
@@ -46,103 +47,35 @@ const TableBatchActions: FC<TableBatchActionsProps> = ({
       }}
       {...rest}
     >
-      {(() => {
-        // 默认状态
-        if (!controller || !selectedRowKeys.length) {
-          return (
-            <>
-              <div
-                // className="tw-text-black-light"
-                style={{
-                  color: '#333',
-                }}
-              >
-                批量操作:
-              </div>
-              {children}
-            </>
-          );
-        }
-        // 全选状态
-        if (isSelectedAll) {
-          // 支持选择所有页
-          if (totalCount) {
-            return (
-              <>
-                <CloseOutlined
-                  // className="tw-cursor-pointer"
-                  style={{
-                    cursor: 'pointer',
-                  }}
-                  onClick={() => controller.unselectAll()}
-                />
-                <Button size="small" type="link" onClick={() => controller.toggleTotal()}>
-                  全选{isSelectedTotal ? '当前' : '所有'}页
-                </Button>
-                <div
-                  className="tw-text-black-light"
-                  style={{
-                    color: '#333',
-                  }}
-                >
-                  已选
-                  {isSelectedTotal ? totalCount : selectedRowKeys.length}
-                  项:
-                </div>
-                {children}
-              </>
-            );
-          }
-          return (
-            <>
-              <CloseOutlined
-                // className="tw-cursor-pointer"
-                style={{
-                  cursor: 'pointer',
-                }}
-                onClick={() => controller.unselectAll()}
-              />
-              <Button size="small" type="link">
-                全选当前页
-              </Button>
-              <div
-                // className="tw-text-black-light"
-                style={{
-                  color: '#333',
-                }}
-              >
-                已选{selectedRowKeys.length}项:
-              </div>
-              {children}
-            </>
-          );
-        }
-        // 选中但未全选状态
-
-        return (
+      <div className="table-batch-actions-content">
+        <Checkbox
+          checked={isSelectedTotal}
+          disabled={!totalCount}
+          onClick={() => {
+            setIsSelectedTotal(!isSelectedTotal);
+          }}
+          className="table-batch-actions-content-checkbox"
+        >
+          全选所有页
+        </Checkbox>
+        {selectedRowKeys.length > 0 && (
           <>
-            <CloseOutlined
-              // className="tw-cursor-pointer"
-              style={{
-                cursor: 'pointer',
-              }}
-              onClick={() => controller.unselectAll()}
-            />
-            <Button size="small" type="link" onClick={() => controller.selectAll()}>
-              全选当前页
-            </Button>
-            <div
-              // className="tw-text-black-light"
-              style={{
-                color: '#333',
-              }}
-            >
-              已选{selectedRowKeys.length}项:
-            </div>
-            {children}
+            <Divider type="vertical" />
+            <Space>
+              <div>
+                已选
+                <span className="primary">
+                  {' '}
+                  {isSelectedTotal ? totalCount : selectedRowKeys.length}{' '}
+                </span>
+                项目
+              </div>
+            </Space>
           </>
-        );
-      })()}
+        )}
+        {children && <Divider type="vertical" />}
+        <div className="table-batch-actions-content-btns">{children}</div>
+      </div>
     </div>
   );
 };
