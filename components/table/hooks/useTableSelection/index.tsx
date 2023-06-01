@@ -86,6 +86,8 @@ export interface UseTableSelectionController<DataType = any> {
   reset(): void;
   /** 设置已选择的 key */
   setSelected: React.Dispatch<React.SetStateAction<(string | number)[]>>;
+  /** 设置全选所有页 */
+  setIsSelectedTotal(value: boolean): void;
 }
 
 /** 表格多选支持 */
@@ -284,6 +286,14 @@ function useTableSelection<DataType extends { [key: string]: any }>(
     },
     toggleTotal() {
       setIsSelectedTotal(!isSelectedTotal);
+    },
+    setIsSelectedTotal(value: boolean) {
+      setIsSelectedTotal(value);
+      if (value) {
+        controller.selectAll();
+      } else {
+        controller.unselectAll();
+      }
     },
     reset() {
       setSelected([]);

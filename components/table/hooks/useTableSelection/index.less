@@ -18,3 +18,30 @@
     visibility: visible !important;
   }
 }
+
+
+.table-batch-actions-content {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+
+  &-checkbox {
+    .ant-checkbox + span {
+      padding-right: 0;
+    }
+  }
+  
+  &-btns {
+    z-index: 10;
+    display: flex;
+    flex: 1;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .primary {
+    color: var(--ant-primary-color);
+  }
+}
