@@ -31,6 +31,7 @@ function Component(options: TableFilterProps) {
     isUpdateFields,
     isAlwaysShowCustom,
     skipInitialValues,
+    isSaveOptions = false,
     onCustomSave,
   } = options;
   const id = options.id ?? new URL(location.href.replace('/#', '')).pathname;
@@ -42,8 +43,6 @@ function Component(options: TableFilterProps) {
  
   const [expanded, setExpanded] = useState(false)
 
-  // #region 自适应
-  // const [expanded, setExpanded] = useState(false)
   const [{ width }, setState] = useState({ width: 1 });
   const flex = parseInt(`${width / FIELD_MIN_WIDTH}`, 10) || 1; // 每行个数
   const fieldWidth = width / flex - ((flex - 1) * GAP) / flex;
@@ -59,6 +58,7 @@ function Component(options: TableFilterProps) {
         // mixins,
         paginationResult,
         trigger,
+        isSaveOptions,
       })
       .then(() => {
         setVisibleFields(store.getVisibleFields());

@@ -37,8 +37,6 @@ export interface TableFilterProps
    * - `both` 字段表单变化后查询，点击“查询”按钮后查询；
    */
   trigger?: 'onChange' | 'manual' | 'both';
-  /** 自定义模式 */
-  customMode?: ''
   /** 是否显示展开收起按钮 */
   isExpanded?: boolean
   /** 是否更新 fields */
@@ -47,6 +45,8 @@ export interface TableFilterProps
   isAlwaysShowCustom?: boolean
   /** 在重置的时候跳过某些值的初始化 */
   skipInitialValues?: string[]
+  /** 是否在select Options 异步获取时保存他的option 值 */
+  isSaveOptions?: boolean
   /** 设置保存回调 */
   onCustomSave?: () => void
 }
@@ -136,6 +136,7 @@ export interface FieldSelectItem<
 > extends FieldBaseItem {
   type: 'select';
   multiple?: Multiple;
+  allowClear?: boolean;
   /**
    * 列表选项，支持数组、函数、异步函数
    *
