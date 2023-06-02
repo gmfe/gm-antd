@@ -41,8 +41,7 @@ Fork 自antd@4.24.0，做 AntD 组件二次开发及文档使用。[在线文档
 Demo 中使用 gm_api 接口需要先初始化:
 
 ```
-// baseURL可以是'http://localhost:5555' | 'https://env-xxx.x.k8s.guanmai.cn'，后者需要解决跨域问题
-window.init_gm_api(baseURL:string,'TOKEN')
+window.init_gm_api('https://env-xxx.x.k8s.guanmai.cn', 'TOKEN')
 ```
 
 #### 配套开发工具

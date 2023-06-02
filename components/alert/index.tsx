@@ -52,14 +52,14 @@ const iconMapFilled = {
   success: CheckCircleFilled,
   info: InfoCircleFilled,
   error: CloseCircleFilled,
-  warning: ExclamationCircleFilled,
+  warning: InfoCircleFilled,
 };
 
 const iconMapOutlined = {
-  success: CheckCircleOutlined,
-  info: InfoCircleOutlined,
-  error: CloseCircleOutlined,
-  warning: ExclamationCircleOutlined,
+  success: CheckCircleFilled,
+  info: InfoCircleFilled,
+  error: CloseCircleFilled,
+  warning: InfoCircleFilled,
 };
 
 interface IconNodeProps {

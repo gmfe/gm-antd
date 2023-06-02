@@ -1,5 +1,5 @@
 ---
-order: 2
+order: 8
 title:
   zh-CN: 居中
   en-US: Centered

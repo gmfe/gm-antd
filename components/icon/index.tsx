@@ -1,8 +1,7 @@
-import warning from '../_util/warning';
+import { createFromIconfontCN } from '@ant-design/icons';
 
-const Icon: React.FC = () => {
-  warning(false, 'Icon', 'Empty Icon');
-  return null;
-};
+const Icon = createFromIconfontCN({
+  scriptUrl: 'https://at.alicdn.com/t/c/font_4079364_omop55e0gd.js',
+});
 
 export default Icon;

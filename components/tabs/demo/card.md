@@ -1,5 +1,5 @@
 ---
-order: 8
+order: 1
 title:
   zh-CN: 卡片式页签
   en-US: Card type tab
@@ -31,6 +31,7 @@ const App: React.FC = () => (
         label: `Tab ${id}`,
         key: id,
         children: `Content of Tab Pane ${id}`,
+        disabled: i === 2,
       };
     })}
   />

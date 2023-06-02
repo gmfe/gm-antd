@@ -9,13 +9,23 @@
     .@{tab-prefix-cls}-tab {
       margin: 0;
       padding: @tabs-card-horizontal-padding;
-      background: @tabs-card-head-background;
+      background: white;
       border: @border-width-base @border-style-base @border-color-split;
       transition: all @animation-duration-slow @ease-in-out;
 
-      &-active {
+      &:hover {
         color: @tabs-card-active-color;
-        background: @component-background;
+        background-color: @tabs-card-head-background;
+      }
+
+      &-active {
+        color: @tabs-card-active-color!important;
+        background-color: white !important;
+      }
+
+      &-disabled {
+        color: @disabled-color!important;
+        background: @tabs-card-head-background!important;
       }
     }
 
