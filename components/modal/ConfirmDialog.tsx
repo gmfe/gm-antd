@@ -64,7 +64,7 @@ const ConfirmDialog = (props: ConfirmDialogProps) => {
   const contentPrefixCls = `${prefixCls}-confirm`;
   // 默认为 true，保持向下兼容
   const okCancel = 'okCancel' in props ? props.okCancel! : true;
-  const width = props.width || 416;
+  const width = props.width || 424;
   const style = props.style || {};
   const mask = props.mask === undefined ? true : props.mask;
   // 默认为 false，保持旧版默认行为
