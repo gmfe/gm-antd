@@ -7,7 +7,6 @@ import { Pagination, Typography } from '../index';
 import InfoField from './components/InfoField';
 import './index.less';
 
-
 export interface TablePaginationProps extends PaginationProps {
   paginationResult: UsePaginationResult;
   left?: ReactNode;
@@ -69,6 +68,7 @@ const TablePagination: FC<TablePaginationProps> & Components = ({
           onPageChange && onPageChange();
         }}
         onShowSizeChange={(_, size) => {
+          paginationResult.paging.offset = 0;
           paginationResult.paging.limit = size;
           // paginationResult.pagination.onChange({
           //   ...paginationResult.paging,
