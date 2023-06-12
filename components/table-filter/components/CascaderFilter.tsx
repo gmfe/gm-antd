@@ -4,14 +4,14 @@ import { observer } from 'mobx-react';
 import classNames from 'classnames';
 import type { CasCaderOption, FieldCascaderItem } from '../types';
 import TableFilterContext from '../context';
-import Cascader from '../../cascader';
+import Cascader, { CascaderProps } from '../../cascader';
 
 export interface CascaderFilterProps extends HTMLAttributes<HTMLDivElement> {
   field: FieldCascaderItem;
 }
 
 const CascaderFilter: FC<CascaderFilterProps> = ({ className, field }) => {
-  const { options: originOptions, placeholder, changeOnSelect, label, multiple } = field;
+  const { options: originOptions, placeholder, changeOnSelect, label, multiple, useAntdDisplayRender, displayRender = null, showCheckedStrategy } = field;
   const store = useContext(TableFilterContext);
 
   const [options, setOptions] = useState<CasCaderOption[]>(
@@ -40,7 +40,24 @@ const CascaderFilter: FC<CascaderFilterProps> = ({ className, field }) => {
   }, [originOptions]);
 
   /** 只展示最后一级 */
-  const displayRender = (labels: string[]) => <span>{labels[labels.length - 1]}</span>;
+  const defaultDisplayRender = (labels: string[]) => <span>{labels[labels.length - 1]}</span>;
+
+ /** 设置是否使用ant 内部渲染，或者使用自定义渲染，或者是渲染最后一级 */
+ const renderDisplayRender = () => {
+  /** 如果想使用antd 内部渲染并且没有使用自定义渲染，那么直接使用ant 内部渲染 */
+  if (useAntdDisplayRender && !displayRender) {
+    return {}
+  }
+
+  if (displayRender) {
+    return {
+      displayRender: displayRender,
+    }
+  }
+  return {
+    displayRender: defaultDisplayRender,
+  }
+}
 
   return (
     <Cascader
@@ -52,7 +69,7 @@ const CascaderFilter: FC<CascaderFilterProps> = ({ className, field }) => {
       changeOnSelect={changeOnSelect ?? true}
       expandTrigger="hover"
       options={options}
-      displayRender={displayRender}
+      displayRender={displayRender as unknown as CascaderProps<CasCaderOption>['displayRender']}
       value={value}
       multiple={multiple}
       maxTagCount="responsive"
@@ -69,6 +86,8 @@ const CascaderFilter: FC<CascaderFilterProps> = ({ className, field }) => {
       onBlurCapture={() => {
         store.focusedFieldKey = '';
       }}
+      showCheckedStrategy={showCheckedStrategy}
+      {...renderDisplayRender()}
     />
   );
 };

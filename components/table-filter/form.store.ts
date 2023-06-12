@@ -104,8 +104,6 @@ class TableFilterStore {
       ['sort'], 
       ['asc']
     );
-    
-
     // 加载云字段
     // if (!this._model_type) return Promise.resolve()
     // return ListModelField({
@@ -143,7 +141,7 @@ class TableFilterStore {
       this._fixedFields?.find(item2 => item2.key !== item.key),
     );
     const cachedField = cachedFields.find(item => item.key === field.key) || {};
-    return merge(cachedField, field);
+    return merge(field, cachedField, { defaultUsed: (field.defaultUsed && (cachedField as any)?.visible) });
   }
 
   /** Key为fields的key，value为表单项的值 */

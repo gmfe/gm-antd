@@ -90,7 +90,7 @@ const SelectFilter: FC<SelectFilterProps> = ({ className, field }) => {
       dropdownMatchSelectWidth={false}
       // dropdownAlign={{ offset: [-10, 2] }}
       filterOption={(input, option) =>
-        (option!.children as unknown as string).toLowerCase().includes(input.toLowerCase())
+        (option!.children as unknown as string)?.toLowerCase().includes(input.toLowerCase())
       }
       onFocus={() => {
         store.focusedFieldKey = field.key;
