@@ -6,6 +6,7 @@ import type { RangeValue, PickerMode } from 'rc-picker/lib/interface';
 import type { UsePaginationResult as GMUsePaginationResult } from '@gm-common/hooks';
 import type { RangePickerProps } from '../date-picker';
 import type { PickerDateProps, RangePickerDateProps } from '../date-picker/generatePicker';
+import { CascaderProps } from 'antd';
 
 // export type TableListSourceMapType = typeof TableListSourceMap
 // export type UsePaginationResult = {
@@ -210,6 +211,10 @@ export interface FieldCascaderItem<
   changeOnSelect?: boolean;
   /** 同 {@link FieldInputItem.toParam} */
   toParam?: ToParam<Multiple extends true ? string[][] : string[], API>;
+  showCheckedStrategy?: CascaderProps<any>['showCheckedStrategy']
+  /** 使用ant 原始渲染 */
+  useAntdDisplayRender?: boolean
+  displayRender?: CascaderProps<CasCaderOption>['displayRender'] | null
 }
 
 /**

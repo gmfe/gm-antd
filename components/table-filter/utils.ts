@@ -38,9 +38,10 @@ export function stashFieldItems(
 /** 恢复字段配置缓存 */
 export function restoreFieldItems(id: string) {
   const fields: CachedFields = JSON.parse(localStorage.getItem(CACHE_PREFIX + id) || '[]')
-  fields.forEach((item) => {
-    delete item.visible
-  })
+  /** 不能删掉visible 字段，不然勾选显示有问题 */
+  // fields.forEach((item) => {
+  //   delete item.visible
+  // })
   return fields
 }
 
@@ -50,7 +51,7 @@ export function restoreFieldItemsForSetting(id: string, defaultFields: FieldItem
   const setting: CachedSetting = fields?.reduce((pre, item) => ({
       ...pre,
       [item.key]: {
-        visible: item.visible || (item as FieldItem).defaultUsed || (item as FieldItem).alwaysUsed,
+        visible: typeof item.visible !== 'undefined' ? item.visible : (item as FieldItem).defaultUsed || (item as FieldItem).alwaysUsed,
       },
     }), {})
   return setting
