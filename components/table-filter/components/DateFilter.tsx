@@ -19,7 +19,7 @@ const DateFilter: FC<DateFilterProps> = ({ field }) => {
     <Observer>
       {() => {
         if (!field.range) {
-          const commonProps = pick(field, ['disabledDate', 'showTime', 'picker']);
+          const commonProps = pick(field, ['disabledDate', 'showTime', 'picker', 'allowClear']);
           // 单日选择, 缺少使用场景，有需要再完善
           const value = store.get(field);
           return (
@@ -44,7 +44,7 @@ const DateFilter: FC<DateFilterProps> = ({ field }) => {
             />
           );
         }
-        const commonProps = pick(field, ['disabledDate', 'showTime']);
+        const commonProps = pick(field, ['disabledDate', 'showTime', 'allowClear']);
         const defaultRanges: FieldDateRangeItem['ranges'] = {
           今天: [moment().startOf('day'), moment().endOf('day')],
           昨天: [
