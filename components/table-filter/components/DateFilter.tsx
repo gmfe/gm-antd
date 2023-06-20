@@ -44,7 +44,7 @@ const DateFilter: FC<DateFilterProps> = ({ field }) => {
             />
           );
         }
-        const commonProps = pick(field, ['disabledDate', 'showTime']);
+        const commonProps = pick(field, ['disabledDate', 'showTime', 'allowClear']);
         const defaultRanges: FieldDateRangeItem['ranges'] = {
           今天: [moment().startOf('day'), moment().endOf('day')],
           昨天: [

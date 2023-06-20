@@ -168,6 +168,7 @@ export interface FieldDateTypeItem<API extends API_Method = API_Method> extends 
   picker?: PickerMode;
   /** 同 {@link FieldInputItem.toParam} */
   toParam?: ToParam<Moment, API>;
+  allowClear?: boolean;
 }
 
 /** 表单类型，日期范围选择器 */
@@ -186,6 +187,7 @@ export interface FieldDateRangeItem<API extends API_Method = API_Method> extends
   picker?: PickerMode;
   /** 同 {@link FieldInputItem.toParam]} */
   toParam?: ToParam<RangeValue<Moment>, API>;
+  allowClear?: boolean;
 }
 
 export type FieldDateItem = FieldDateTypeItem | FieldDateRangeItem;
