@@ -101,13 +101,14 @@ class TableFilterStore {
   /** 字段默认值 */
   private _applyDefaultFieldValue(field: FieldItem): FieldItem {
     const res = {
-      ...field, // minWidth: field.minWidth ?? 160,
+      ...field,
+      // minWidth: field.minWidth ?? 160,
       // maxWidth: field.maxWidth ?? 320,
-      // 显式声明一下
       hideLabel: field.hideLabel ?? false,
       defaultUsed: field.defaultUsed ?? false,
       alwaysUsed: field.alwaysUsed ?? false,
       hide: field.hide ?? false,
+      allowClear: field.allowClear ?? true,
     };
     return res;
   }

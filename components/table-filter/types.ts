@@ -48,9 +48,9 @@ export interface FieldBaseItem {
   label?: string;
   /** 表单中不展示label */
   hideLabel?: boolean;
-  /** @deprecated 已移除，采用栅格方案 表单项最小宽度, 默认160 */
+  /** @deprecated 已移除，采用栅格方案 */
   minWidth?: number | string;
-  /** @deprecated 已移除，采用栅格方案 表单项最大宽度, 默认320 */
+  /** @deprecated 已移除，采用栅格方案 */
   maxWidth?: number | string;
   /** Group相同的表单项在交互上合并成一个，比如 按下单日期/按收货日期 */
   group?: string;
@@ -63,6 +63,8 @@ export interface FieldBaseItem {
   placeholder?: string;
   /** 是否禁用 */
   disabled?: boolean;
+  /** Antd, 展示清空的icon按钮，默认为true */
+  allowClear?: boolean;
 }
 
 type API_Method = (r?: any, codes?: number[]) => Promise<any>;

@@ -221,19 +221,27 @@ const useTableDIY = <DataType extends { [key: string]: any }>(
       (newColumns.slice(i + 1).length === 0 ||
         !newColumns.slice(i + 1).find(item => item.fixed === 'right')),
   );
-  // 如果指定 width 不生效或出现白色垂直空隙，请尝试建议留一列不设宽度以适应弹性布局，或者检查是否有超长连续字段破坏布局。
-  // https://ant.design/components/table-cn/#components-table-demo-fixed-columns
   const newColumnsWithPlaceholder = newColumns.slice();
-  if (fixedRightIndex > -1) {
-    newColumnsWithPlaceholder.splice(fixedRightIndex, 0, {
-      key: 'PLACEHOLDER',
-      className: 'placeholder',
-    });
-  } else {
-    newColumnsWithPlaceholder.push({
-      key: 'PLACEHOLDER',
-      className: 'placeholder',
-    });
+  /** 最后一列（非固定） */
+  const lastNormalColumn = newColumns
+    .slice()
+    .reverse()
+    .find(item => !item.fixed);
+  // 最后一列未设置宽度已自适应，则不加占位列
+  if (lastNormalColumn?.width) {
+    // 如果指定 width 不生效或出现白色垂直空隙，请尝试建议留一列不设宽度以适应弹性布局，或者检查是否有超长连续字段破坏布局。
+    // https://ant.design/components/table-cn/#components-table-demo-fixed-columns
+    if (fixedRightIndex > -1) {
+      newColumnsWithPlaceholder.splice(fixedRightIndex, 0, {
+        key: 'PLACEHOLDER',
+        className: 'placeholder',
+      });
+    } else {
+      newColumnsWithPlaceholder.push({
+        key: 'PLACEHOLDER',
+        className: 'placeholder',
+      });
+    }
   }
 
   return {

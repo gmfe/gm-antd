@@ -57,6 +57,7 @@ const FIELDS: FieldItem[] = [
     type: 'date',
     alwaysUsed: true,
     label: '日期',
+    allowClear: false,
   },
   {
     key: 'time',
