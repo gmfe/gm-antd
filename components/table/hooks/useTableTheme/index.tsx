@@ -50,9 +50,10 @@ const Cell = ({ className, children, ...rest }: PropsWithChildren<any>) => {
                     <div
                       // className="tw-truncate"
                       style={{
-                        maxWidth: 'inherit',
-                        maxHeight: 'inherit',
                         whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        width: 'inherit',
+                        textOverflow: 'ellipsis',
                       }}
                     >
                       <Tooltip
