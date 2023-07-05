@@ -20,7 +20,7 @@ export function stashFieldItems(
   setting: CachedSetting,
 ) {
   // 只缓存必要数据,
-  const data: CachedFields = fields.map((item) => ({
+  const data: CachedFields = fields.map((item, index) => ({
       attributes:
         item.attributes &&
         pick(item.attributes, [
@@ -30,6 +30,7 @@ export function stashFieldItems(
         ]),
       ...pick(item, ['key', 'label', 'type']),
       visible: setting[item.key]?.visible,
+      sort: index,
     }))
   localStorage.setItem(CACHE_PREFIX + id, JSON.stringify(data.filter(Boolean)))
 }
@@ -37,19 +38,20 @@ export function stashFieldItems(
 /** 恢复字段配置缓存 */
 export function restoreFieldItems(id: string) {
   const fields: CachedFields = JSON.parse(localStorage.getItem(CACHE_PREFIX + id) || '[]')
-  fields.forEach((item) => {
-    delete item.visible
-  })
+  /** 不能删掉visible 字段，不然勾选显示有问题 */
+  // fields.forEach((item) => {
+  //   delete item.visible
+  // })
   return fields
 }
 
 /** 恢复字段配置缓存，设置界面用 */
-export function restoreFieldItemsForSetting(id: string) {
-  const fields: CachedFields = JSON.parse(localStorage.getItem(CACHE_PREFIX + id) || '[]')
-  const setting: CachedSetting = fields.reduce((pre, item) => ({
+export function restoreFieldItemsForSetting(id: string, defaultFields: FieldItem[]) {
+  const fields: CachedFields = localStorage.getItem(CACHE_PREFIX + id) ? JSON.parse(localStorage.getItem(CACHE_PREFIX + id) || '[]') : defaultFields
+  const setting: CachedSetting = fields?.reduce((pre, item) => ({
       ...pre,
       [item.key]: {
-        visible: item.visible,
+        visible: typeof item.visible !== 'undefined' ? item.visible : (item as FieldItem).defaultUsed || (item as FieldItem).alwaysUsed,
       },
     }), {})
   return setting

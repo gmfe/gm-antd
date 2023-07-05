@@ -21,6 +21,11 @@ tag: New
 | paginationResult | `usePagination`的返回值, `{ run: (params)=>Promise<void> }` | { run: (params)=>Promise<void> } | - |  |
 | immediate | 是否就绪后即刻提交一次查询 | boolean | `false` |  |
 | trigger | 触发类型,触发搜索的方式；`manual` 点击“查询”按钮后才查询；`onChange` 字段表单变化后查询，且查询和重置按钮会被隐藏； `both` 字段表单变化后查询，点击“查询”按钮后查询； | string | `manual` |  |
+| isExpanded | 是否有展开收起 | boolean | false | |
+| isUpdateFields | 是否更新fields | boolean | false | |
+| isAlwaysShowCustom | 是否一致显示自定义按钮 | boolean | false | |
+| skipInitialValues | 重置时跳过初始化值 | string[] | [] | |
+| onCustomSave | 保存设置时的回调 | (() => void) | null | null | |
 
 ### TableFilter 实例
 

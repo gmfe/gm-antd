@@ -6,6 +6,7 @@ import type { RangeValue, PickerMode } from 'rc-picker/lib/interface';
 import type { UsePaginationResult as GMUsePaginationResult } from '@gm-common/hooks';
 import type { RangePickerProps } from '../date-picker';
 import type { PickerDateProps, RangePickerDateProps } from '../date-picker/generatePicker';
+import { CascaderProps } from 'antd';
 
 // export type TableListSourceMapType = typeof TableListSourceMap
 // export type UsePaginationResult = {
@@ -37,6 +38,18 @@ export interface TableFilterProps
    * - `both` 字段表单变化后查询，点击“查询”按钮后查询；
    */
   trigger?: 'onChange' | 'manual' | 'both';
+  /** 是否显示展开收起按钮 */
+  isExpanded?: boolean
+  /** 是否更新 fields */
+  isUpdateFields?: boolean
+  /** 是否一直显示自定义按钮 */
+  isAlwaysShowCustom?: boolean
+  /** 在重置的时候跳过某些值的初始化 */
+  skipInitialValues?: string[]
+  /** 是否在select Options 异步获取时保存他的option 值 */
+  isSaveOptions?: boolean
+  /** 设置保存回调 */
+  onCustomSave?: () => void
 }
 
 /** 表单项 */
@@ -65,6 +78,10 @@ export interface FieldBaseItem {
   disabled?: boolean;
   /** Antd, 展示清空的icon按钮，默认为true */
   allowClear?: boolean;
+  /** 是否折叠 */
+  collapsed?: boolean
+  /** 自定义组件 */
+  render?: React.ReactNode;
 }
 
 type API_Method = (r?: any, codes?: number[]) => Promise<any>;
@@ -120,6 +137,7 @@ export interface FieldSelectItem<
 > extends FieldBaseItem {
   type: 'select';
   multiple?: Multiple;
+  allowClear?: boolean;
   /**
    * 列表选项，支持数组、函数、异步函数
    *
@@ -150,6 +168,7 @@ export interface FieldDateTypeItem<API extends API_Method = API_Method> extends 
   picker?: PickerMode;
   /** 同 {@link FieldInputItem.toParam} */
   toParam?: ToParam<Moment, API>;
+  allowClear?: boolean;
 }
 
 /** 表单类型，日期范围选择器 */
@@ -168,6 +187,7 @@ export interface FieldDateRangeItem<API extends API_Method = API_Method> extends
   picker?: PickerMode;
   /** 同 {@link FieldInputItem.toParam]} */
   toParam?: ToParam<RangeValue<Moment>, API>;
+  allowClear?: boolean;
 }
 
 export type FieldDateItem = FieldDateTypeItem | FieldDateRangeItem;
@@ -193,6 +213,10 @@ export interface FieldCascaderItem<
   changeOnSelect?: boolean;
   /** 同 {@link FieldInputItem.toParam} */
   toParam?: ToParam<Multiple extends true ? string[][] : string[], API>;
+  showCheckedStrategy?: CascaderProps<any>['showCheckedStrategy']
+  /** 使用ant 原始渲染 */
+  useAntdDisplayRender?: boolean
+  displayRender?: CascaderProps<CasCaderOption>['displayRender'] | null
 }
 
 /**

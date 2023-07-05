@@ -63,6 +63,7 @@ const Labeled: FC<LabeledProps> = ({ style, className, fields }) => {
                 // className="tw-text-gray-2 tw-text-sm"
                 style={{
                   color: '#707070',
+                  fontSize: 14
                 }}
               >
                 {field.label}
