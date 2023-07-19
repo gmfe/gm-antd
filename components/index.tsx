@@ -184,3 +184,6 @@ export { default as TablePagination } from './table-pagination';
 export { default as ContentWrapper } from './content-wrapper';
 export { default as ContentWrapperContext } from './content-wrapper/context';
 export { default as Icon } from './icon';
+
+/** 源antd版本， gm 版本号取package.json */
+export const version = '4.24.0'
