@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import type { FC } from 'react';
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
-import type { FormInstance } from '../../index';
+import type { FieldItem, FormInstance } from '../../index';
 import { Cascader, Button, Form, Input, Select, Space } from '../../index';
 
 const api: any = {};
@@ -35,15 +35,16 @@ const ConfigPanel: FC<ConfigPanelProps> = ({ form }) => {
         })),
     }));
   }, []);
-  const definitions: Array<{
+  const definitions = api[selectedAPI?.[0]]?.definitions;
+  const availableAPI: Array<{
     value: string;
     label: string;
-    origin: { description: string; type: string };
+    origin: { description: string; type: string; $ref?: string };
   }> = React.useMemo(() => {
     if (!selectedAPI || selectedAPI.length !== 2) return [];
-    const definition = api[selectedAPI[0]].definitions?.[`${selectedAPI[1]}Request`]?.properties;
+    const item = definitions?.[`${selectedAPI[1]}Request`]?.properties;
     // eslint-disable-next-line compat/compat
-    return Object.entries(definition)
+    return Object.entries(item)
       .filter(item => !item[0].startsWith('_'))
       .map(([key, value]: any) => ({
         value: key,
@@ -92,15 +93,36 @@ const ConfigPanel: FC<ConfigPanelProps> = ({ form }) => {
                     >
                       <Select
                         disabled={!form.getFieldValue('selectedAPI')}
-                        options={definitions}
+                        options={availableAPI}
                         dropdownMatchSelectWidth={false}
                         onChange={value => {
-                          const definition = definitions.find(d => d.value === value)!;
+                          const definition = availableAPI.find(d => d.value === value)!;
                           form.setFieldValue(
                             ['fields', field.name, 'label'],
-                            definition.origin.description,
+                            definition.origin.description || definition.label,
                           );
                           form.setFieldValue(['fields', field.name, 'type'], 'input');
+                          form.setFieldValue(['fields', field.name, 'options'], undefined);
+                          form.setFieldValue(['fields', field.name, '// options'], undefined);
+                          // #
+
+                          const typeName = definition.origin['$ref']
+                            ?.split('/')
+                            ?.reverse()?.[0] as any;
+                          // 引用, 可能是对象、枚举
+                          const ref = definitions[typeName];
+                          // 枚举
+                          if (ref && ref.type === 'number') {
+                            form.setFieldValue(['fields', field.name, 'type'], 'select');
+                            form.setFieldValue(
+                              ['fields', field.name, '// options'],
+                              `// list_${typeName}`,
+                            );
+                            form.setFieldValue(
+                              ['fields', field.name, 'options'],
+                              api[selectedAPI[0]][`list_${typeName}`],
+                            );
+                          }
                         }}
                         style={{ width: 130 }}
                       />
@@ -168,4 +190,18 @@ const ConfigPanel: FC<ConfigPanelProps> = ({ form }) => {
     </Form>
   );
 };
+
+export function formatFormFields(fields: any[] = []) {
+  // fields = fields.slice().map(item => {
+  //   if (item.options) {
+  //     item.options = item.optionsName;
+  //     delete item.options;
+  //   }
+  //   return item
+  // });
+  let res = JSON.stringify(fields, undefined, 2);
+
+  return res;
+}
+
 export default ConfigPanel;

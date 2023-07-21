@@ -17,7 +17,7 @@ TODO
 import { TableFilter, Divider, Form, message } from 'antd';
 import React from 'react';
 import { usePagination } from '@gm-common/hooks';
-import ConfigPanel from './ConfigPanel';
+import ConfigPanel, {formatFormFields} from './ConfigPanel';
 
 const App: React.FC = () => {
   const [form] = Form.useForm();
@@ -48,7 +48,7 @@ const App: React.FC = () => {
         fields={fields}
       />
       <Divider />
-      <code>{JSON.stringify(fields, undefined, 2)}</code>
+      <pre>{formatFormFields(fields)}</pre>
     </>
   );
 };
