@@ -250,7 +250,7 @@ function useTableSelection<DataType extends { [key: string]: any }>(
               }
             } else {
               const parent: DataType = dataSource.find((item: DataType) =>
-                item[childrenColumnName].includes(record),
+                item[childrenColumnName].find((item: DataType) => item[keyName] === key),
               )!;
               const newSelected = selected.slice();
               if (newSelected.includes(key)) {
