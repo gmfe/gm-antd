@@ -50,7 +50,6 @@ const FIELDS: FieldItem[] = [
   {
     key: 'subject_code_or_name',
     type: 'input',
-    alwaysUsed: true,
     defaultValue: '默认值',
     label: '科目代码/名称',
   },

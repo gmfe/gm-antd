@@ -24,17 +24,16 @@ type Options = {
   paginationResult: UsePaginationResult;
   trigger?: TableFilterProps['trigger'];
   /** 是否在select Options 异步获取时保存他的option 值 */
-  isSaveOptions?: boolean
+  isSaveOptions?: boolean;
 };
 
 type OptionDataType = {
-  label?: string | React.ReactNode,
-  text?: string,
-  value: string | number,
-  children?: OptionDataType[]
-  [key: string]: any
-}
-
+  label?: string | React.ReactNode;
+  text?: string;
+  value: string | number;
+  children?: OptionDataType[];
+  [key: string]: any;
+};
 
 class TableFilterStore {
   constructor() {
@@ -66,8 +65,7 @@ class TableFilterStore {
   optionData: Record<string, OptionDataType[]> = {};
 
   /** 是否在select Options 异步获取时保存他的option 值 */
-  isSaveOptions?: boolean = false
-
+  isSaveOptions?: boolean = false;
 
   /** 可见(启用)的字段列表 */
   getVisibleFields() {
@@ -94,16 +92,16 @@ class TableFilterStore {
     this._fixedFields = fixedFields;
     this._paginationResult = paginationResult;
     this.trigger = trigger;
-    this.isSaveOptions = isSaveOptions ?? false
+    this.isSaveOptions = isSaveOptions ?? false;
     // 使用缓存，避免跳动
     this.fields = orderBy(
       fixedFields
-      .map(field => this._applyDefaultFieldValue(field))
-      .map(field => this._applyCachedValueToDefault(field))
-      .filter(field => !field.hide), 
-      ['sort'], 
-      ['asc']
-    );
+        .map(field => this._applyDefaultFieldValue(field))
+        .map(field => this._applyCachedValueToDefault(field))
+        .filter(field => !field.hide),
+      ['sort'],
+      ['asc'],
+    ) as typeof fixedFields;
     // 加载云字段
     // if (!this._model_type) return Promise.resolve()
     // return ListModelField({
@@ -142,7 +140,7 @@ class TableFilterStore {
       this._fixedFields?.find(item2 => item2.key !== item.key),
     );
     const cachedField = cachedFields.find(item => item.key === field.key) || {};
-    return merge(field, cachedField, { defaultUsed: (field.defaultUsed && (cachedField as any)?.visible) });
+    return merge(field, cachedField);
   }
 
   /** Key为fields的key，value为表单项的值 */
@@ -288,8 +286,8 @@ class TableFilterStore {
   /** 清空所有表单字段输入 */
   reset(skipFields: string[] = []) {
     Object.keys(this.attributes).forEach(key => {
-       // 跳过指定字段
-      if (skipFields.includes(key)) return
+      // 跳过指定字段
+      if (skipFields.includes(key)) return;
       delete this.attributes[key];
     }, {});
     this.groups.clear();
@@ -307,23 +305,23 @@ class TableFilterStore {
   }
 
   updateFields(fields: FieldItem[] = []) {
-    this._fixedFields = fields
+    this._fixedFields = fields;
     this.fields = fields
-      .map((field) => this._applyDefaultFieldValue(field))
-      .map((field) => this._applyCachedValueToDefault(field))
-      .filter((field) => !field.hide)
+      .map(field => this._applyDefaultFieldValue(field))
+      .map(field => this._applyCachedValueToDefault(field))
+      .filter(field => !field.hide);
   }
 
   searchNow = () => {
-    this.loading = true
-    const params = this.toParams()
+    this.loading = true;
+    const params = this.toParams();
     return this._paginationResult!.run(params).finally(() => {
-      this.loading = false
-    })
-  }
+      this.loading = false;
+    });
+  };
 
   setOptionData(keyName: string, data: OptionDataType[]) {
-    this.optionData[keyName] = data
+    this.optionData[keyName] = data;
   }
 }
 
