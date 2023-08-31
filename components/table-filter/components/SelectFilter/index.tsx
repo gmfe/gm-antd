@@ -34,30 +34,30 @@ const SelectFilter: FC<SelectFilterProps> = ({ className, field }) => {
           if (store.isSaveOptions) {
             store.setOptionData(field.key, data);
           }
-          setOptions(data)
+          setOptions(data);
         });
       } else {
         setOptions(res);
       }
     }
     return debounce(fetch, 300);
-  }, [originOptions]);
+  }, [originOptions, searchValue]);
 
   useEffect(() => {
     if (remote) {
-      fetch()
-      return 
+      fetch();
+      return;
     }
     /** 如果是启动了保存options 并且有值，就直接从里面取，避免每次展开收起时重新调接口 */
     if (store.isSaveOptions && store.optionData[field.key]) {
-      setOptions(store.optionData[field.key] as SelectOptions)
-      return 
+      setOptions(store.optionData[field.key] as SelectOptions);
+      return;
     }
 
     if (first.current) {
       fetch();
       first.current = false;
-    } 
+    }
   }, [originOptions, searchValue]);
 
   return (

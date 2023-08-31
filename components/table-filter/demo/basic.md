@@ -27,6 +27,7 @@ const FIELDS: FieldItem[] = [
     alwaysUsed: true,
     label: '科目类别',
     minWidth: 250,
+    remote: true,
     async options() {
       return new Promise((resolve, reject) => {
         setTimeout(
@@ -96,11 +97,14 @@ const FIELDS: FieldItem[] = [
 ];
 
 const App: React.FC = () => {
-  const paginationResult = usePagination(async params => alert(JSON.stringify(params, undefined, 2)), {
-    defaultPaging: {
-      limit: 999,
+  const paginationResult = usePagination(
+    async params => alert(JSON.stringify(params, undefined, 2)),
+    {
+      defaultPaging: {
+        limit: 999,
+      },
     },
-  });
+  );
   return (
     <>
       <TableFilter paginationResult={paginationResult} fields={FIELDS} />

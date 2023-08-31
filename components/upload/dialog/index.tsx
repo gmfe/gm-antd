@@ -1,6 +1,6 @@
 /* eslint-disable camelcase */
 import type { HTMLAttributes, ReactNode } from 'react';
-import React, { createRef, forwardRef, useEffect, useImperativeHandle, useReducer } from 'react';
+import React, { createRef, forwardRef, useEffect, useImperativeHandle, useReducer, useRef } from 'react';
 import { InboxOutlined } from '@ant-design/icons';
 import { cloneDeep } from 'lodash';
 import locale from '../../locale/zh_CN';
@@ -57,13 +57,23 @@ const Component = forwardRef<UploadFileMethods, UploadFileProps>(
     ref,
   ) => {
     const [state, assignState] = useReducer(
-      (state: typeof initialState, data: Partial<typeof initialState>) => ({
-        ...state,
-        ...data,
-      }),
+      (
+        state: typeof initialState,
+        data: Partial<typeof initialState>,
+      ) => {
+        const res = {
+          ...state,
+          ...data,
+        };
+        return res;
+      },
       initialState,
     );
+
     const { show, uploading, fileList } = state;
+
+    // 闭包陷阱临时方案
+    const liveFileList = useRef([] as UploadFileType[]);
 
     const methods: UploadFileMethods = {
       state,
@@ -110,12 +120,13 @@ const Component = forwardRef<UploadFileMethods, UploadFileProps>(
         }
         // compressImg(file as File, 3182, 2160)
         (file as UploadFileType).status = 'uploading';
-        let newFileList: UploadFileType[] = [...fileList, file];
+        let newFileList: UploadFileType[] = [...liveFileList.current, file];
         if (!multiple) newFileList = [file];
         assignState({ uploading: true, fileList: newFileList });
+        liveFileList.current = newFileList;
         uploadFn(file as File)
           .then(({ data: { url } }) => {
-            newFileList = cloneDeep(newFileList);
+            newFileList = cloneDeep(liveFileList.current);
             const item = newFileList.find(f => f.uid === file.uid)!;
             item.status = 'done';
             item.url = url;
