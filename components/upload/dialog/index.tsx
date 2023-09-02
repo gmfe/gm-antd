@@ -95,7 +95,7 @@ const Component = forwardRef<UploadFileMethods, UploadFileProps>(
           return;
         }
         assignState({ show: false });
-        onOK && onOK(fileList);
+        onOK && onOK(fileList.filter(f => f.status === 'done'));
         methods.close();
       },
     };
