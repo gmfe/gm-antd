@@ -1,6 +1,14 @@
 /* eslint-disable camelcase */
 import type { HTMLAttributes, ReactNode } from 'react';
-import React, { createRef, forwardRef, useEffect, useImperativeHandle, useReducer, useRef } from 'react';
+import React, {
+  cloneElement,
+  createRef,
+  forwardRef,
+  useEffect,
+  useImperativeHandle,
+  useReducer,
+  useRef,
+} from 'react';
 import { InboxOutlined } from '@ant-design/icons';
 import { cloneDeep } from 'lodash';
 import locale from '../../locale/zh_CN';
@@ -57,10 +65,7 @@ const Component = forwardRef<UploadFileMethods, UploadFileProps>(
     ref,
   ) => {
     const [state, assignState] = useReducer(
-      (
-        state: typeof initialState,
-        data: Partial<typeof initialState>,
-      ) => {
+      (state: typeof initialState, data: Partial<typeof initialState>) => {
         const res = {
           ...state,
           ...data,
@@ -144,7 +149,7 @@ const Component = forwardRef<UploadFileMethods, UploadFileProps>(
             // className={classNames('tw-relative', {})}
             style={{ position: 'relative' }}
           >
-            {node}
+            {cloneElement(node, { style: { width: '75%' } })}
             {file.status === 'done' && (
               <span
                 // className="tw-absolute tw-right-6 tw-top-0.5 tw-text-sm tw-pointer-events-none"
