@@ -189,6 +189,7 @@
     "bisheng-plugin-description": "^0.1.4",
     "bisheng-plugin-react": "^1.2.0",
     "bisheng-plugin-toc": "^0.4.4",
+    "bumpp": "^9.2.0",
     "bundlesize": "^0.18.0",
     "chalk": "^4.0.0",
     "cheerio": "1.0.0-rc.12",
