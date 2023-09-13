@@ -25,7 +25,7 @@ import jsonp from 'fetch-jsonp';
 import qs from 'qs';
 
 interface CustomerInputProps {
-  field: FieldItem
+  field?: FieldItem
 }
 
 /**
@@ -135,7 +135,7 @@ const App: React.FC = () => {
   const fields: FieldItem[] = [
     {
       key: 'customer_render',
-      type: 'input',
+      type: 'customize',
       alwaysUsed: true,
       defaultValue: {
         select: '1',
@@ -185,6 +185,15 @@ const App: React.FC = () => {
         })
         return options
       },
+      collapsed: true,
+    },
+    {
+      key: 'input1',
+      type: 'input',
+      alwaysUsed: false,
+      label: 'input',
+      allowClear: false,
+      defaultUsed: true,
       collapsed: true,
     },
   ]

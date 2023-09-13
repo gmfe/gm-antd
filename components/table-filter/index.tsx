@@ -113,6 +113,13 @@ function Component(options: TableFilterProps) {
                     React.cloneElement(field.render as React.ReactElement, {
                       field: field,
                       key: field.key,
+                      value: store.get(field),
+                      onValueChange: (value: any) => {
+                        store.set(field.key, value)
+                        if (['onChange', 'both'].includes(store.trigger!)) {
+                          store.search();
+                        }
+                      }
                     })
                   }
                 </div>

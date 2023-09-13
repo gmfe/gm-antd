@@ -35,6 +35,7 @@ Fork 自antd@4.24.0，做 AntD 组件二次开发及文档使用。[在线文档
 - `yarn compile` 编译 TypeScript 代码到 lib 和 es 目录。
 - `yarn dist` 构建 antd 的 UMD 版本到 dist 目录。
 - `yarn site` 构建静态文档站到\_site 目录
+- `npx bumpp` 给当前包打tag，push 上去后会执行github action
 
 ### gm_api
 

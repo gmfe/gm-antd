@@ -1,5 +1,5 @@
 import type { FC, HTMLAttributes } from 'react';
-import React, { useContext, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { observer } from 'mobx-react';
 import classNames from 'classnames';
 import type { FieldInputItem } from '../types';
@@ -27,6 +27,13 @@ const InputFilter: FC<InputFilterProps> = ({ className, field }) => {
       store.search();
     }
   }, 750, [updatedValue])
+
+  /** 考虑重置后，value 更新，需要重新设置updatedValue */
+  useEffect(() => {
+    if (value !== updatedValue) {
+      setUpdatedValue(value)
+    }
+  }, [value])
 
   /** 这里setkey 会重渲染导致 input失焦 */
   // useEffect(() => {

@@ -219,6 +219,14 @@ export interface FieldCascaderItem<
   displayRender?: CascaderProps<CasCaderOption>['displayRender'] | null
 }
 
+/** 自定义表单项 */
+export interface FieldCustomizeItem<API extends API_Method = API_Method> extends FieldBaseItem {
+  type: 'customize';
+  defaultValue?: any;
+  toParam?: ToParam<any, API>;
+  render: React.ReactNode
+}
+
 /**
  * 字段配置，使用到toParams时建议传入api,类型更安全：
  *
@@ -231,7 +239,9 @@ export type FieldItem<API extends API_Method = API_Method> =
   | FieldSelectItem<API>
   | FieldDateTypeItem<API>
   | FieldDateRangeItem<API>
-  | FieldCascaderItem<API>;
+  | FieldCascaderItem<API>
+  | FieldCustomizeItem<API>;
+
 
 // MixinFieldItem不需要的属性
 type IgnoredMixinFields = 'attributes' | 'key';
