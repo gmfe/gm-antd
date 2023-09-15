@@ -1,6 +1,6 @@
 // import type { QueryCriteriaGroup } from 'gm_api/src/common'
 // import { ListModelField } from 'gm_api/src/metadata'
-import { debounce, get, merge, orderBy, pickBy, set } from 'lodash';
+import { debounce, get, keyBy, merge, orderBy, pickBy, set } from 'lodash';
 import { makeAutoObservable, toJS } from 'mobx';
 import type { Moment } from 'moment';
 import type {
@@ -305,11 +305,16 @@ class TableFilterStore {
   }
 
   updateFields(fields: FieldItem[] = []) {
-    this._fixedFields = fields;
-    this.fields = fields
-      .map(field => this._applyDefaultFieldValue(field))
-      .map(field => this._applyCachedValueToDefault(field))
-      .filter(field => !field.hide);
+    const currentFields = this.fields;
+    const keyByFieldKey = keyBy(fields, 'key');
+    const newFields = currentFields.map(field => {
+      return {
+        ...field,
+        ...keyByFieldKey[field.key],
+        sort: (field as any).sort,
+      }
+    })
+    this.fields = newFields as FieldItem[];
   }
 
   searchNow = () => {
