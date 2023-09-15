@@ -11,6 +11,7 @@ import Popover from '../popover';
 import Setting from './components/Setting';
 import type { TableFilterProps } from './types';
 import './index.less';
+import { useFirstMountState } from 'react-use';
 
 const GAP = 12.5;
 const FIELD_MIN_WIDTH = 300;
@@ -46,6 +47,7 @@ function Component(options: TableFilterProps) {
   const [{ width }, setState] = useState({ width: 1 });
   const flex = parseInt(`${width / FIELD_MIN_WIDTH}`, 10) || 1; // 每行个数
   const fieldWidth = width / flex - ((flex - 1) * GAP) / flex;
+  const isFirstMount = useFirstMountState()
   // #endregion
 
   useEffect(() => {
@@ -70,12 +72,19 @@ function Component(options: TableFilterProps) {
     };
   }, [id]);
 
-   // fields 变化时，重新设置
+   // fields 变化时，重新设置, 如果你的field 中包含select， 
+   // 而select 中的option 并不是从options 方法中获取。而是通过其他异步方式获取然后更改field 时
+   // 需要用到该字段, 场景是，当你的搜索内容有相互联动时，你不得不使用这种方式，比如其他搜索内容依赖于某个搜索时间组件时
+   // 
    useEffect(() => {
+    if (isFirstMount) {
+      return
+    }
     if (!isUpdateFields) return
+    /** 如果他并不是第一次渲染，那么表示他有store.field, 那么我们只要更新当前的store.field 即可 */
     store.updateFields(fields)
     setVisibleFields(store.getVisibleFields())
-  }, [fields])
+  }, [fields, isFirstMount])
 
   const handleReset = () => {
     store.reset(skipInitialValues)
