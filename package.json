@@ -1,6 +1,6 @@
 {
   "name": "gm-antd",
-  "version": "1.1.15-beta.0",
+  "version": "1.1.16-beta.0",
   "description": "An enterprise-class UI design language and React components implementation",
   "title": "GM Ant Design",
   "homepage": "https://gmfe.github.io/gm-antd/index-cn",
@@ -303,8 +303,7 @@
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
   },
-  "size-limit": [
-    {
+  "size-limit": [{
       "path": "./dist/antd.min.js",
       "limit": "282 kB"
     },
@@ -325,8 +324,7 @@
       "limit": "67 kB"
     }
   ],
-  "bundlesize": [
-    {
+  "bundlesize": [{
       "path": "./dist/antd.min.js",
       "maxSize": "283 kB"
     },

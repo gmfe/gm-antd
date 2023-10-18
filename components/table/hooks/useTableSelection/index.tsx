@@ -41,6 +41,9 @@ export interface UseTableSelectionOptions<
   ) => boolean;
   /** Cell的 选中/取消 事件，不被 全选/取消 触发 */
   onSelect?: (record: DataType, selected: boolean) => void;
+
+  /** 是否保留上一次选择 */
+  isPreSelect?: boolean;
 }
 
 export interface UseTableSelectionResult<DataType> {
@@ -104,6 +107,7 @@ function useTableSelection<DataType extends { [key: string]: any }>(
     mode = 'all',
     disabled = () => false,
     onSelect,
+    isPreSelect = false,
   } = options;
   const [selected, setSelected] = useState<Array<string | number>>([]);
   /** 是否全选所有页 */
@@ -389,7 +393,12 @@ function useTableSelection<DataType extends { [key: string]: any }>(
 
   // 数据变化（翻页）后重置, 且仅监听数据key的变化
   const contactedKeys = dataSource.map(item => item[keyName]).join(',');
-  useEffect(() => controller.reset(), [contactedKeys]);
+  useEffect(() => {
+    if (!isPreSelect) {
+      console.log('223');
+      controller.reset();
+    }
+  }, [contactedKeys]);
 
   // 取消勾选后重置全选所有页的状态为false
   useEffect(() => {
