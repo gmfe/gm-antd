@@ -395,7 +395,6 @@ function useTableSelection<DataType extends { [key: string]: any }>(
   const contactedKeys = dataSource.map(item => item[keyName]).join(',');
   useEffect(() => {
     if (!isPreSelect) {
-      console.log('223');
       controller.reset();
     }
   }, [contactedKeys]);
