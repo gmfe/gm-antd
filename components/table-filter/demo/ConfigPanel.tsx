@@ -6,12 +6,12 @@ import { Cascader, Button, Form, Input, Select, Space } from '../../index';
 
 const api: any = {};
 // @ts-ignore
-const r = require.context('gm_api/src', true, /.*\/(index\.ts|methods\.ts|types_schema\.json)$/);
-r.keys().forEach((key: string) => {
-  const module = key.split('/')[1];
-  // eslint-disable-next-line compat/compat
-  api[module] = Object.assign(api[module] || {}, r(key));
-});
+// const r = require.context('gm_api/src', true, /.*\/(index\.ts|methods\.ts|types_schema\.json)$/);
+// r.keys().forEach((key: string) => {
+//   const module = key.split('/')[1];
+//   // eslint-disable-next-line compat/compat
+//   api[module] = Object.assign(api[module] || {}, r(key));
+// });
 
 interface ConfigPanelProps {
   form: FormInstance<any>;
