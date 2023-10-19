@@ -38,7 +38,6 @@ jobs:
         uses: actions/configure-pages@v3
       - name: Build
         run: |
-          git config --global --add url."https://${{ secrets.GITLAB_USERNAME }}:${{ secrets.GITLAB_PASSWORD }}@code.guanmai.cn".insteadOf "https://code.guanmai.cn"
           yarn 
           yarn run version
           yarn run site

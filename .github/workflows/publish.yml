@@ -37,7 +37,6 @@ jobs:
 
       - name: install
         run: |
-          git config --global --add url."https://${{ secrets.GITLAB_USERNAME }}:${{ secrets.GITLAB_PASSWORD }}@code.guanmai.cn".insteadOf "https://code.guanmai.cn"
           yarn 
         # Use the cache from the previous step
         # if available to speed up the build

@@ -1,5 +1,3 @@
-// import type { ModelField } from 'gm_api/src/metadata';
-// import { FieldValueType } from 'gm_api/src/metadata'
 import { pick } from 'lodash'
 import type {
   FieldItem,
@@ -21,17 +19,17 @@ export function stashFieldItems(
 ) {
   // 只缓存必要数据,
   const data: CachedFields = fields.map((item, index) => ({
-      attributes:
-        item.attributes &&
-        pick(item.attributes, [
-          'model_field_id',
-          'field_desc',
-          'field_value_type',
-        ]),
-      ...pick(item, ['key', 'label', 'type']),
-      visible: setting[item.key]?.visible,
-      sort: index,
-    }))
+    attributes:
+      item.attributes &&
+      pick(item.attributes, [
+        'model_field_id',
+        'field_desc',
+        'field_value_type',
+      ]),
+    ...pick(item, ['key', 'label', 'type']),
+    visible: setting[item.key]?.visible,
+    sort: index,
+  }))
   localStorage.setItem(CACHE_PREFIX + id, JSON.stringify(data.filter(Boolean)))
 }
 
@@ -48,11 +46,11 @@ export function restoreFieldItems(id: string) {
 export function restoreFieldItemsForSetting(id: string, defaultFields: FieldItem[]) {
   const fields: CachedFields = localStorage.getItem(CACHE_PREFIX + id) ? JSON.parse(localStorage.getItem(CACHE_PREFIX + id) || '[]') : defaultFields
   const setting: CachedSetting = fields?.reduce((pre, item) => ({
-      ...pre,
-      [item.key]: {
-        visible: item.visible,
-      },
-    }), {})
+    ...pre,
+    [item.key]: {
+      visible: item.visible,
+    },
+  }), {})
   return setting
 }
 

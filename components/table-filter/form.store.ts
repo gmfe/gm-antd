@@ -1,5 +1,3 @@
-// import type { QueryCriteriaGroup } from 'gm_api/src/common'
-// import { ListModelField } from 'gm_api/src/metadata'
 import { debounce, get, keyBy, merge, orderBy, pickBy, set } from 'lodash';
 import { makeAutoObservable, toJS } from 'mobx';
 import type { Moment } from 'moment';
@@ -146,10 +144,10 @@ class TableFilterStore {
   /** Key为fields的key，value为表单项的值 */
   attributes: {
     [key: string]:
-      | {
-          value?: any;
-        }
-      | undefined;
+    | {
+      value?: any;
+    }
+    | undefined;
   } = {};
 
   /** 包含group字段的下拉框索引 */

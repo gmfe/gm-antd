@@ -1,7 +1,6 @@
 import type { Moment } from 'moment';
 import type { HTMLAttributes } from 'react';
 import type { RangeValue, PickerMode } from 'rc-picker/lib/interface';
-// import type { ModelField } from 'gm_api/src/metadata'
 // import TableListSourceMap from './sources'
 import type { UsePaginationResult as GMUsePaginationResult } from '@gm-common/hooks';
 import type { RangePickerProps } from '../date-picker';
