@@ -305,8 +305,8 @@ class TableFilterStore {
   }
 
   updateFields(fields: FieldItem[] = []) {
-    const currentFields = this.fields;
-    const keyByFieldKey = keyBy(fields, 'key');
+    const currentFields = fields;
+    const keyByFieldKey = keyBy(this.fields, 'key');
     const newFields = currentFields.map(field => {
       return {
         ...field,
