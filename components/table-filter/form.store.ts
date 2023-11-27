@@ -305,8 +305,12 @@ class TableFilterStore {
   }
 
   updateFields(fields: FieldItem[] = []) {
-    const currentFields = fields;
-    const keyByFieldKey = keyBy(this.fields, 'key');
+    const currentFields = this.fields;
+    const keyByFieldKey = keyBy(fields, 'key');
+    const keyByCurrentFieldKey = keyBy(currentFields, 'key');
+    const newAddFields = fields.filter((field) => !keyByCurrentFieldKey[field.key])
+
+    // const differentField = differenceBy(fields, this.fields)
     const newFields = currentFields.map(field => {
       return {
         ...field,
@@ -314,7 +318,8 @@ class TableFilterStore {
         sort: (field as any).sort,
       }
     })
-    this.fields = newFields as FieldItem[];
+
+    this.fields = [...newFields, ...newAddFields] as FieldItem[];
   }
 
   searchNow = () => {
