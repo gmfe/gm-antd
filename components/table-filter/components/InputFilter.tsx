@@ -68,6 +68,7 @@ const InputFilter: FC<InputFilterProps> = ({ className, field }) => {
         if (e.key !== 'Enter') return;
         if (['onChange', 'both'].includes(store.trigger!)) {
           cancel()
+          store.set(field.key, updatedValue);
           store.search();
         }
       }}

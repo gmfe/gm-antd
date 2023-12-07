@@ -6,7 +6,7 @@ import { IntlProvider } from 'react-intl';
 import { presetPalettes, presetDarkPalettes } from '@ant-design/colors';
 import themeSwitcher from 'theme-switcher';
 import { initAuth, instance, setAccessToken } from '@gm-common/x-request';
-import { Token } from 'gm_api/src/oauth';
+// import { Token } from 'gm_api/src/oauth';
 import type { TwoToneColor } from '@ant-design/icons';
 import { setTwoToneColor } from '@ant-design/icons';
 import { Helmet, HelmetProvider } from 'react-helmet-async';
@@ -55,23 +55,23 @@ if (typeof window !== 'undefined') {
   });
 
   // @ts-ignore
-  window.init_gm_api = (baseURL: string, token: string) => {
-    localStorage.setItem('init_gm_api', JSON.stringify({ baseurl: baseURL, token }));
-    // 初始化gm_api
-    initAuth(Token.url, 'access_token');
-    setAccessToken(token);
-    // 兼容github page
-    instance.interceptors.request.use(config => {
-      if (!config.baseURL) config.baseURL = baseURL;
-      return config;
-    });
-    return '初始化成功，请刷新页面'
-  };
-  if (localStorage.getItem('init_gm_api')) {
-    const { baseurl, token } = JSON.parse(localStorage.getItem('init_gm_api') || '{}');
-    // @ts-ignore
-    window.init_gm_api(baseurl, token);
-  }
+  // window.init_gm_api = (baseURL: string, token: string) => {
+  //   localStorage.setItem('init_gm_api', JSON.stringify({ baseurl: baseURL, token }));
+  //   // 初始化gm_api
+  //   initAuth(Token.url, 'access_token');
+  //   setAccessToken(token);
+  //   // 兼容github page
+  //   instance.interceptors.request.use(config => {
+  //     if (!config.baseURL) config.baseURL = baseURL;
+  //     return config;
+  //   });
+  //   return '初始化成功，请刷新页面'
+  // };
+  // if (localStorage.getItem('init_gm_api')) {
+  //   const { baseurl, token } = JSON.parse(localStorage.getItem('init_gm_api') || '{}');
+  //   // @ts-ignore
+  //   window.init_gm_api(baseurl, token);
+  // }
 }
 
 const RESPONSIVE_MOBILE = 768;

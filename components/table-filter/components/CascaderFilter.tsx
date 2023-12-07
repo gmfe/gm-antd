@@ -1,5 +1,5 @@
 import type { FC, HTMLAttributes } from 'react';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { observer } from 'mobx-react';
 import classNames from 'classnames';
 import type { CasCaderOption, FieldCascaderItem } from '../types';
@@ -13,6 +13,7 @@ export interface CascaderFilterProps extends HTMLAttributes<HTMLDivElement> {
 const CascaderFilter: FC<CascaderFilterProps> = ({ className, field }) => {
   const { options: originOptions, placeholder, changeOnSelect, label, multiple, useAntdDisplayRender, displayRender = null, showCheckedStrategy } = field;
   const store = useContext(TableFilterContext);
+  const isFetched = useRef(false);
 
   const [options, setOptions] = useState<CasCaderOption[]>(
     Array.isArray(originOptions) ? originOptions : [],
@@ -26,6 +27,9 @@ const CascaderFilter: FC<CascaderFilterProps> = ({ className, field }) => {
       setOptions(store.optionData[field.key] as CasCaderOption[])
       return
     }
+    if (isFetched.current) {
+      return
+    }
     const res: any = originOptions();
     if (res.then) {
       res.then((data: CasCaderOption[]) => {
@@ -37,6 +41,7 @@ const CascaderFilter: FC<CascaderFilterProps> = ({ className, field }) => {
     } else {
       setOptions(res);
     }
+    isFetched.current = true
   }, [originOptions]);
 
   /** 只展示最后一级 */
