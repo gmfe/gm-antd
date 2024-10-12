@@ -50,6 +50,7 @@ import type {
   TableRowSelection,
 } from './interface';
 import { ColumnsType, TablePaginationConfig } from './interface';
+import useTableResizable from './hooks/useTableResizable';
 
 export { ColumnsType, TablePaginationConfig };
 
@@ -104,6 +105,7 @@ export interface TableProps<RecordType>
   };
   sortDirections?: SortOrder[];
   showSorterTooltip?: boolean | TooltipProps;
+  isResizable?: boolean;
 }
 
 function InternalTable<RecordType extends object = any>(
@@ -137,6 +139,8 @@ function InternalTable<RecordType extends object = any>(
     sortDirections,
     locale,
     showSorterTooltip = true,
+    isResizable = true,
+    components,
   } = props;
 
   warning(
@@ -156,10 +160,15 @@ function InternalTable<RecordType extends object = any>(
     );
   });
 
-  const baseColumns = React.useMemo(
-    () => columns || (convertChildrenToColumns(children) as ColumnsType<RecordType>),
-    [columns, children],
-  );
+  const { columns: columnsByResizable, components: componentsByResizable } =
+    useTableResizable(columns);
+
+  const baseColumns = React.useMemo(() => {
+    return (
+      (isResizable ? columnsByResizable : columns) ||
+      (convertChildrenToColumns(children) as ColumnsType<RecordType>)
+    );
+  }, [columns, columnsByResizable, isResizable, children]);
   const needResponsive = React.useMemo(
     () => baseColumns.some((col: ColumnType<RecordType>) => col.responsive),
     [baseColumns],
@@ -175,7 +184,12 @@ function InternalTable<RecordType extends object = any>(
     );
   }, [baseColumns, screens]);
 
-  const tableProps = omit(props, ['className', 'style', 'columns']) as TableProps<RecordType>;
+  const tableProps = omit(props, [
+    'className',
+    'style',
+    'columns',
+    'components',
+  ]) as TableProps<RecordType>;
 
   const size = React.useContext(SizeContext);
   const {
@@ -525,6 +539,7 @@ function InternalTable<RecordType extends object = any>(
         {topPaginationNode}
         <RcTable<RecordType>
           {...tableProps}
+          components={isResizable ? componentsByResizable : components}
           columns={mergedColumns as RcTableProps<RecordType>['columns']}
           direction={direction}
           expandable={mergedExpandable}
