@@ -48,7 +48,7 @@ const InputFilter: FC<InputFilterProps> = ({ className, field }) => {
       className={classNames(className)}
       bordered={false}
       placeholder={field.placeholder || `请输入${field.label}`}
-      allowClear
+      allowClear={field.allowClear ?? true}
       value={updatedValue}
       type={field.inputType}
       onChange={({ target }) => {
