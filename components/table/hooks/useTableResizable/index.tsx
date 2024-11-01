@@ -45,7 +45,7 @@ const ResizableTitle = (
   const { onResize, width: w, style, ...restProps } = props;
   const [width, setWidth] = useState(w || DEFAULT_COLUMNS_HEAD_WIDTH);
 
-  if (w === undefined) {
+  if (width === undefined) {
     return <th style={style} {...restProps} />;
   }
 
