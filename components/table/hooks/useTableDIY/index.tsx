@@ -7,6 +7,7 @@ import type { ColumnType } from '../../interface';
 import type { Groups } from './DiyPanel';
 import DiyPanel from './DiyPanel';
 import { getRawColumns, getSortedColumns, initGroups } from './util';
+import { useLocaleReceiver } from '../../../locale-provider/LocaleReceiver';
 import './index.less';
 
 export interface ConfigItem {
@@ -27,17 +28,11 @@ export interface UseTableDIYOptions<DataType extends { [key: string]: any }> {
   cacheID?: string;
   /** 配置列的DIY */
   config?: { [columnKey: string]: ConfigItem };
-  shouldUpdateKey?: any
-  /** 
-   * 是否在二级封装 就是useTableDiy 与 ant Table 作为一个单独的组件，这样当column更新的时候也会得到更新
-   * table props 由父组件传入
-   */
-  inDeep?: boolean
-  /**
-   * 当修改columns 时触发，模态框确定时
-   * 当你修改columns 显示隐藏时，重新获取数据，根据columns 的变化，重新获取数据
-   */
-  onUpdateColumns?: (columns: ColumnType<DataType>[]) => void
+  shouldUpdateKey?: any;
+  /** 是否在二级封装 就是useTableDiy 与 ant Table 作为一个单独的组件，这样当column更新的时候也会得到更新 table props 由父组件传入 */
+  inDeep?: boolean;
+  /** 当修改columns 时触发，模态框确定时 当你修改columns 显示隐藏时，重新获取数据，根据columns 的变化，重新获取数据 */
+  onUpdateColumns?: (columns: ColumnType<DataType>[]) => void;
 }
 
 export interface UseTableDIYResult<DataType extends { [key: string]: any }> {
@@ -77,6 +72,7 @@ const ColumnTitle = (
   const { cacheID, rowSelection, columns = [], config = {}, onUpdate } = options;
   const [open, setOpen] = useState(false);
   const [groups, setGroups] = useState<Groups>([]);
+  const [TableLocale] = useLocaleReceiver('Table');
 
   const ref = useRef(document.createElement('div'));
   /** 小屏 */
@@ -162,7 +158,7 @@ const ColumnTitle = (
         </div>,
         document.body,
       )}
-      <div className="use-table-diy-setting-icon" title="表头设置">
+      <div className="use-table-diy-setting-icon" title={TableLocale?.headerSettings}>
         <SVGSettingIcon
           style={{ cursor: 'pointer', display: 'inline-block', width: 14, height: 14 }}
           onClick={() => {
@@ -183,9 +179,9 @@ const ColumnTitle = (
 const useTableDIY = <DataType extends { [key: string]: any }>(
   options: UseTableDIYOptions<DataType>,
 ): UseTableDIYResult<DataType> => {
-  const { 
-    rowSelection, 
-    columns, 
+  const {
+    rowSelection,
+    columns,
     config,
     shouldUpdateKey,
     inDeep = false,
@@ -195,48 +191,44 @@ const useTableDIY = <DataType extends { [key: string]: any }>(
 
   const [newColumns, setNewColumns] = useState(columns);
 
-  const shouldUpdateKeyRef = useRef(shouldUpdateKey)
- 
-  const previousRawColumns = useRef<string | null>(null)
+  const shouldUpdateKeyRef = useRef(shouldUpdateKey);
+
+  const previousRawColumns = useRef<string | null>(null);
 
   // 处理columns
   const updateColumns = (columns: ColumnType<DataType>[]) => {
-    const groups = initGroups({ columns, config, cacheID })
-    const checkedColumns = flatten(
-      Object.values(groups.map((item) => item.list)),
-    ).filter((item) => item.state.checked)
-    const sortedColumns = getSortedColumns(checkedColumns).map(
-      (item) => item.column,
-    )
-    setNewColumns(sortedColumns)
-  }
+    const groups = initGroups({ columns, config, cacheID });
+    const checkedColumns = flatten(Object.values(groups.map(item => item.list))).filter(
+      item => item.state.checked,
+    );
+    const sortedColumns = getSortedColumns(checkedColumns).map(item => item.column);
+    setNewColumns(sortedColumns);
+  };
 
   // shouldUpdateKey变化时，更新columns
   useEffect(() => {
     if (shouldUpdateKeyRef.current !== shouldUpdateKey) {
-      shouldUpdateKeyRef.current = shouldUpdateKey
-      updateColumns(columns)
+      shouldUpdateKeyRef.current = shouldUpdateKey;
+      updateColumns(columns);
     }
-  })
+  });
 
   /**
-   * 这里拿到的并不是最新的column，就是假设你的column里面有编辑操作，即点击编辑后
-   * 修改某个column为修改项，但此时他拿到的column 还是旧值。
-   * 但如果你的依赖项由rawColumns 改为columns 会更新，但是有可能会造成死循环...
-   * 如果一起跟tableFilter 使用的话可能会造成死循环
+   * 这里拿到的并不是最新的column，就是假设你的column里面有编辑操作，即点击编辑后 修改某个column为修改项，但此时他拿到的column 还是旧值。
+   * 但如果你的依赖项由rawColumns 改为columns 会更新，但是有可能会造成死循环... 如果一起跟tableFilter 使用的话可能会造成死循环
    */
   useEffect(() => {
     if (inDeep) {
-      updateColumns(columns)
-      return
+      updateColumns(columns);
+      return;
     }
-    const rawColumns = getRawColumns(columns)
+    const rawColumns = getRawColumns(columns);
     if (rawColumns === previousRawColumns.current) {
-      return
+      return;
     }
-    previousRawColumns.current = rawColumns
-    updateColumns(columns)
-  }, [columns])
+    previousRawColumns.current = rawColumns;
+    updateColumns(columns);
+  }, [columns]);
 
   const newRowSelection: TableProps<any>['rowSelection'] = {
     ...rowSelection,

@@ -41,12 +41,29 @@ export interface TableLocale {
   triggerDesc?: string;
   triggerAsc?: string;
   cancelSort?: string;
+  headerSettings?: string;
+  optionalField?: string;
+  defaultGrouping?: string;
+  theCurrentlySelectedField?: string;
+  cancel?: string;
+  save?: string;
+  selectAllPages?: string;
+  selected?: string;
+  project?: string;
+  open?: string;
+  close?: string;
+  search?: string;
+  pleaseSelect?: string;
+  pleaseEnter?: string;
+  allFilteringCriteria?: string;
+  saveSettings?: string;
+  items?: string;
 }
 
 export type SortOrder = 'descend' | 'ascend' | null;
 
 const TableActions = tuple('paginate', 'sort', 'filter');
-export type TableAction = typeof TableActions[number];
+export type TableAction = (typeof TableActions)[number];
 
 export type CompareFn<T> = (a: T, b: T, sortOrder?: SortOrder) => number;
 

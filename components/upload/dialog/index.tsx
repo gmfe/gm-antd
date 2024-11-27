@@ -14,6 +14,7 @@ import { cloneDeep } from 'lodash';
 import locale from '../../locale/zh_CN';
 import { ConfigProvider, message, Modal, Upload } from '../../index';
 import type { UploadFile as UploadFileType, UploadProps } from '../../index';
+import { useLocaleReceiver } from '../../locale-provider/LocaleReceiver';
 
 export interface UploadFileProps extends HTMLAttributes<HTMLDivElement> {
   onClose?: () => void;
@@ -49,168 +50,168 @@ export interface UploadFileMethods {
 }
 
 /** 两种使用方式： 1、传入ref到此组件并挂载后通过ref来handle显示/隐藏 2、直接调用组件的.open().then((handler) => {})方法显示 */
-const Component = forwardRef<UploadFileMethods, UploadFileProps>(
-  (
-    {
-      onReady,
-      onClose,
-      onOK,
-      title = '上传本地文件',
-      accept,
-      extra,
-      maxSize = 10,
-      multiple = false,
-      uploadFn,
+const Component = forwardRef<UploadFileMethods, UploadFileProps>((uploadProps, ref) => {
+  const [UploadLocale] = useLocaleReceiver('Upload');
+  const {
+    onReady,
+    onClose,
+    onOK,
+    title = UploadLocale?.uploadLocalFile,
+    accept,
+    extra,
+    maxSize = 10,
+    multiple = false,
+    uploadFn,
+  } = uploadProps;
+  const [state, assignState] = useReducer(
+    (state: typeof initialState, data: Partial<typeof initialState>) => {
+      const res = {
+        ...state,
+        ...data,
+      };
+      return res;
     },
-    ref,
-  ) => {
-    const [state, assignState] = useReducer(
-      (state: typeof initialState, data: Partial<typeof initialState>) => {
-        const res = {
-          ...state,
-          ...data,
-        };
-        return res;
-      },
-      initialState,
-    );
+    initialState,
+  );
 
-    const { show, uploading, fileList } = state;
+  const { show, uploading, fileList } = state;
 
-    // 闭包陷阱临时方案
-    const liveFileList = useRef([] as UploadFileType[]);
+  // 闭包陷阱临时方案
+  const liveFileList = useRef([] as UploadFileType[]);
 
-    const methods: UploadFileMethods = {
-      state,
-      open() {
-        assignState({ show: true });
-      },
-      close() {
-        assignState({ show: false });
-        onClose && setTimeout(onClose, 500);
-      },
-      onOK() {
-        if (uploading || !fileList.length) {
-          message.warn('未上传任何文件');
-          return;
-        }
-        assignState({ show: false });
-        onOK && onOK(fileList.filter(f => f.status === 'done'));
-        methods.close();
-      },
-    };
+  const methods: UploadFileMethods = {
+    state,
+    open() {
+      assignState({ show: true });
+    },
+    close() {
+      assignState({ show: false });
+      onClose && setTimeout(onClose, 500);
+    },
+    onOK() {
+      if (uploading || !fileList.length) {
+        message.warn(UploadLocale?.noFilesUploaded);
+        return;
+      }
+      assignState({ show: false });
+      onOK && onOK(fileList.filter(f => f.status === 'done'));
+      methods.close();
+    },
+  };
 
-    useImperativeHandle(ref, () => methods, [state]);
-    useEffect(() => {
-      if (onReady) onReady();
-    }, []);
+  useImperativeHandle(ref, () => methods, [state]);
+  useEffect(() => {
+    if (onReady) onReady();
+  }, []);
 
-    const props: UploadProps = {
-      name: 'file',
-      multiple,
-      // showUploadList: false,
-      accept,
-      fileList,
-      onRemove(file) {
-        const index = fileList.indexOf(file);
-        const newFileList = fileList.slice();
-        newFileList.splice(index, 1);
-        assignState({ fileList: newFileList });
-      },
-      beforeUpload(file) {
-        const size = (file as File).size / 1024 / 1024;
-        if (size > maxSize) {
-          message.error('文件不能大于10MB');
-          return false;
-        }
-        // compressImg(file as File, 3182, 2160)
-        (file as UploadFileType).status = 'uploading';
-        let newFileList: UploadFileType[] = [...liveFileList.current, file];
-        if (!multiple) newFileList = [file];
-        assignState({ uploading: true, fileList: newFileList });
-        liveFileList.current = newFileList;
-        uploadFn(file as File)
-          .then(({ data: { url } }) => {
-            newFileList = cloneDeep(liveFileList.current);
-            const item = newFileList.find(f => f.uid === file.uid)!;
-            item.status = 'done';
-            item.url = url;
-            assignState({ fileList: newFileList });
-          })
-          .finally(() => {
-            assignState({ uploading: false });
-          });
+  const props: UploadProps = {
+    name: 'file',
+    multiple,
+    // showUploadList: false,
+    accept,
+    fileList,
+    onRemove(file) {
+      const index = fileList.indexOf(file);
+      const newFileList = fileList.slice();
+      newFileList.splice(index, 1);
+      assignState({ fileList: newFileList });
+    },
+    beforeUpload(file) {
+      const size = (file as File).size / 1024 / 1024;
+      if (size > maxSize) {
+        message.error(UploadLocale?.theFileCannotBeLargerThan10MB);
         return false;
-      },
-      // eslint-disable-next-line react/no-unstable-nested-components
-      itemRender(node, file) {
-        return (
-          <div
-            // className={classNames('tw-relative', {})}
-            style={{ position: 'relative' }}
-          >
-            {cloneElement(node, { style: { width: '75%' } })}
-            {file.status === 'done' && (
-              <span
-                // className="tw-absolute tw-right-6 tw-top-0.5 tw-text-sm tw-pointer-events-none"
-                style={{
-                  position: 'absolute',
-                  right: 30,
-                  top: 2,
-                  fontSize: 14,
-                  pointerEvents: 'none',
-                }}
-              >
-                上传成功
-              </span>
-            )}
-          </div>
-        );
-      },
-    };
+      }
+      // compressImg(file as File, 3182, 2160)
+      (file as UploadFileType).status = 'uploading';
+      let newFileList: UploadFileType[] = [...liveFileList.current, file];
+      if (!multiple) newFileList = [file];
+      assignState({ uploading: true, fileList: newFileList });
+      liveFileList.current = newFileList;
+      uploadFn(file as File)
+        .then(({ data: { url } }) => {
+          newFileList = cloneDeep(liveFileList.current);
+          const item = newFileList.find(f => f.uid === file.uid)!;
+          item.status = 'done';
+          item.url = url;
+          assignState({ fileList: newFileList });
+        })
+        .finally(() => {
+          assignState({ uploading: false });
+        });
+      return false;
+    },
+    // eslint-disable-next-line react/no-unstable-nested-components
+    itemRender(node, file) {
+      return (
+        <div
+          // className={classNames('tw-relative', {})}
+          style={{ position: 'relative' }}
+        >
+          {cloneElement(node, { style: { width: '75%' } })}
+          {file.status === 'done' && (
+            <span
+              // className="tw-absolute tw-right-6 tw-top-0.5 tw-text-sm tw-pointer-events-none"
+              style={{
+                position: 'absolute',
+                right: 30,
+                top: 2,
+                fontSize: 14,
+                pointerEvents: 'none',
+              }}
+            >
+              {UploadLocale?.uploadSuccessful}
+            </span>
+          )}
+        </div>
+      );
+    },
+  };
 
-    return (
-      <Modal
-        title={title}
-        open={show}
-        onOk={methods.onOK}
-        onCancel={methods.close}
-        destroyOnClose
-        bodyStyle={{ maxHeight: '75vh', overflow: 'auto' }}
-        width={600}
-        cancelButtonProps={{ type: 'second' }}
-        okText="提交"
-        okButtonProps={{
-          disabled: uploading, // || !fileList.length,
+  return (
+    <Modal
+      title={title}
+      open={show}
+      onOk={methods.onOK}
+      onCancel={methods.close}
+      destroyOnClose
+      bodyStyle={{ maxHeight: '75vh', overflow: 'auto' }}
+      width={600}
+      cancelButtonProps={{ type: 'second' }}
+      okText={UploadLocale?.submit}
+      okButtonProps={{
+        disabled: uploading, // || !fileList.length,
+      }}
+    >
+      <div
+        // className="tw-px-6"
+        style={{
+          padding: '0 30px',
         }}
       >
+        <Upload.Dragger height={200} {...props}>
+          <p className="ant-upload-drag-icon">
+            <InboxOutlined />
+          </p>
+          <p className="ant-upload-text " style={{ fontWeight: 'bold' }}>
+            {UploadLocale?.clickOrDragTheFileHereToUpload}
+          </p>
+          <p className="ant-upload-hint">
+            {UploadLocale?.supportExtensions}
+            {accept}
+          </p>
+        </Upload.Dragger>
         <div
-          // className="tw-px-6"
+          // className="tw-h-3"
           style={{
-            padding: '0 30px',
+            height: 15,
           }}
-        >
-          <Upload.Dragger height={200} {...props}>
-            <p className="ant-upload-drag-icon">
-              <InboxOutlined />
-            </p>
-            <p className="ant-upload-text " style={{ fontWeight: 'bold' }}>
-              点击或将文件拖拽到这里上传
-            </p>
-            <p className="ant-upload-hint">支持扩展名: {accept}</p>
-          </Upload.Dragger>
-          <div
-            // className="tw-h-3"
-            style={{
-              height: 15,
-            }}
-          />
-          {extra}
-        </div>
-      </Modal>
-    );
-  },
-);
+        />
+        {extra}
+      </div>
+    </Modal>
+  );
+});
 
 async function open(
   props: Omit<

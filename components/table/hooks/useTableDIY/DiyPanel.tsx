@@ -11,6 +11,7 @@ import Button from '../../../button';
 import type { ColumnType } from '../../interface';
 import Sortable from '../../../sortable/sortable';
 import type { SortableDataItem } from '../../../sortable/types';
+import { useLocaleReceiver } from '../../../locale-provider/LocaleReceiver';
 
 export type GroupItem = {
   column: ColumnType<any>;
@@ -65,6 +66,7 @@ const DiyPanel: FC<DiyPanelProps> = ({
   const allColumns = flatten(Object.values(groups.map(item => item.list)));
   const checkedColumns = allColumns.filter(col => col.state.checked);
   const sortedColumns = getSortedColumns(checkedColumns);
+  const [TableLocale] = useLocaleReceiver('Table');
 
   const _onSave = () => {
     localStorage.setItem(cacheID, JSON.stringify(getStorageColumns(getSortedColumns(allColumns))));
@@ -114,7 +116,7 @@ const DiyPanel: FC<DiyPanelProps> = ({
           // className="tw-text-base"
           style={{ fontSize: 16 }}
         >
-          表头设置
+          {TableLocale?.headerSettings}
         </span>
         <span
           // className="tw-flex-grow"
@@ -135,7 +137,7 @@ const DiyPanel: FC<DiyPanelProps> = ({
         style={{ display: 'flex' }}
       >
         <div className="diy-panel-left">
-          <div className="diy-panel-left-head">可选字段</div>
+          <div className="diy-panel-left-head">{TableLocale?.optionalField}</div>
           <div className="diy-panel-left-content">
             {groups.map(({ name, list }, groupIndex) => (
               <div key={name || groupIndex}>
@@ -144,7 +146,7 @@ const DiyPanel: FC<DiyPanelProps> = ({
                     // className="tw-mb-2"
                     style={{ marginBottom: 10 }}
                   >
-                    {name || '默认分组'}
+                    {name || TableLocale?.defaultGrouping}
                   </div>
                 )}
                 <div
@@ -184,7 +186,7 @@ const DiyPanel: FC<DiyPanelProps> = ({
           </div>
         </div>
         <div className="diy-panel-right" style={{ width: '40%', maxWidth: 280, minWidth: 140 }}>
-          <div className="diy-panel-right-head">当前选定字段</div>
+          <div className="diy-panel-right-head">{TableLocale?.theCurrentlySelectedField}</div>
           <div
             className="diy-panel-right-content"
             style={{
@@ -270,13 +272,13 @@ const DiyPanel: FC<DiyPanelProps> = ({
         >
           {/* TODO: */}
           <Button type="second" onClick={() => onReset()}>
-            重置
+            {TableLocale?.filterReset}
           </Button>
           <Button type="second" onClick={() => onCancel()}>
-            取消
+            {TableLocale?.cancel}
           </Button>
           <Button type="primary" onClick={() => _onSave()}>
-            保存
+            {TableLocale?.save}
           </Button>
         </div>
       </div>
