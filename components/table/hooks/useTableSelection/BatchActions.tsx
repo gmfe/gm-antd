@@ -5,6 +5,7 @@ import Checkbox from '../../../checkbox';
 import Divider from '../../../divider';
 import Space from '../../../space';
 import type { UseTableSelectionController } from '.';
+import { useLocaleReceiver } from '../../../locale-provider/LocaleReceiver';
 
 export interface TableBatchActionsProps extends HTMLAttributes<HTMLDivElement> {
   controller: UseTableSelectionController;
@@ -24,6 +25,7 @@ const TableBatchActions: FC<TableBatchActionsProps> = ({
   ...rest
 }) => {
   const { selectedRowKeys, isSelectedTotal, setIsSelectedTotal } = controller;
+  const [TableLocale] = useLocaleReceiver('Table');
   return (
     <div
       className={classNames(
@@ -56,19 +58,18 @@ const TableBatchActions: FC<TableBatchActionsProps> = ({
           }}
           className="table-batch-actions-content-checkbox"
         >
-          全选所有页
+          {TableLocale?.selectAllPages}
         </Checkbox>
         {selectedRowKeys.length > 0 && (
           <>
             <Divider type="vertical" />
             <Space>
               <div>
-                已选
+                {TableLocale?.selected}
                 <span className="primary">
-                  {' '}
                   {isSelectedTotal ? totalCount : selectedRowKeys.length}{' '}
                 </span>
-                项目
+                {TableLocale?.project}
               </div>
             </Space>
           </>

@@ -63,6 +63,13 @@ export interface UploadLocale {
   downloadFile?: string;
   uploadError?: string;
   previewFile?: string;
+  uploadLocalFile?: string;
+  noFilesUploaded?: string;
+  theFileCannotBeLargerThan10MB?: string;
+  uploadSuccessful?: string;
+  submit?: string;
+  clickOrDragTheFileHereToUpload?: string;
+  supportExtensions?: string;
 }
 
 export type UploadType = 'drag' | 'select';

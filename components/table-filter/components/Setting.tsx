@@ -9,6 +9,7 @@ import Sortable from '../../sortable/sortable';
 import type { CachedSetting } from '../types';
 import type { SortableDataItem } from '../../sortable/types';
 import { keyBy } from 'lodash';
+import { useLocaleReceiver } from '../../locale-provider/LocaleReceiver';
 
 export interface SettingProps extends HTMLAttributes<HTMLDivElement> {
   afterCancel?: () => void;
@@ -30,6 +31,7 @@ const Setting: FC<SettingProps> = ({ afterCancel, afterReset, afterSave }) => {
   const [cachedSetting, setCachedSetting] = useState<CachedSetting>(
     restoreFieldItemsForSetting(store.id, store.fields),
   );
+  const [TableLocale] = useLocaleReceiver('Table');
 
   const _onSort = (data: SortableDataItem[]): void => {
     store.fields = data.map(item => store.fields.find(field => field.key === item.value)!);
@@ -50,56 +52,68 @@ const Setting: FC<SettingProps> = ({ afterCancel, afterReset, afterSave }) => {
   };
 
   const handleCheckAllFilterChange = (e: CheckboxChangeEvent) => {
-    const keyByKeyInFields = keyBy(store.fields, 'key')
+    const keyByKeyInFields = keyBy(store.fields, 'key');
     const checked = e.target.checked;
-    const keys = Object.keys(keyByKeyInFields)
+    const keys = Object.keys(keyByKeyInFields);
     /** 勾选 */
     if (checked) {
-      const newCachedSetting = keys.reduce((prev, current) => {
+      const newCachedSetting = keys.reduce(
+        (prev, current) => {
+          return {
+            ...prev,
+            [current]: {
+              ...(cachedSetting[current] || {}),
+              visible: true,
+            },
+          };
+        },
+        {} as Record<
+          string,
+          {
+            visible: boolean;
+          }
+        >,
+      );
+      setCachedSetting(newCachedSetting);
+      return;
+    }
+
+    /** 取消勾选，如果当前为alwaysUsed 那么不取消勾选 */
+    const newCachedSetting = keys.reduce(
+      (prev, current) => {
         return {
           ...prev,
           [current]: {
             ...(cachedSetting[current] || {}),
-            visible: true,
-          }
+            visible: keyByKeyInFields[current].alwaysUsed ? true : false,
+          },
+        };
+      },
+      {} as Record<
+        string,
+        {
+          visible: boolean;
         }
-      }, {} as Record<string, {
-        visible: boolean;
-      }>)
-      setCachedSetting(newCachedSetting)
-      return
-    }
-
-    /** 取消勾选，如果当前为alwaysUsed 那么不取消勾选 */
-    const newCachedSetting = keys.reduce((prev, current) => {
-      return {
-        ...prev,
-        [current]: {
-          ...(cachedSetting[current] || {}),
-          visible: keyByKeyInFields[current].alwaysUsed ? true : false,
-        }
-      }
-    }, {} as Record<string, {
-      visible: boolean;
-    }>)
-    setCachedSetting(newCachedSetting)
-  }
+      >,
+    );
+    setCachedSetting(newCachedSetting);
+  };
 
   const isCheckAllOrIsIndeterminate = useMemo(() => {
-    const keys = Object.keys(cachedSetting)
-    const visibleKeys = keys.filter(key => cachedSetting[key].visible)
+    const keys = Object.keys(cachedSetting);
+    const visibleKeys = keys.filter(key => cachedSetting[key].visible);
     if (visibleKeys.length === store.fields?.length) {
       return {
         isCheckAll: true,
-        isIndeterminate: false
-      }
+        isIndeterminate: false,
+      };
     }
     return {
       isCheckAll: false,
-      isIndeterminate: visibleKeys.length > 0
-    }
-  }, [cachedSetting])
-  
+      isIndeterminate: visibleKeys.length > 0,
+    };
+  }, [cachedSetting]);
+
   return (
     <div
       className="setting-panel"
@@ -117,13 +131,13 @@ const Setting: FC<SettingProps> = ({ afterCancel, afterReset, afterSave }) => {
           fontWeight: 'bold',
         }}
       >
-        <div style={{padding: 8}}>
+        <div style={{ padding: 8 }}>
           <Checkbox
             indeterminate={isCheckAllOrIsIndeterminate.isIndeterminate}
             checked={isCheckAllOrIsIndeterminate.isCheckAll}
             onChange={handleCheckAllFilterChange}
           >
-            全部筛选条件
+            {TableLocale?.allFilteringCriteria}
           </Checkbox>
         </div>
         <Divider
@@ -139,7 +153,11 @@ const Setting: FC<SettingProps> = ({ afterCancel, afterReset, afterSave }) => {
         style={{ maxHeight: '50vh', flexGrow: 1, overflowY: 'scroll' }}
       >
         <Sortable
-          data={store.fields.map(field => ({ value: field.key, text: field.label!, disabled: field.alwaysUsed }))}
+          data={store.fields.map(field => ({
+            value: field.key,
+            text: field.label!,
+            disabled: field.alwaysUsed,
+          }))}
           onChange={_onSort}
           options={{
             filter: '.selector',
@@ -147,8 +165,8 @@ const Setting: FC<SettingProps> = ({ afterCancel, afterReset, afterSave }) => {
             handle: '.sortable',
             chosenClass: 'sortable-active',
             onMove: event => {
-              return event.related.dataset.disabled !== 'true'
-            }
+              return event.related.dataset.disabled !== 'true';
+            },
           }}
           renderItem={(_, index) => {
             const field = store.fields[index];
@@ -179,7 +197,7 @@ const Setting: FC<SettingProps> = ({ afterCancel, afterReset, afterSave }) => {
                   style={{
                     width: '100%',
                     color: 'black',
-                    padding: '4px 0'
+                    padding: '4px 0',
                   }}
                   disabled={field.alwaysUsed}
                   checked={field.alwaysUsed || (used ?? field.defaultUsed)}
@@ -219,13 +237,13 @@ const Setting: FC<SettingProps> = ({ afterCancel, afterReset, afterSave }) => {
         }}
       >
         <Button size="small" type="link" onClick={() => _onReset()}>
-          重置
+          {TableLocale?.filterReset}
         </Button>
         <Button size="small" type="second" onClick={() => _onCancel()}>
-          取消
+          {TableLocale?.cancel}
         </Button>
         <Button size="small" type="primary" onClick={() => _onSave()}>
-          保存设置
+          {TableLocale?.saveSettings}
         </Button>
       </div>
     </div>

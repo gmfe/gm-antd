@@ -6,6 +6,7 @@ import { debounce, groupBy } from 'lodash';
 import type { FieldSelectItem, SelectOptions } from '../../types';
 import TableFilterContext from '../../context';
 import Select from '../../../select';
+import { useLocaleReceiver } from '../../../locale-provider/LocaleReceiver';
 
 export interface SelectFilterProps extends HTMLAttributes<HTMLDivElement> {
   field: FieldSelectItem;
@@ -20,6 +21,7 @@ const SelectFilter: FC<SelectFilterProps> = ({ className, field }) => {
   const [searchValue, setSearchValue] = useState('');
   const [options, setOptions] = useState(Array.isArray(originOptions) ? originOptions : []);
   const groups = groupBy(options, item => item.group);
+  const [TableLocale] = useLocaleReceiver('Table');
 
   const value = store.get(field);
 
@@ -67,7 +69,7 @@ const SelectFilter: FC<SelectFilterProps> = ({ className, field }) => {
       bordered={false}
       mode={multiple ? 'multiple' : undefined}
       maxTagCount="responsive"
-      placeholder={placeholder || `请选择${label}`}
+      placeholder={placeholder || `${TableLocale?.pleaseSelect}${label?.toLowerCase()}`}
       value={options.length ? value : undefined}
       onChange={value => {
         const oldValue = store.get(field);
@@ -107,7 +109,7 @@ const SelectFilter: FC<SelectFilterProps> = ({ className, field }) => {
           </Option>
         ))}
       {Object.keys(groups).length >= 2 &&
-        Object.keys(groups).map((groupName = '默认分组') => {
+        Object.keys(groups).map((groupName = TableLocale?.defaultGrouping || '') => {
           const list = groups[groupName];
           if (!list.length) return null;
           return (
