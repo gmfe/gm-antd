@@ -85,7 +85,7 @@ const localeValues: Locale = {
     uploadSuccessful:'上传成功',
     submit:'提交',
     clickOrDragTheFileHereToUpload:'点击或将文件拖拽到这里上传',
-    SupportExtensions:'支持扩展名: '
+    supportExtensions:'支持扩展名: '
   },
   Empty: {
     description: '暂无数据',
