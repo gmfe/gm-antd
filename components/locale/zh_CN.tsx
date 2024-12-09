@@ -82,10 +82,10 @@ const localeValues: Locale = {
     uploadLocalFile: '上传本地文件',
     noFilesUploaded: '未上传任何文件',
     theFileCannotBeLargerThan10MB: '文件不能大于10MB',
-    uploadSuccessful:'上传成功',
-    submit:'提交',
-    clickOrDragTheFileHereToUpload:'点击或将文件拖拽到这里上传',
-    supportExtensions:'支持扩展名: '
+    uploadSuccessful: '上传成功',
+    submit: '提交',
+    clickOrDragTheFileHereToUpload: '点击或将文件拖拽到这里上传',
+    supportExtensions: '支持扩展名: ',
   },
   Empty: {
     description: '暂无数据',
@@ -154,6 +154,12 @@ const localeValues: Locale = {
   },
   Image: {
     preview: '预览',
+  },
+  TableFilter: {
+    today: '今天',
+    yesterday: '昨天',
+    last7days: '近7天',
+    last30Days: '近30天',
   },
 };
 

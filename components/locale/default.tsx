@@ -155,6 +155,12 @@ const localeValues: Locale = {
   Image: {
     preview: 'Preview',
   },
+  TableFilter: {
+    today: 'Today',
+    yesterday: 'Yesterday',
+    last7days: 'Last 7 days',
+    last30Days: 'Last 30 days',
+  },
 };
 
 export default localeValues;

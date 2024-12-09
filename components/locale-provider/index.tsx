@@ -44,6 +44,12 @@ export interface Locale {
   Image?: {
     preview: string;
   };
+  TableFilter?: {
+    today?: string;
+    yesterday?: string;
+    last7days?: string;
+    last30Days?: string;
+  };
 }
 
 export interface LocaleProviderProps {
