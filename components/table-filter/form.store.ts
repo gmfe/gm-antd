@@ -278,18 +278,20 @@ class TableFilterStore {
   /** 搜索 */
   search = debounce(
     () => {
-      this.loading = true;
       const params = this.toParams();
+      this.loading = true;
       if (this._paginationResult) {
         return this._paginationResult!.run(params).finally(() => {
           this.loading = false;
         });
       } else {
-        return this.onSearch?.(params)
+        return Promise.resolve(this.onSearch?.(params)).finally(() => {
+          this.loading = false;
+        })
       }
     },
-    1000,
-    { leading: true },
+    500,
+    { leading: true, trailing: false },
   );
 
   /** 清空所有表单字段输入 */
@@ -332,14 +334,16 @@ class TableFilterStore {
   }
 
   searchNow = () => {
-    this.loading = true;
     const params = this.toParams();
+    this.loading = true;
     if (this._paginationResult) {
       return this._paginationResult!.run(params).finally(() => {
         this.loading = false;
       });
     } else {
-      return this.onSearch?.(params)
+      return Promise.resolve(this.onSearch?.(params)).finally(() => {
+        this.loading = false;
+      })
     }
   };
 

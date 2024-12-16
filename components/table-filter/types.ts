@@ -19,7 +19,7 @@ export type UsePaginationResult = Partial<GMUsePaginationResult> &
 export interface TableFilterProps
   extends Pick<HTMLAttributes<HTMLDivElement>, 'className' | 'style'> {
   /** 配合usePagination使用 */
-  paginationResult: UsePaginationResult;
+  paginationResult?: UsePaginationResult;
   /** 全局唯一id, 缓存标识，默认使用路由路径作为id因此同路由下使用1个以上这个组件需要指定唯一id */
   id?: string;
   /** 前端编码的字段 */

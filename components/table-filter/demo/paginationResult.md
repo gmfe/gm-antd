@@ -101,7 +101,12 @@ const App: React.FC = () => {
     <>
       <TableFilter 
         onSearch={(params) => {
-          alert(JSON.stringify(params, undefined, 2))
+          return new Promise((resolve, reject) => {
+            console.log(JSON.stringify(params, undefined, 2))
+            setTimeout(() => {
+              resolve(1)
+            }, 300)
+          })
         }} 
         fields={FIELDS} 
         trigger='both' 
