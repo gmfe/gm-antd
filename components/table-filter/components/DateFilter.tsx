@@ -4,7 +4,7 @@ import { Observer, observer } from 'mobx-react';
 import { pick } from 'lodash';
 import moment from 'moment';
 import type { FieldDateItem, FieldDateRangeItem } from '../types';
-import TableFilterContext from '../context';
+import TableFilterContext, { SearchBarContext } from '../context';
 import DatePicker from '../../date-picker';
 import { useLocaleReceiver } from '../../locale-provider/LocaleReceiver';
 
@@ -17,6 +17,8 @@ export interface DateFilterProps extends HTMLAttributes<HTMLDivElement> {
 const DateFilter: FC<DateFilterProps> = ({ field }) => {
   const store = useContext(TableFilterContext);
   const [tableFilterLocale] = useLocaleReceiver('TableFilter');
+  const searchBar = useContext(SearchBarContext)
+
   return (
     <Observer>
       {() => {
@@ -31,7 +33,11 @@ const DateFilter: FC<DateFilterProps> = ({ field }) => {
               onChange={moment => {
                 store.set(field, moment!);
                 if (['onChange', 'both'].includes(store.trigger!)) {
-                  store.search();
+                  if (searchBar?.onSearch) {
+                    searchBar.onSearch(store.toParams())
+                  } else {
+                    store.search();
+                  }
                 }
               }}
               style={{ width: '100%' }}

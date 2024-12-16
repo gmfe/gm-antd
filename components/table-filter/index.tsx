@@ -5,7 +5,7 @@ import { observer } from 'mobx-react';
 import ResizeObserver from 'rc-resize-observer';
 import TableFilterStore from './form.store';
 import Labeled from './components/Labeled';
-import TableFilterContext from './context';
+import TableFilterContext, { SearchBarContext } from './context';
 import Button from '../button';
 import Popover from '../popover';
 import Setting from './components/Setting';
@@ -35,6 +35,7 @@ function Component(options: TableFilterProps) {
     skipInitialValues,
     isSaveOptions = false,
     onCustomSave,
+    onSearch,
   } = options;
   const id = options.id ?? new URL(location.href.replace('/#', '')).pathname;
 
@@ -66,7 +67,13 @@ function Component(options: TableFilterProps) {
       })
       .then(() => {
         setVisibleFields(store.getVisibleFields());
-        if (immediate) store.search();
+        if (immediate) {
+          if (onSearch) {
+            onSearch?.(store.toParams());
+          } else {
+            store.search();
+          }
+        }
       });
     return () => {
       store.clear();
@@ -89,11 +96,19 @@ function Component(options: TableFilterProps) {
   }, [fields, isFirstMount]);
 
   const handleReset = () => {
-    store.reset(skipInitialValues);
-    setTimeout(() => store.search(), 50);
-  };
+    store.reset(skipInitialValues)
+    if (onSearch) {
+      store.setLoading(true)
+      Promise.resolve(onSearch?.(store.toParams())).finally(() => {
+        setTimeout(() => store.setLoading(false), 100)
+      })
+    } else {
+      setTimeout(() => store.search(), 50)
+    }
+  }
 
   return (
+    <SearchBarContext.Provider value={{ onSearch }}>
     <TableFilterContext.Provider value={store}>
       <ResizeObserver onResize={({ width }) => setState({ width })}>
         <div className={classNames('table-filter', className)} style={{ gap: GAP }}>
@@ -239,7 +254,17 @@ function Component(options: TableFilterProps) {
                 store.loading ? Date.now().toString() : Date.now().toString() // 解决loading态和点击动效不丝滑
               }
               loading={store.loading}
-              onClick={() => store.search()}
+              onClick={() => {
+                if (onSearch) {
+                  store.setLoading(true)
+                  Promise.resolve(onSearch?.(store.toParams())).finally(() => {
+                    console.log(123123)
+                    setTimeout(() => store.setLoading(false), 100)
+                  })
+                } else {
+                  store.search()
+                }
+              }}
             >
               {TableLocale?.search}
             </Button>
@@ -247,6 +272,7 @@ function Component(options: TableFilterProps) {
         </div>
       </ResizeObserver>
     </TableFilterContext.Provider>
+    </SearchBarContext.Provider>
   );
 }
 
@@ -266,5 +292,5 @@ Component.get = (id?: string) => {
 const TableFilter = observer(Component);
 export default TableFilter;
 
-export * from './types';
-export { TableFilterContext };
+export * from './types'
+export { TableFilterContext, SearchBarContext }

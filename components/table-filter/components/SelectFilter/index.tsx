@@ -4,7 +4,7 @@ import { observer } from 'mobx-react';
 import classNames from 'classnames';
 import { debounce, groupBy } from 'lodash';
 import type { FieldSelectItem, SelectOptions } from '../../types';
-import TableFilterContext from '../../context';
+import TableFilterContext, { SearchBarContext } from '../../context';
 import Select from '../../../select';
 import { useLocaleReceiver } from '../../../locale-provider/LocaleReceiver';
 
@@ -17,6 +17,7 @@ const { Option, OptGroup } = Select;
 const SelectFilter: FC<SelectFilterProps> = ({ className, field }) => {
   const { multiple, options: originOptions, placeholder, remote, label } = field;
   const store = useContext(TableFilterContext);
+  const searchBar = useContext(SearchBarContext)
   const first = useRef(true);
   const [searchValue, setSearchValue] = useState('');
   const [options, setOptions] = useState(Array.isArray(originOptions) ? originOptions : []);
@@ -81,7 +82,11 @@ const SelectFilter: FC<SelectFilterProps> = ({ className, field }) => {
         }
         store.set(field, value);
         if (['onChange', 'both'].includes(store.trigger!) && value !== oldValue) {
-          store.search();
+          if (searchBar?.onSearch) {
+            searchBar.onSearch(store.toParams())
+          } else {
+            store.search();
+          }
         }
       }}
       searchValue={searchValue}
