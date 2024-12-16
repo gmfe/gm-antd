@@ -3,7 +3,7 @@ import React, { useContext, useEffect, useRef, useState } from 'react';
 import { observer } from 'mobx-react';
 import classNames from 'classnames';
 import type { CasCaderOption, FieldCascaderItem } from '../types';
-import TableFilterContext from '../context';
+import TableFilterContext, { SearchBarContext } from '../context';
 import Cascader, { CascaderProps } from '../../cascader';
 
 export interface CascaderFilterProps extends HTMLAttributes<HTMLDivElement> {
@@ -13,6 +13,7 @@ export interface CascaderFilterProps extends HTMLAttributes<HTMLDivElement> {
 const CascaderFilter: FC<CascaderFilterProps> = ({ className, field }) => {
   const { options: originOptions, placeholder, changeOnSelect, label, multiple, useAntdDisplayRender, displayRender = null, showCheckedStrategy } = field;
   const store = useContext(TableFilterContext);
+  const searchBar = useContext(SearchBarContext)
   const isFetched = useRef(false);
 
   const [options, setOptions] = useState<CasCaderOption[]>(
@@ -81,7 +82,11 @@ const CascaderFilter: FC<CascaderFilterProps> = ({ className, field }) => {
       onChange={(value: any) => {
         store.set(field, value);
         if (['onChange', 'both'].includes(store.trigger!)) {
-          store.search();
+          if (searchBar?.onSearch) {
+            searchBar.onSearch(store.toParams())
+          } else {
+            store.search();
+          }
         }
       }}
       onFocus={() => {

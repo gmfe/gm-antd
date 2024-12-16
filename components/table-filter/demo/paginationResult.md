@@ -51,6 +51,7 @@ const FIELDS: FieldItem[] = [
     key: 'subject_code_or_name',
     type: 'input',
     alwaysUsed: true,
+    defaultValue: '123',
     label: '科目代码/名称',
   },
   {
@@ -105,7 +106,7 @@ const App: React.FC = () => {
             console.log(JSON.stringify(params, undefined, 2))
             setTimeout(() => {
               resolve(1)
-            }, 300)
+            }, 2000)
           })
         }} 
         fields={FIELDS} 
