@@ -50,6 +50,7 @@ export interface TableFilterProps
   isSaveOptions?: boolean
   /** 设置保存回调 */
   onCustomSave?: () => void
+  onSearch?: (params: any) => void
 }
 
 /** 表单项 */

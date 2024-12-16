@@ -21,10 +21,11 @@ type Options = {
   // model_type?: keyof TableListSourceMapType
   fixedFields?: Array<FieldItem>;
   // mixins?: Array<MixinFieldItem>;
-  paginationResult: UsePaginationResult;
+  paginationResult?: UsePaginationResult;
   trigger?: TableFilterProps['trigger'];
   /** 是否在select Options 异步获取时保存他的option 值 */
   isSaveOptions?: boolean;
+  onSearch?: TableFilterProps['onSearch'];
 };
 
 type OptionDataType = {
@@ -67,6 +68,8 @@ class TableFilterStore {
   /** 是否在select Options 异步获取时保存他的option 值 */
   isSaveOptions?: boolean = false;
 
+  onSearch?: TableFilterProps['onSearch'];
+
   /** 可见(启用)的字段列表 */
   getVisibleFields() {
     const cachedSetting = restoreFieldItemsForSetting(this.id, this.fields);
@@ -85,6 +88,7 @@ class TableFilterStore {
     paginationResult,
     trigger,
     isSaveOptions,
+    onSearch,
   }: Options) {
     this.id = id;
     // this._model_type = model_type
@@ -92,6 +96,7 @@ class TableFilterStore {
     this._fixedFields = fixedFields;
     this._paginationResult = paginationResult;
     this.trigger = trigger;
+    this.onSearch = onSearch;
     this.isSaveOptions = isSaveOptions ?? false;
     // 使用缓存，避免跳动
     this.fields = orderBy(
@@ -275,9 +280,13 @@ class TableFilterStore {
     () => {
       this.loading = true;
       const params = this.toParams();
-      return this._paginationResult!.run(params).finally(() => {
-        this.loading = false;
-      });
+      if (this._paginationResult) {
+        return this._paginationResult!.run(params).finally(() => {
+          this.loading = false;
+        });
+      } else {
+        return this.onSearch?.(params)
+      }
     },
     1000,
     { leading: true },
@@ -325,9 +334,13 @@ class TableFilterStore {
   searchNow = () => {
     this.loading = true;
     const params = this.toParams();
-    return this._paginationResult!.run(params).finally(() => {
-      this.loading = false;
-    });
+    if (this._paginationResult) {
+      return this._paginationResult!.run(params).finally(() => {
+        this.loading = false;
+      });
+    } else {
+      return this.onSearch?.(params)
+    }
   };
 
   setOptionData(keyName: string, data: OptionDataType[]) {

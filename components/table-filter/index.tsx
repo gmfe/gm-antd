@@ -34,6 +34,7 @@ function Component(options: TableFilterProps) {
     skipInitialValues,
     isSaveOptions = false,
     onCustomSave,
+    onSearch,
   } = options;
   const id = options.id ?? new URL(location.href.replace('/#', '')).pathname;
 
@@ -61,6 +62,7 @@ function Component(options: TableFilterProps) {
         paginationResult,
         trigger,
         isSaveOptions,
+        onSearch,
       })
       .then(() => {
         setVisibleFields(store.getVisibleFields());
