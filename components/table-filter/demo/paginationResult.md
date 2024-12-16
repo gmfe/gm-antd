@@ -1,7 +1,7 @@
 ---
-order: 0
+order: 6
 title:
-  zh-CN: 基本使用
+  zh-CN: 不需要paginationResult，手动传onSearch
   en-US: TODO
 gm: true
 ---
@@ -51,6 +51,7 @@ const FIELDS: FieldItem[] = [
     key: 'subject_code_or_name',
     type: 'input',
     alwaysUsed: true,
+    defaultValue: '123',
     label: '科目代码/名称',
   },
   {
@@ -97,17 +98,20 @@ const FIELDS: FieldItem[] = [
 ];
 
 const App: React.FC = () => {
-  const paginationResult = usePagination(
-    async params => alert(JSON.stringify(params, undefined, 2)),
-    {
-      defaultPaging: {
-        limit: 999,
-      },
-    },
-  );
   return (
     <>
-      <TableFilter paginationResult={paginationResult} fields={FIELDS} trigger='both' />
+      <TableFilter 
+        onSearch={(params) => {
+          return new Promise((resolve, reject) => {
+            console.log(JSON.stringify(params, undefined, 2))
+            setTimeout(() => {
+              resolve(1)
+            }, 2000)
+          })
+        }} 
+        fields={FIELDS} 
+        trigger='both' 
+      />
     </>
   );
 };

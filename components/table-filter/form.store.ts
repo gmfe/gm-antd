@@ -21,10 +21,11 @@ type Options = {
   // model_type?: keyof TableListSourceMapType
   fixedFields?: Array<FieldItem>;
   // mixins?: Array<MixinFieldItem>;
-  paginationResult: UsePaginationResult;
+  paginationResult?: UsePaginationResult;
   trigger?: TableFilterProps['trigger'];
   /** 是否在select Options 异步获取时保存他的option 值 */
   isSaveOptions?: boolean;
+  onSearch?: TableFilterProps['onSearch'];
 };
 
 type OptionDataType = {
@@ -273,14 +274,16 @@ class TableFilterStore {
   /** 搜索 */
   search = debounce(
     () => {
-      this.loading = true;
       const params = this.toParams();
-      return this._paginationResult!.run(params).finally(() => {
-        this.loading = false;
-      });
+      this.loading = true;
+      if (this._paginationResult) {
+        return this._paginationResult!.run(params).finally(() => {
+          this.loading = false;
+        });
+      }
     },
-    1000,
-    { leading: true },
+    500,
+    { leading: true, trailing: false },
   );
 
   /** 清空所有表单字段输入 */
@@ -323,15 +326,22 @@ class TableFilterStore {
   }
 
   searchNow = () => {
-    this.loading = true;
+    console.log("searchNow")
     const params = this.toParams();
-    return this._paginationResult!.run(params).finally(() => {
-      this.loading = false;
-    });
+    this.loading = true;
+    if (this._paginationResult) {
+      return this._paginationResult!.run(params).finally(() => {
+        this.loading = false;
+      });
+    }
   };
 
   setOptionData(keyName: string, data: OptionDataType[]) {
     this.optionData[keyName] = data;
+  }
+
+  setLoading(flag: boolean) {
+    this.loading = flag;
   }
 }
 

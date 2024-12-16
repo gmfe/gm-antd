@@ -3,7 +3,7 @@ import React, { useContext, useEffect, useRef, useState } from 'react';
 import { observer } from 'mobx-react';
 import classNames from 'classnames';
 import type { FieldInputItem } from '../types';
-import TableFilterContext from '../context';
+import TableFilterContext, { SearchBarContext } from '../context';
 import Input from '../../input';
 import { useDebounce } from 'react-use'
 
@@ -13,6 +13,7 @@ export interface InputFilterProps extends HTMLAttributes<HTMLDivElement> {
 
 const InputFilter: FC<InputFilterProps> = ({ className, field }) => {
   const store = useContext(TableFilterContext);
+  const searchBar = useContext(SearchBarContext)
   const value = store.get(field);
   const [updatedValue, setUpdatedValue] = useState(value);
   // const [key, setKey] = useState(Math.random());
@@ -24,7 +25,11 @@ const InputFilter: FC<InputFilterProps> = ({ className, field }) => {
     }
     if (['onChange', 'both'].includes(store.trigger!) && updatedValue !== value) {
       store.set(field.key, updatedValue);
-      store.search();
+      if (searchBar?.onSearch) {
+        searchBar.onSearch(store.toParams())
+      } else {
+        store.search();
+      }
     }
   }, 750, [updatedValue])
 
@@ -59,7 +64,11 @@ const InputFilter: FC<InputFilterProps> = ({ className, field }) => {
         if (['onChange', 'both'].includes(store.trigger!) && (value || '') !== updatedValue) {
           cancel()
           store.set(field.key, updatedValue);
-          store.search();
+          if (searchBar?.onSearch) {
+            searchBar.onSearch(store.toParams())
+          } else {
+            store.search();
+          }
         } else {
           store.set(field.key, updatedValue);
         }
@@ -69,7 +78,11 @@ const InputFilter: FC<InputFilterProps> = ({ className, field }) => {
         if (['onChange', 'both'].includes(store.trigger!)) {
           cancel()
           store.set(field.key, updatedValue);
-          store.search();
+          if (searchBar?.onSearch) {
+            searchBar.onSearch(store.toParams())
+          } else {
+            store.search();
+          }
         }
       }}
       onFocus={() => {
