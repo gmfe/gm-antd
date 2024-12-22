@@ -160,8 +160,10 @@ function InternalTable<RecordType extends object = any>(
     );
   });
 
-  const { columns: columnsByResizable, components: componentsByResizable } =
-    useTableResizable(columns);
+  const { columns: columnsByResizable, components: componentsByResizable } = useTableResizable(
+    columns,
+    components,
+  );
 
   const baseColumns = React.useMemo(() => {
     return (
