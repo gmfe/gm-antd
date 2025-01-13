@@ -67,3 +67,8 @@ window.init_gm_api('https://env-xxx.x.k8s.guanmai.cn', 'TOKEN')
 ## 其他
 
 - antd 官方贡献指南：https://ant.design/docs/react/contributing-cn
+
+发包打tag
+```
+npx bumpp
+```

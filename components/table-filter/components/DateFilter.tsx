@@ -4,8 +4,9 @@ import { Observer, observer } from 'mobx-react';
 import { pick } from 'lodash';
 import moment from 'moment';
 import type { FieldDateItem, FieldDateRangeItem } from '../types';
-import TableFilterContext from '../context';
+import TableFilterContext, { SearchBarContext } from '../context';
 import DatePicker from '../../date-picker';
+import { useLocaleReceiver } from '../../locale-provider/LocaleReceiver';
 
 const { RangePicker } = DatePicker;
 
@@ -15,6 +16,9 @@ export interface DateFilterProps extends HTMLAttributes<HTMLDivElement> {
 
 const DateFilter: FC<DateFilterProps> = ({ field }) => {
   const store = useContext(TableFilterContext);
+  const [tableFilterLocale] = useLocaleReceiver('TableFilter');
+  const searchBar = useContext(SearchBarContext)
+
   return (
     <Observer>
       {() => {
@@ -29,7 +33,11 @@ const DateFilter: FC<DateFilterProps> = ({ field }) => {
               onChange={moment => {
                 store.set(field, moment!);
                 if (['onChange', 'both'].includes(store.trigger!)) {
-                  store.search();
+                  if (searchBar?.onSearch) {
+                    searchBar.onSearch(store.toParams())
+                  } else {
+                    store.search();
+                  }
                 }
               }}
               style={{ width: '100%' }}
@@ -46,13 +54,19 @@ const DateFilter: FC<DateFilterProps> = ({ field }) => {
         }
         const commonProps = pick(field, ['disabledDate', 'showTime', 'allowClear']);
         const defaultRanges: FieldDateRangeItem['ranges'] = {
-          今天: [moment().startOf('day'), moment().endOf('day')],
-          昨天: [
+          [tableFilterLocale?.today || '']: [moment().startOf('day'), moment().endOf('day')],
+          [tableFilterLocale?.yesterday || '']: [
             moment().subtract(1, 'day').startOf('day'),
             moment().subtract(1, 'day').endOf('day'),
           ],
-          近7天: [moment().subtract(6, 'day').startOf('day'), moment().endOf('day')],
-          近30天: [moment().subtract(29, 'day').startOf('day'), moment().endOf('day')],
+          [tableFilterLocale?.last7days || '']: [
+            moment().subtract(6, 'day').startOf('day'),
+            moment().endOf('day'),
+          ],
+          [tableFilterLocale?.last30Days || '']: [
+            moment().subtract(29, 'day').startOf('day'),
+            moment().endOf('day'),
+          ],
         };
         // 日期范围选择
         const value = store.get(field);

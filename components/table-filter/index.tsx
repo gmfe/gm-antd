@@ -5,13 +5,14 @@ import { observer } from 'mobx-react';
 import ResizeObserver from 'rc-resize-observer';
 import TableFilterStore from './form.store';
 import Labeled from './components/Labeled';
-import TableFilterContext from './context';
+import TableFilterContext, { SearchBarContext } from './context';
 import Button from '../button';
 import Popover from '../popover';
 import Setting from './components/Setting';
 import type { TableFilterProps } from './types';
 import './index.less';
 import { useFirstMountState } from 'react-use';
+import { useLocaleReceiver } from '../locale-provider/LocaleReceiver';
 
 const GAP = 12.5;
 const FIELD_MIN_WIDTH = 300;
@@ -34,6 +35,7 @@ function Component(options: TableFilterProps) {
     skipInitialValues,
     isSaveOptions = false,
     onCustomSave,
+    onSearch,
   } = options;
   const id = options.id ?? new URL(location.href.replace('/#', '')).pathname;
 
@@ -41,13 +43,14 @@ function Component(options: TableFilterProps) {
   _controllerMap[id] = store;
   const [showSetting, setShowSetting] = useState(false);
   const [visibleFields, setVisibleFields] = useState(store.getVisibleFields());
- 
-  const [expanded, setExpanded] = useState(false)
+  const [TableLocale] = useLocaleReceiver('Table');
+
+  const [expanded, setExpanded] = useState(false);
 
   const [{ width }, setState] = useState({ width: 1 });
   const flex = parseInt(`${width / FIELD_MIN_WIDTH}`, 10) || 1; // 每行个数
   const fieldWidth = width / flex - ((flex - 1) * GAP) / flex;
-  const isFirstMount = useFirstMountState()
+  const isFirstMount = useFirstMountState();
   // #endregion
 
   useEffect(() => {
@@ -64,7 +67,13 @@ function Component(options: TableFilterProps) {
       })
       .then(() => {
         setVisibleFields(store.getVisibleFields());
-        if (immediate) store.search();
+        if (immediate) {
+          if (onSearch) {
+            onSearch?.(store.toParams());
+          } else {
+            store.search();
+          }
+        }
       });
     return () => {
       store.clear();
@@ -72,26 +81,34 @@ function Component(options: TableFilterProps) {
     };
   }, [id]);
 
-   // fields 变化时，重新设置, 如果你的field 中包含select， 
-   // 而select 中的option 并不是从options 方法中获取。而是通过其他异步方式获取然后更改field 时
-   // 需要用到该字段, 场景是，当你的搜索内容有相互联动时，你不得不使用这种方式，比如其他搜索内容依赖于某个搜索时间组件时
-   // 
-   useEffect(() => {
+  // fields 变化时，重新设置, 如果你的field 中包含select，
+  // 而select 中的option 并不是从options 方法中获取。而是通过其他异步方式获取然后更改field 时
+  // 需要用到该字段, 场景是，当你的搜索内容有相互联动时，你不得不使用这种方式，比如其他搜索内容依赖于某个搜索时间组件时
+  //
+  useEffect(() => {
     if (isFirstMount) {
-      return
+      return;
     }
-    if (!isUpdateFields) return
+    if (!isUpdateFields) return;
     /** 如果他并不是第一次渲染，那么表示他有store.field, 那么我们只要更新当前的store.field 即可 */
-    store.updateFields(fields)
-    setVisibleFields(store.getVisibleFields())
-  }, [fields, isFirstMount])
+    store.updateFields(fields);
+    setVisibleFields(store.getVisibleFields());
+  }, [fields, isFirstMount]);
 
   const handleReset = () => {
     store.reset(skipInitialValues)
-    setTimeout(() => store.search(), 50)
+    if (onSearch) {
+      store.setLoading(true)
+      Promise.resolve(onSearch?.(store.toParams())).finally(() => {
+        setTimeout(() => store.setLoading(false), 100)
+      })
+    } else {
+      setTimeout(() => store.search(), 50)
+    }
   }
 
   return (
+    <SearchBarContext.Provider value={{ onSearch }}>
     <TableFilterContext.Provider value={store}>
       <ResizeObserver onResize={({ width }) => setState({ width })}>
         <div className={classNames('table-filter', className)} style={{ gap: GAP }}>
@@ -104,36 +121,33 @@ function Component(options: TableFilterProps) {
 
             // 未展开时，隐藏收起的字段
             if (isExpanded && !expanded && field.collapsed) {
-              return null
+              return null;
             }
 
             if (field.render) {
               return (
-                <div 
-                key={field.key}
+                <div
+                  key={field.key}
                   style={{
                     width:
                       field.type === 'date' && field.range
                         ? fieldWidth * 2 + GAP // 时间范围占两个，加上少了的间距
                         : fieldWidth,
                   }}
-                > 
-                  {
-                    React.cloneElement(field.render as React.ReactElement, {
-                      field: field,
-                      key: field.key,
-                      value: store.get(field),
-                      onValueChange: (value: any) => {
-                        store.set(field.key, value)
-                        if (['onChange', 'both'].includes(store.trigger!)) {
-                          store.search();
-                        }
+                >
+                  {React.cloneElement(field.render as React.ReactElement, {
+                    field: field,
+                    key: field.key,
+                    value: store.get(field),
+                    onValueChange: (value: any) => {
+                      store.set(field.key, value);
+                      if (['onChange', 'both'].includes(store.trigger!)) {
+                        store.search();
                       }
-                    })
-                  }
+                    },
+                  })}
                 </div>
-              )
-             
+              );
             }
 
             return (
@@ -176,7 +190,7 @@ function Component(options: TableFilterProps) {
                     afterSave={() => {
                       setShowSetting(false);
                       setVisibleFields(store.getVisibleFields());
-                      onCustomSave?.()
+                      onCustomSave?.();
                     }}
                   />
                 }
@@ -192,7 +206,7 @@ function Component(options: TableFilterProps) {
                   onClick={() => setShowSetting(!showSetting)}
                 >
                   <FilterOutlined
-                    className='filter-icon'
+                    className="filter-icon"
                     // className="tw-text-base tw-leading-none"
                     style={{ transform: 'scaleX(0.9)', fontSize: 16, lineHeight: 'none' }}
                   />
@@ -203,16 +217,16 @@ function Component(options: TableFilterProps) {
               // className="tw-flex-grow"
               style={{ flexGrow: 1 }}
             />
-             {isExpanded && (
+            {isExpanded && (
               <Button
                 // className={classNames('tw--mr-2', {
                 //   'tw-hidden': false,
                 // })}
-                style={{marginRight: '-10px'}}
-                type='link'
+                style={{ marginRight: '-10px' }}
+                type="link"
                 onClick={() => setExpanded(!expanded)}
               >
-                <span>{expanded ? '收起' : '展开'}</span>
+                <span>{expanded ? TableLocale?.close : TableLocale?.open}</span>
                 <span>{expanded ? <UpOutlined /> : <DownOutlined />}</span>
               </Button>
             )}
@@ -226,7 +240,7 @@ function Component(options: TableFilterProps) {
               type="second"
               onClick={handleReset}
             >
-              重置
+              {TableLocale?.filterReset}
             </Button>
             <Button
               // className={classNames({
@@ -240,14 +254,25 @@ function Component(options: TableFilterProps) {
                 store.loading ? Date.now().toString() : Date.now().toString() // 解决loading态和点击动效不丝滑
               }
               loading={store.loading}
-              onClick={() => store.search()}
+              onClick={() => {
+                if (onSearch) {
+                  store.setLoading(true)
+                  Promise.resolve(onSearch?.(store.toParams())).finally(() => {
+                    console.log(123123)
+                    setTimeout(() => store.setLoading(false), 100)
+                  })
+                } else {
+                  store.search()
+                }
+              }}
             >
-              查询
+              {TableLocale?.search}
             </Button>
           </div>
         </div>
       </ResizeObserver>
     </TableFilterContext.Provider>
+    </SearchBarContext.Provider>
   );
 }
 
@@ -268,4 +293,4 @@ const TableFilter = observer(Component);
 export default TableFilter;
 
 export * from './types'
-export { TableFilterContext }
+export { TableFilterContext, SearchBarContext }

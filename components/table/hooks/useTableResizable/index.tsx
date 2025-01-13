@@ -17,6 +17,25 @@ export interface UseTableResizableResult<DataType extends { [key: string]: any }
   components: TableProps<DataType>['components'];
 }
 
+const clearSelection = () => {
+  const _document = document as any;
+  if (window.getSelection) {
+    const selection = window.getSelection();
+    if (selection) {
+      if (selection.empty) {
+        // Chrome
+        selection.empty();
+      } else if (selection.removeAllRanges) {
+        // Firefox
+        selection.removeAllRanges();
+      }
+    }
+  } else if (_document?.selection && _document?.selection.empty) {
+    // IE
+    (_document.selection as any).empty();
+  }
+};
+
 const ResizableTitle = (
   props: React.HTMLAttributes<any> & {
     onResize: (e: React.SyntheticEvent<Element>, data: ResizeCallbackData) => void;
@@ -26,7 +45,7 @@ const ResizableTitle = (
   const { onResize, width: w, style, ...restProps } = props;
   const [width, setWidth] = useState(w || DEFAULT_COLUMNS_HEAD_WIDTH);
 
-  if (w === undefined) {
+  if (width === undefined) {
     return <th style={style} {...restProps} />;
   }
 
@@ -49,7 +68,13 @@ const ResizableTitle = (
         />
       }
       onResize={_handleResize}
-      draggableOpts={{ enableUserSelectHack: false }}
+      draggableOpts={{
+        enableUserSelectHack: false,
+        onMouseDown: () => {
+          // 处理Windows Chrome 和 Edge 松开鼠标依然能拖动的问题
+          clearSelection();
+        },
+      }}
     >
       <th
         style={{
@@ -95,10 +120,7 @@ const useTableResizable = <DataType extends { [key: string]: any }>(
         ...width,
         [getColumnKey(col)!]: clamp(
           size.width,
-          parseFloat(
-            (originCol?.width as string) ||
-              (MIN_COLUMN_WIDTH as unknown as string),
-          ),
+          parseFloat((originCol?.width as string) || (MIN_COLUMN_WIDTH as unknown as string)),
           MAX_COLUMN_WIDTH,
         ),
       }));

@@ -3,17 +3,29 @@ import React, { useContext, useEffect, useRef, useState } from 'react';
 import { observer } from 'mobx-react';
 import classNames from 'classnames';
 import type { CasCaderOption, FieldCascaderItem } from '../types';
-import TableFilterContext from '../context';
+import TableFilterContext, { SearchBarContext } from '../context';
 import Cascader, { CascaderProps } from '../../cascader';
+import { useLocaleReceiver } from '../../locale-provider/LocaleReceiver';
 
 export interface CascaderFilterProps extends HTMLAttributes<HTMLDivElement> {
   field: FieldCascaderItem;
 }
 
 const CascaderFilter: FC<CascaderFilterProps> = ({ className, field }) => {
-  const { options: originOptions, placeholder, changeOnSelect, label, multiple, useAntdDisplayRender, displayRender = null, showCheckedStrategy } = field;
+  const {
+    options: originOptions,
+    placeholder,
+    changeOnSelect,
+    label,
+    multiple,
+    useAntdDisplayRender,
+    displayRender = null,
+    showCheckedStrategy,
+  } = field;
   const store = useContext(TableFilterContext);
+  const searchBar = useContext(SearchBarContext)
   const isFetched = useRef(false);
+  const [TableLocale] = useLocaleReceiver('Table');
 
   const [options, setOptions] = useState<CasCaderOption[]>(
     Array.isArray(originOptions) ? originOptions : [],
@@ -23,12 +35,12 @@ const CascaderFilter: FC<CascaderFilterProps> = ({ className, field }) => {
     if (!originOptions) return setOptions([]);
     if (Array.isArray(originOptions)) setOptions(originOptions);
     if (typeof originOptions !== 'function') return;
-    if (store.isSaveOptions && store.optionData[field.key]) { 
-      setOptions(store.optionData[field.key] as CasCaderOption[])
-      return
+    if (store.isSaveOptions && store.optionData[field.key]) {
+      setOptions(store.optionData[field.key] as CasCaderOption[]);
+      return;
     }
     if (isFetched.current) {
-      return
+      return;
     }
     const res: any = originOptions();
     if (res.then) {
@@ -36,40 +48,40 @@ const CascaderFilter: FC<CascaderFilterProps> = ({ className, field }) => {
         if (store.isSaveOptions) {
           store.setOptionData(field.key, data);
         }
-        setOptions(data)
+        setOptions(data);
       });
     } else {
       setOptions(res);
     }
-    isFetched.current = true
+    isFetched.current = true;
   }, [originOptions]);
 
   /** 只展示最后一级 */
   const defaultDisplayRender = (labels: string[]) => <span>{labels[labels.length - 1]}</span>;
 
- /** 设置是否使用ant 内部渲染，或者使用自定义渲染，或者是渲染最后一级 */
- const renderDisplayRender = () => {
-  /** 如果想使用antd 内部渲染并且没有使用自定义渲染，那么直接使用ant 内部渲染 */
-  if (useAntdDisplayRender && !displayRender) {
-    return {}
-  }
-
-  if (displayRender) {
-    return {
-      displayRender: displayRender,
+  /** 设置是否使用ant 内部渲染，或者使用自定义渲染，或者是渲染最后一级 */
+  const renderDisplayRender = () => {
+    /** 如果想使用antd 内部渲染并且没有使用自定义渲染，那么直接使用ant 内部渲染 */
+    if (useAntdDisplayRender && !displayRender) {
+      return {};
     }
-  }
-  return {
-    displayRender: defaultDisplayRender,
-  }
-}
+
+    if (displayRender) {
+      return {
+        displayRender: displayRender,
+      };
+    }
+    return {
+      displayRender: defaultDisplayRender,
+    };
+  };
 
   return (
     <Cascader
       className={classNames(className)}
       style={{ width: '100%' }}
       bordered={false}
-      placeholder={placeholder || `请选择${label}`}
+      placeholder={placeholder || `${TableLocale?.pleaseSelect}${label?.toLowerCase()}`}
       allowClear
       changeOnSelect={changeOnSelect ?? true}
       expandTrigger="hover"
@@ -81,7 +93,11 @@ const CascaderFilter: FC<CascaderFilterProps> = ({ className, field }) => {
       onChange={(value: any) => {
         store.set(field, value);
         if (['onChange', 'both'].includes(store.trigger!)) {
-          store.search();
+          if (searchBar?.onSearch) {
+            searchBar.onSearch(store.toParams())
+          } else {
+            store.search();
+          }
         }
       }}
       onFocus={() => {
