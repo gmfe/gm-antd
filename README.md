@@ -25,6 +25,9 @@ Fork 自antd@4.24.0，做 AntD 组件二次开发及文档使用。[在线文档
 
 ```
 
+## 注意
+mac 可能需要删掉 `bundlesize` 依赖，不然install 不下来, `yarn remove bundlesize`
+
 ## 开发流程
 
 在你 clone 了 antd 的代码并且使用 yarn install 安装完依赖后，你还可以运行下面几个常用的命令：
