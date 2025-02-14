@@ -58,7 +58,7 @@ const SelectFilter: FC<SelectFilterProps> = ({ className, field }) => {
     }
 
     if (first.current) {
-      fetch();
+      setTimeout(fetch, 300);
       first.current = false;
     }
   }, [originOptions, searchValue]);
@@ -72,6 +72,11 @@ const SelectFilter: FC<SelectFilterProps> = ({ className, field }) => {
       maxTagCount="responsive"
       placeholder={placeholder || `${TableLocale?.pleaseSelect}${label?.toLowerCase()}`}
       value={options.length ? value : undefined}
+      onDropdownVisibleChange={(open) => {
+        if (open) {
+          fetch();
+        }
+      }}
       onChange={value => {
         const oldValue = store.get(field);
         let val: typeof value | undefined = value;
