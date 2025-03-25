@@ -1,6 +1,6 @@
 import { clamp, cloneDeep, merge, pick } from 'lodash';
 import type { SyntheticEvent } from 'react';
-import React, { useState, useRef, useMemo } from 'react';
+import React, { useState, useRef, useMemo, useEffect } from 'react';
 import type { ResizeCallbackData } from 'react-resizable';
 import { Resizable } from 'react-resizable';
 import type { ColumnType } from '../../interface';
@@ -38,16 +38,24 @@ const clearSelection = () => {
 
 const ResizableTitle = (
   props: React.HTMLAttributes<any> & {
-    onResize: (e: React.SyntheticEvent<Element>, data: ResizeCallbackData) => void;
+    onResize: (e: React.SyntheticEvent<Element>, data: ResizeCallbackData, rect?: any) => void;
     width: number;
   },
 ) => {
   const { onResize, width: w, style, ...restProps } = props;
   const [width, setWidth] = useState(w || DEFAULT_COLUMNS_HEAD_WIDTH);
+  const ref = useRef<HTMLTableHeaderCellElement | null>(null)
 
-  if (width === undefined) {
-    return <th style={style} {...restProps} />;
-  }
+  useEffect(() => {
+    if (w) {
+      return
+    }
+    if (ref.current) {
+      const rect = ref.current?.getBoundingClientRect()
+      setWidth(rect?.width || w)
+    }
+  }, [])
+
 
   const _handleResize = (e: SyntheticEvent<Element>, data: ResizeCallbackData) => {
     // eslint-disable-next-line @typescript-eslint/no-unused-expressions
@@ -77,6 +85,7 @@ const ResizableTitle = (
       }}
     >
       <th
+        ref={ref}
         style={{
           ...style,
           minWidth: w,
@@ -116,13 +125,14 @@ const useTableResizable = <DataType extends { [key: string]: any }>(
       const originCol = originColumns.current?.find(
         item => getColumnKey(item) === getColumnKey(col),
       );
+     
       setWidth(width => ({
         ...width,
         [getColumnKey(col)!]: clamp(
           size.width,
           parseFloat((originCol?.width as string) || (MIN_COLUMN_WIDTH as unknown as string)),
           MAX_COLUMN_WIDTH,
-        ),
+        )
       }));
     };
 

@@ -258,7 +258,6 @@ function Component(options: TableFilterProps) {
                 if (onSearch) {
                   store.setLoading(true)
                   Promise.resolve(onSearch?.(store.toParams())).finally(() => {
-                    console.log(123123)
                     setTimeout(() => store.setLoading(false), 100)
                   })
                 } else {
