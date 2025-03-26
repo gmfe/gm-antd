@@ -15,7 +15,7 @@ export interface SelectFilterProps extends HTMLAttributes<HTMLDivElement> {
 const { Option, OptGroup } = Select;
 
 const SelectFilter: FC<SelectFilterProps> = ({ className, field }) => {
-  const { multiple, options: originOptions, placeholder, remote, label, selectProps } = field;
+  const { multiple, options: originOptions, placeholder, remote, maxLength, label, selectProps } = field;
   const store = useContext(TableFilterContext);
   const searchBar = useContext(SearchBarContext)
   const first = useRef(true);
@@ -72,18 +72,25 @@ const SelectFilter: FC<SelectFilterProps> = ({ className, field }) => {
       maxTagCount="responsive"
       placeholder={placeholder || `${TableLocale?.pleaseSelect}${label?.toLowerCase()}`}
       value={options.length ? value : undefined}
+      {...selectProps}
       onDropdownVisibleChange={(open) => {
         if (open) {
           fetch();
         }
       }}
-      onChange={value => {
+      onChange={(value, option) => {
         const oldValue = store.get(field);
         let val: typeof value | undefined = value;
+        const isArray = Array.isArray(val)
+        selectProps?.onChange?.(value, option)
         if (typeof val === 'string' || typeof val === 'number') {
           if (val === '') val = undefined;
-        } else if (Array.isArray(val)) {
+        } else if (isArray) {
           if (val.length === 0) val = undefined;
+        }
+        if (isArray && maxLength && val.length > maxLength) {
+          // 删除前面的值，保留maxLength个
+          value = val.slice(0, maxLength);
         }
         store.set(field, value);
         if (['onChange', 'both'].includes(store.trigger!) && value !== oldValue) {
@@ -111,7 +118,6 @@ const SelectFilter: FC<SelectFilterProps> = ({ className, field }) => {
       onBlurCapture={() => {
         store.focusedFieldKey = '';
       }}
-      {...selectProps}
     >
       {Object.keys(groups).length < 2 &&
         options.map(item => (

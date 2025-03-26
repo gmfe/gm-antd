@@ -151,6 +151,8 @@ export interface FieldSelectItem<
   defaultValue?: Multiple extends true ? S[0]['value'][] : S[0]['value'];
   /** 远程搜索模式，默认为false即前端筛选模式 */
   remote?: boolean;
+  // 限制多选时的最大选择数量
+  maxLength?: number;
   selectProps?: SelectProps;
   /** 同 {@link FieldInputItem.toParam} */
   toParam?: ToParam<Multiple extends true ? S[0]['value'][] : S[0]['value'], API>;
