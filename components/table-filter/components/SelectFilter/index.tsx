@@ -15,7 +15,7 @@ export interface SelectFilterProps extends HTMLAttributes<HTMLDivElement> {
 const { Option, OptGroup } = Select;
 
 const SelectFilter: FC<SelectFilterProps> = ({ className, field }) => {
-  const { multiple, options: originOptions, placeholder, remote, label } = field;
+  const { multiple, options: originOptions, placeholder, remote, label, selectProps } = field;
   const store = useContext(TableFilterContext);
   const searchBar = useContext(SearchBarContext)
   const first = useRef(true);
@@ -111,6 +111,7 @@ const SelectFilter: FC<SelectFilterProps> = ({ className, field }) => {
       onBlurCapture={() => {
         store.focusedFieldKey = '';
       }}
+      {...selectProps}
     >
       {Object.keys(groups).length < 2 &&
         options.map(item => (

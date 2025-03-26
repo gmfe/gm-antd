@@ -6,7 +6,7 @@ import type { RangeValue, PickerMode } from 'rc-picker/lib/interface';
 import type { UsePaginationResult as GMUsePaginationResult } from '@gm-common/hooks';
 import type { RangePickerProps } from '../date-picker';
 import type { PickerDateProps, RangePickerDateProps } from '../date-picker/generatePicker';
-import { CascaderProps } from 'antd';
+import { CascaderProps, SelectProps } from 'antd';
 
 // export type TableListSourceMapType = typeof TableListSourceMap
 // export type UsePaginationResult = {
@@ -151,6 +151,7 @@ export interface FieldSelectItem<
   defaultValue?: Multiple extends true ? S[0]['value'][] : S[0]['value'];
   /** 远程搜索模式，默认为false即前端筛选模式 */
   remote?: boolean;
+  selectProps?: SelectProps;
   /** 同 {@link FieldInputItem.toParam} */
   toParam?: ToParam<Multiple extends true ? S[0]['value'][] : S[0]['value'], API>;
 }
