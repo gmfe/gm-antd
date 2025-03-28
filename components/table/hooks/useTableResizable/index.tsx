@@ -139,12 +139,12 @@ const useTableResizable = <DataType extends { [key: string]: any }>(
   return {
     columns: columns!.map((col, index) => {
       const onHeaderCell = () => ({
-        width: col.width,
+        width: width[getColumnKey(col)!] || col.width || MIN_COLUMN_WIDTH ,
         onResize: handleResize(col) as any,
       });
       return {
         ...col,
-        width: width[getColumnKey(col)!] || col.width,
+        width: width[getColumnKey(col)!] || col.width || MIN_COLUMN_WIDTH,
         // 固定列、最后一列不支持拖拽
         onHeaderCell: col.fixed || index === columns.length - 1 ? undefined : onHeaderCell,
       };
