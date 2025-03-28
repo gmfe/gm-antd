@@ -137,7 +137,7 @@ const useTableResizable = <DataType extends { [key: string]: any }>(
     };
 
   return {
-    columns: columns!.map((col, index) => {
+    columns: columns!.filter((_item) => _item.key !== "PLACEHOLDER").map((col, index) => {
       const onHeaderCell = () => ({
         width: width[getColumnKey(col)!] || col.width || MIN_COLUMN_WIDTH ,
         onResize: handleResize(col) as any,
