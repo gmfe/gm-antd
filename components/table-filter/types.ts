@@ -140,6 +140,15 @@ export interface FieldSelectItem<
   multiple?: Multiple;
   allowClear?: boolean;
   /**
+   * 触发搜索的方式，默认为`manual`；
+   *
+   * - `manual` 点击“查询”按钮后才查询；
+   * - `onChange` 字段表单变化后查询，且查询和重置按钮会被隐藏；
+   * - `both` 字段表单变化后查询，点击“查询”按钮后查询；
+   * - `onBlur` 失去焦点时查询，可以使用 onBlur 事件触发查询；
+   */
+  trigger?: 'onChange' | 'manual' | 'both' | 'onBlur';
+  /**
    * 列表选项，支持数组、函数、异步函数
    *
    * 支持远程搜索

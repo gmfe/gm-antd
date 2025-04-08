@@ -15,7 +15,7 @@ export interface SelectFilterProps extends HTMLAttributes<HTMLDivElement> {
 const { Option, OptGroup } = Select;
 
 const SelectFilter: FC<SelectFilterProps> = ({ className, field }) => {
-  const { multiple, options: originOptions, placeholder, remote, maxLength, label, selectProps } = field;
+  const { multiple, options: originOptions, placeholder, remote, maxLength, label, selectProps, trigger } = field;
   const store = useContext(TableFilterContext);
   const searchBar = useContext(SearchBarContext)
   const first = useRef(true);
@@ -93,7 +93,7 @@ const SelectFilter: FC<SelectFilterProps> = ({ className, field }) => {
           value = val.slice(0, maxLength);
         }
         store.set(field, value);
-        if (['onChange', 'both'].includes(store.trigger!) && value !== oldValue) {
+        if (['onChange', 'both'].includes(trigger || store.trigger!) && value !== oldValue) {
           if (searchBar?.onSearch) {
             searchBar.onSearch(store.toParams())
           } else {
@@ -111,6 +111,15 @@ const SelectFilter: FC<SelectFilterProps> = ({ className, field }) => {
       filterOption={(input, option) =>
         (option!.children as unknown as string)?.toLowerCase().includes(input.toLowerCase())
       }
+      onBlur={() => {
+        if (trigger === 'onBlur') {
+          if (searchBar?.onSearch) {
+            searchBar.onSearch(store.toParams())
+          } else {
+            store.search();
+          }
+        }
+      }}
       onFocus={() => {
         store.focusedFieldKey = field.key;
       }}
