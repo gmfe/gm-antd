@@ -88,7 +88,7 @@ const SelectFilter: FC<SelectFilterProps> = ({ className, field }) => {
         } else if (isArray) {
           if (val.length === 0) val = undefined;
         }
-        if (isArray && maxLength && val.length > maxLength) {
+        if (val && isArray && maxLength && val.length > maxLength) {
           // 删除前面的值，保留maxLength个
           value = val.slice(0, maxLength);
         }
