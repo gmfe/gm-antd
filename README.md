@@ -40,6 +40,15 @@ mac 可能需要删掉 `bundlesize` 依赖，不然install 不下来, `yarn remo
 - `yarn site` 构建静态文档站到\_site 目录
 - `npx bumpp` 给当前包打tag，push 上去后会执行github action
 
+## link
+
+如果是在erp 那边使用`yarn link` 你可能需要执行一下步骤
+1. 修改package.json中的`name`为`gm-antd`  => `antd`
+1. 修改package.json中的`main` | `module`为 `components/index.tsx`
+1. 执行 `yarn link`
+1. 执行 `yarn start`
+1. erp 执行 `yarn link "antd"`
+
 ### gm_api
 
 Demo 中使用 gm_api 接口需要先初始化:

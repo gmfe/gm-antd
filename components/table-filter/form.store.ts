@@ -326,7 +326,6 @@ class TableFilterStore {
   }
 
   searchNow = () => {
-    console.log("searchNow")
     const params = this.toParams();
     this.loading = true;
     if (this._paginationResult) {

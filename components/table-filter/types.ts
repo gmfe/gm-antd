@@ -6,7 +6,7 @@ import type { RangeValue, PickerMode } from 'rc-picker/lib/interface';
 import type { UsePaginationResult as GMUsePaginationResult } from '@gm-common/hooks';
 import type { RangePickerProps } from '../date-picker';
 import type { PickerDateProps, RangePickerDateProps } from '../date-picker/generatePicker';
-import { CascaderProps } from 'antd';
+import { CascaderProps, SelectProps } from 'antd';
 
 // export type TableListSourceMapType = typeof TableListSourceMap
 // export type UsePaginationResult = {
@@ -141,6 +141,15 @@ export interface FieldSelectItem<
   multiple?: Multiple;
   allowClear?: boolean;
   /**
+   * 触发搜索的方式，默认为`manual`；
+   *
+   * - `manual` 点击“查询”按钮后才查询；
+   * - `onChange` 字段表单变化后查询，且查询和重置按钮会被隐藏；
+   * - `both` 字段表单变化后查询，点击“查询”按钮后查询；
+   * - `onBlur` 失去焦点时查询，可以使用 onBlur 事件触发查询；
+   */
+  trigger?: 'onChange' | 'manual' | 'both' | 'onBlur';
+  /**
    * 列表选项，支持数组、函数、异步函数
    *
    * 支持远程搜索
@@ -152,6 +161,9 @@ export interface FieldSelectItem<
   defaultValue?: Multiple extends true ? S[0]['value'][] : S[0]['value'];
   /** 远程搜索模式，默认为false即前端筛选模式 */
   remote?: boolean;
+  // 限制多选时的最大选择数量
+  maxLength?: number;
+  selectProps?: SelectProps;
   /** 同 {@link FieldInputItem.toParam} */
   toParam?: ToParam<Multiple extends true ? S[0]['value'][] : S[0]['value'], API>;
 }
