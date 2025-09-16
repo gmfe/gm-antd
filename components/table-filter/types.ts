@@ -51,6 +51,7 @@ export interface TableFilterProps
   /** 设置保存回调 */
   onCustomSave?: () => void
   onSearch?: (params: any) => void
+  resetFn?: (params?: any) => void
 }
 
 /** 表单项 */
