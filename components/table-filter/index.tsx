@@ -36,6 +36,7 @@ function Component(options: TableFilterProps) {
     isSaveOptions = false,
     onCustomSave,
     onSearch,
+    resetFn
   } = options;
   const id = options.id ?? new URL(location.href.replace('/#', '')).pathname;
 
@@ -97,6 +98,7 @@ function Component(options: TableFilterProps) {
 
   const handleReset = () => {
     store.reset(skipInitialValues)
+    resetFn && resetFn()
     if (onSearch) {
       store.setLoading(true)
       Promise.resolve(onSearch?.(store.toParams())).finally(() => {

@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8" />
+  <title>订单打印模板</title>
+  <style>
+    @media print {
+      @page {
+        size: A4;
+        margin: 20mm;
+      }
+
+      body {
+        font-family: "Microsoft YaHei", sans-serif;
+        font-size: 12px;
+        line-height: 1.5;
+      }
+
+      .print-container {
+        width: 100%;
+        overflow: hidden;
+      }
+
+      .table-container {
+        display: table;
+        width: 100%;
+        border-collapse: collapse;
+        page-break-inside: avoid;
+      }
+
+      .table-header {
+        display: table-header-group;
+        background-color: #f0f0f0;
+      }
+
+      .table-row {
+        display: table-row;
+        page-break-inside: avoid;
+      }
+
+      .table-cell {
+        display: table-cell;
+        padding: 6px;
+        border: 1px solid #ccc;
+        text-align: center;
+      }
+
+      .table-cell:nth-child(odd) {
+        width: 100px;
+      }
+
+      .table-cell:nth-child(even) {
+        width: 150px;
+      }
+
+      .header-cell {
+        font-weight: bold;
+        background-color: #ddd;
+      }
+
+      .footer {
+        margin-top: 20px;
+        text-align: center;
+        font-size: 10px;
+        color: #666;
+      }
+    }
+
+    /* 非打印时隐藏 */
+    @media screen {
+      .print-container {
+        max-width: 800px;
+        margin: 20px auto;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="print-container">
+    <h2 style="text-align: center;">2025年8月18日</h2>
+
+    <div class="table-container">
+      <!-- 表头 -->
+      <div class="table-header">
+        <div class="table-row">
+          <div class="table-cell header-cell">序号</div>
+          <div class="table-cell header-cell">客户名称</div>
+          <div class="table-cell header-cell">订单备注</div>
+          <div class="table-cell header-cell">商品名称</div>
+          <div class="table-cell header-cell">订单数量+备注</div>
+          <div class="table-cell header-cell">序号</div>
+          <div class="table-cell header-cell">客户名称</div>
+          <div class="table-cell header-cell">订单备注</div>
+          <div class="table-cell header-cell">商品名称</div>
+          <div class="table-cell header-cell">订单数量+备注</div>
+          <div class="table-cell header-cell">序号</div>
+          <div class="table-cell header-cell">客户名称</div>
+          <div class="table-cell header-cell">订单备注</div>
+          <div class="table-cell header-cell">商品名称</div>
+          <div class="table-cell header-cell">订单数量+备注</div>
+        </div>
+      </div>
+
+      <!-- 数据行 -->
+      <div class="table-row">
+        <div class="table-cell">1</div>
+        <div class="table-cell">客户A</div>
+        <div class="table-cell">备注1</div>
+        <div class="table-cell">商品1</div>
+        <div class="table-cell">10件</div>
+        <div class="table-cell">1</div>
+        <div class="table-cell">客户B</div>
+        <div class="table-cell">备注2</div>
+        <div class="table-cell">商品2</div>
+        <div class="table-cell">5件</div>
+        <div class="table-cell">1</div>
+        <div class="table-cell">客户C</div>
+        <div class="table-cell">备注3</div>
+        <div class="table-cell">商品3</div>
+        <div class="table-cell">8件</div>
+      </div>
+
+      <!-- 更多数据行... -->
+      <!-- 可以用 JavaScript 动态生成或从后端填充 -->
+
+      <!-- 示例：再加几行 -->
+      <div class="table-row">
+        <div class="table-cell">2</div>
+        <div class="table-cell">客户A</div>
+        <div class="table-cell">备注1</div>
+        <div class="table-cell">商品4</div>
+        <div class="table-cell">15件</div>
+        <div class="table-cell">2</div>
+        <div class="table-cell">客户B</div>
+        <div class="table-cell">备注2</div>
+        <div class="table-cell">商品5</div>
+        <div class="table-cell">3件</div>
+        <div class="table-cell">2</div>
+        <div class="table-cell">客户C</div>
+        <div class="table-cell">备注3</div>
+        <div class="table-cell">商品6</div>
+        <div class="table-cell">12件</div>
+      </div>
+
+      <!-- 继续添加更多数据 -->
+      <!-- 当数据超过一页时，会自动分页并重复表头 -->
+    </div>
+
+    <div class="footer">
+      打印时间：2025年8月18日
+    </div>
+  </div>
+
+</body>
+</html>
