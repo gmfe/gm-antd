@@ -75,7 +75,7 @@ const TableContainer = forwardRef<Ref, ThHTMLAttributes<HTMLDivElement>>(
     };
 
     return (
-      <div className="virtual-table-container">
+      <div className="gm-antd-virtual-table-container">
         <table
           style={{
             ...style,
@@ -101,10 +101,10 @@ const TableContainer = forwardRef<Ref, ThHTMLAttributes<HTMLDivElement>>(
                       <Th
                         key="rowSelection"
                         className={classNames(
-                          'ant-table-cell virtual-table-cell ant-row-selection',
+                          'ant-table-cell gm-antd-virtual-table-cell ant-row-selection',
                           {
-                            'virtual-table-cell-fixed-left': rowSelection.fixed === 'left',
-                            'virtual-table-cell-fixed-right': rowSelection.fixed === 'right',
+                            'gm-antd-virtual-table-cell-fixed-left': rowSelection.fixed === 'left',
+                            'gm-antd-virtual-table-cell-fixed-right': rowSelection.fixed === 'right',
                           },
                         )}
                         width={rowSelection?.columnWidth}
@@ -118,9 +118,9 @@ const TableContainer = forwardRef<Ref, ThHTMLAttributes<HTMLDivElement>>(
                     )}
                     <Th
                       key={column.key || columnIndex}
-                      className={classNames('ant-table-cell virtual-table-cell', column.className, {
-                        'virtual-table-cell-fixed-left': column.fixed === 'left',
-                        'virtual-table-cell-fixed-right': column.fixed === 'right',
+                      className={classNames('ant-table-cell gm-antd-virtual-table-cell', column.className, {
+                        'gm-antd-virtual-table-cell-fixed-left': column.fixed === 'left',
+                        'gm-antd-virtual-table-cell-fixed-right': column.fixed === 'right',
                       })}
                       width={column.width}
                       onResize={(...args: any) => {
