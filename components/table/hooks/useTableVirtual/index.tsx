@@ -70,7 +70,7 @@ function useTableVirtual({
         <div className="resize-observer" />
       </ResizeObserver>
       <VariableSizeList
-        className="virtual-table"
+        className="gm-antd-virtual-table"
         style={{
           paddingBottom: 10,
         }}
@@ -117,12 +117,12 @@ function useTableVirtual({
                       <td
                         key="rowSelection"
                         className={classNames(
-                          'ant-table-cell virtual-table-cell ant-row-selection',
+                          'ant-table-cell gm-antd-virtual-table-cell ant-row-selection',
                           column.className,
                           {
-                            'virtual-table-cell-fixed-left': rowSelection.fixed === 'left',
-                            'virtual-table-cell-fixed-right': rowSelection.fixed === 'right',
-                            'virtual-table-cell-last': columnIndex === columns!.length - 1,
+                            'gm-antd-virtual-table-cell-fixed-left': rowSelection.fixed === 'left',
+                            'gm-antd-virtual-table-cell-fixed-right': rowSelection.fixed === 'right',
+                            'gm-antd-virtual-table-cell-last': columnIndex === columns!.length - 1,
                           },
                         )}
                         style={{
@@ -137,10 +137,10 @@ function useTableVirtual({
                     )}
                     <td
                       key={column.key || columnIndex}
-                      className={classNames('ant-table-cell virtual-table-cell', column.className, {
-                        'virtual-table-cell-fixed-left': column.fixed === 'left',
-                        'virtual-table-cell-fixed-right': column.fixed === 'right',
-                        'virtual-table-cell-last': columnIndex === columns!.length - 1,
+                      className={classNames('ant-table-cell gm-antd-virtual-table-cell', column.className, {
+                        'gm-antd-virtual-table-cell-fixed-left': column.fixed === 'left',
+                        'gm-antd-virtual-table-cell-fixed-right': column.fixed === 'right',
+                        'gm-antd-virtual-table-cell-last': columnIndex === columns!.length - 1,
                       })}
                       style={{
                         minWidth: column.width,
