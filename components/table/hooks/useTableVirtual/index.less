@@ -1,11 +1,12 @@
 // 模拟出antd table的样式
 
-.virtual-table .ant-table-container::before,
-.virtual-table .ant-table-container::after {
+.gm-antd-virtual-table .ant-table-container::before,
+.gm-antd-virtual-table .ant-table-container::after {
   display: none;
 }
 
-.virtual-table-cell {
+
+.gm-antd-virtual-table-cell {
   box-sizing: border-box;
   margin-bottom: 1px;
   padding: 0 16px !important;
@@ -26,7 +27,9 @@
   }
 }
 
-.virtual-table-container {
+
+
+.gm-antd-virtual-table-container {
   .ant-table-thead {
     display: block;
     background-color: #fafafa;
@@ -45,8 +48,8 @@
     min-width: 100%;
     border-bottom: 1px solid rgba(0, 0, 0, 0.06);
 
-    .virtual-table-cell-fixed-left,
-    .virtual-table-cell-fixed-right {
+    .gm-antd-virtual-table-cell-fixed-left,
+    .gm-antd-virtual-table-cell-fixed-right {
       border-bottom: 1px solid rgba(0, 0, 0, 0.06);
 
       &::before {
@@ -63,15 +66,15 @@
     }
 
     &.ant-table-row-selected {
-      .virtual-table-cell-fixed-left::before,
-      .virtual-table-cell-fixed-right::before {
+      .gm-antd-virtual-table-cell-fixed-left::before,
+      .gm-antd-virtual-table-cell-fixed-right::before {
         background-color: #c3daff;
       }
     }
 
     &:hover {
-      .virtual-table-cell-fixed-left::before,
-      .virtual-table-cell-fixed-right::before {
+      .gm-antd-virtual-table-cell-fixed-left::before,
+      .gm-antd-virtual-table-cell-fixed-right::before {
         background-color: #f5f5f5;
       }
     }
