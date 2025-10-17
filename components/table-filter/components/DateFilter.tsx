@@ -17,7 +17,7 @@ export interface DateFilterProps extends HTMLAttributes<HTMLDivElement> {
 const DateFilter: FC<DateFilterProps> = ({ field }) => {
   const store = useContext(TableFilterContext);
   const [tableFilterLocale] = useLocaleReceiver('TableFilter');
-  const searchBar = useContext(SearchBarContext)
+  const searchBar = useContext(SearchBarContext);
 
   return (
     <Observer>
@@ -34,7 +34,7 @@ const DateFilter: FC<DateFilterProps> = ({ field }) => {
                 store.set(field, moment!);
                 if (['onChange', 'both'].includes(store.trigger!)) {
                   if (searchBar?.onSearch) {
-                    searchBar.onSearch(store.toParams())
+                    searchBar.onSearch(store.toParams());
                   } else {
                     store.search();
                   }
@@ -76,7 +76,7 @@ const DateFilter: FC<DateFilterProps> = ({ field }) => {
             ranges={field.ranges ?? defaultRanges}
             value={value!}
             onChange={moments => {
-              if (moments?.[1]) moments[1] = moments[1].endOf('day');
+              if (moments?.[1]) moments[1] = field?.showTime ? moments[1] : moments[1].endOf('day');
               store.set(field, moments);
               if (['onChange', 'both'].includes(store.trigger!)) {
                 store.search();
