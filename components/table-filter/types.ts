@@ -196,11 +196,14 @@ export interface FieldDateRangeItem<API extends API_Method = API_Method> extends
   /** Antd,增加时间选择功能 */
   showTime?: RangePickerDateProps<Moment>['showTime'];
   /** Antd,不可选择的日期 */
-  disabledDate?: RangePickerProps['disabledDate'];
+  disabledDate?: (date: Moment, { begin, end }?: { begin?: Moment; end?: Moment }) => any;
   /** Antd, 设置选择器类型 */
   picker?: PickerMode;
+  /** 打开选择器时是否清空已选择的值 */
+  openClearValues?: boolean;
   /** 同 {@link FieldInputItem.toParam]} */
   toParam?: ToParam<RangeValue<Moment>, API>;
+  onCalendarChange?: (val: RangeValue<Moment>, dateStrings: string[], info: any) => void;
   allowClear?: boolean;
 }
 
