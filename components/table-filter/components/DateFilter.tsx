@@ -7,6 +7,7 @@ import type { FieldDateItem, FieldDateRangeItem } from '../types';
 import TableFilterContext, { SearchBarContext } from '../context';
 import DatePicker from '../../date-picker';
 import { useLocaleReceiver } from '../../locale-provider/LocaleReceiver';
+import { RangeValue } from 'rc-picker/lib/interface';
 
 const { RangePicker } = DatePicker;
 
@@ -18,6 +19,7 @@ const DateFilter: FC<DateFilterProps> = ({ field }) => {
   const store = useContext(TableFilterContext);
   const [tableFilterLocale] = useLocaleReceiver('TableFilter');
   const searchBar = useContext(SearchBarContext);
+  const calendarDates = React.useRef<RangeValue<any>>(null);
 
   return (
     <Observer>
@@ -52,7 +54,7 @@ const DateFilter: FC<DateFilterProps> = ({ field }) => {
             />
           );
         }
-        const commonProps = pick(field, ['disabledDate', 'showTime', 'allowClear']);
+        const commonProps = pick(field, ['disabledDate', 'showTime', 'allowClear', 'onCalendarChange']);
         const defaultRanges: FieldDateRangeItem['ranges'] = {
           [tableFilterLocale?.today || '']: [moment().startOf('day'), moment().endOf('day')],
           [tableFilterLocale?.yesterday || '']: [
@@ -76,6 +78,7 @@ const DateFilter: FC<DateFilterProps> = ({ field }) => {
             ranges={field.ranges ?? defaultRanges}
             value={value!}
             onChange={moments => {
+              calendarDates.current = moments;
               if (moments?.[1]) moments[1] = field?.showTime ? moments[1] : moments[1].endOf('day');
               store.set(field, moments);
               if (['onChange', 'both'].includes(store.trigger!)) {
@@ -91,6 +94,21 @@ const DateFilter: FC<DateFilterProps> = ({ field }) => {
               store.focusedFieldKey = '';
             }}
             {...commonProps}
+            disabledDate={(date) => {
+              return commonProps?.disabledDate?.(date, { begin: calendarDates.current?.[0], end: calendarDates.current?.[1] })
+            }}
+            onOpenChange={(open) => {
+              if (open) {
+                if (field.openClearValues) {
+                  calendarDates.current = null;
+                  store.set(field, [null, null]);
+                }
+              }
+            }}
+            onCalendarChange={(val, dateStrings, info) => {
+              calendarDates.current = val
+              commonProps?.onCalendarChange?.(val as any, dateStrings, info)
+            }}
           />
         );
       }}
