@@ -168,6 +168,9 @@ const InternalButton: React.ForwardRefRenderFunction<unknown, ButtonProps> = (pr
   const [hasTwoCNChar, setHasTwoCNChar] = React.useState(false);
   const { getPrefixCls, autoInsertSpaceInButton, direction } = React.useContext(ConfigContext);
   const buttonRef = (ref as any) || React.createRef<HTMLElement>();
+
+  const loadingRef = React.useRef<boolean>(!!innerLoading);
+
   const isNeedInserted = () =>
     React.Children.count(children) === 1 && !icon && !isUnBorderedButtonType(type);
 
@@ -188,6 +191,7 @@ const InternalButton: React.ForwardRefRenderFunction<unknown, ButtonProps> = (pr
 
   // =============== Update Loading ===============
   const loadingOrDelay: Loading = typeof loading === 'boolean' ? loading : loading?.delay || true;
+  const finalLoading = innerLoading || autoLoading;
 
   React.useEffect(() => {
     let delayTimer: number | null = null;
@@ -211,6 +215,10 @@ const InternalButton: React.ForwardRefRenderFunction<unknown, ButtonProps> = (pr
     };
   }, [loadingOrDelay]);
 
+  React.useEffect(() => {
+    loadingRef.current = !!finalLoading;
+  }, [finalLoading]);
+
   React.useEffect(fixTwoCNChar, [buttonRef]);
 
   const handleClick = (e: React.MouseEvent<HTMLButtonElement | HTMLAnchorElement, MouseEvent>) => {
@@ -226,10 +234,12 @@ const InternalButton: React.ForwardRefRenderFunction<unknown, ButtonProps> = (pr
 
       // @ts-ignore
       if (result && window.toString.call(result) === '[object Promise]') {
+        loadingRef.current = true;
         setAutoLoading(true);
         (result as Promise<any>)
           .finally(() => {
             setAutoLoading(false);
+            loadingRef.current = false;
           });
       }
     }
@@ -255,7 +265,6 @@ const InternalButton: React.ForwardRefRenderFunction<unknown, ButtonProps> = (pr
   const sizeFullname = compactSize || groupSize || customizeSize || size;
   const sizeCls = sizeFullname ? sizeClassNameMap[sizeFullname] || '' : '';
 
-  const finalLoading = innerLoading || autoLoading;
   const iconType = finalLoading ? 'loading' : icon;
 
   const linkButtonRestProps = omit(rest as AnchorButtonProps & { navigate: any }, ['navigate']);
