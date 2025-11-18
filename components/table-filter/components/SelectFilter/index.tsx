@@ -129,7 +129,6 @@ const SelectFilter: FC<SelectFilterProps> = ({ className, field }) => {
       searchValue={searchValue}
       onSearch={val => setSearchValue(val?.trim())}
       showSearch
-      optionFilterProp="label"
       allowClear={field.allowClear}
       dropdownMatchSelectWidth={false}
       // dropdownAlign={{ offset: [-10, 2] }}
