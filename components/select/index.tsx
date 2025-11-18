@@ -400,7 +400,7 @@ const InternalSelect = <OptionType extends BaseOptionType | DefaultOptionType = 
     return (
       <div className={`${prefixCls}-dropdown-render`}>
         {menu}
-        {isRenderDefaultBottom && (props.mode === 'multiple' || props.mode === 'tags') && !(props.children || props.optionFilterProp === 'label') && (
+        {availableOptionValues.length > 0 && isRenderDefaultBottom && (props.mode === 'multiple' || props.mode === 'tags') && !(props.children || props.optionFilterProp === 'label') && (
           <div className={`${prefixCls}-dropdown-render-section`}>
             {
               isShowCheckedAll && (
@@ -420,7 +420,7 @@ const InternalSelect = <OptionType extends BaseOptionType | DefaultOptionType = 
                     checked={filterDeleted}
                     onChange={handleFilterDeletedChange}
                   />
-                  <span style={{ fontSize: '12px' }}>过滤已删除商品</span>
+                  <span style={{ fontSize: '12px' }}>过滤已删除的数据</span>
                 </Space>
               )
             }
