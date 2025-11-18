@@ -23,8 +23,11 @@ for (let i = 10; i < 36; i++) {
   options.push({
     label: i.toString(36) + i,
     value: i.toString(36) + i,
+    deleted: i % 3 === 0
   });
 }
+
+
 
 const handleChange = (value: string[]) => {
   console.log(`selected ${value}`);
@@ -40,6 +43,7 @@ const App: React.FC = () => (
       defaultValue={['a10', 'c12']}
       onChange={handleChange}
       options={options}
+      isRenderDefaultBottom
     />
     <br />
     <Select
@@ -51,6 +55,8 @@ const App: React.FC = () => (
       onChange={handleChange}
       options={options}
     />
+    
+    <br />
   </>
 );
 
