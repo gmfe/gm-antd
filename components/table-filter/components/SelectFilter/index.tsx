@@ -12,8 +12,6 @@ export interface SelectFilterProps extends HTMLAttributes<HTMLDivElement> {
   field: FieldSelectItem;
 }
 
-const { Option, OptGroup } = Select;
-
 const SelectFilter: FC<SelectFilterProps> = ({ className, field }) => {
   const {
     multiple,
@@ -32,6 +30,32 @@ const SelectFilter: FC<SelectFilterProps> = ({ className, field }) => {
   const [options, setOptions] = useState(Array.isArray(originOptions) ? originOptions : []);
   const groups = groupBy(options, item => item.group);
   const [TableLocale] = useLocaleReceiver('Table');
+
+  // 将 options 转换为 Select 组件需要的格式
+  const selectOptions = useMemo(() => {
+    if (Object.keys(groups).length < 2) {
+      // 没有分组的情况
+      return options.map(item => ({
+        value: item.value,
+        label: item.text,
+        key: item.value
+      }));
+    } else {
+      // 有分组的情况
+      return Object.keys(groups).map((groupName = TableLocale?.defaultGrouping || '') => {
+        const list = groups[groupName];
+        if (!list.length) return null;
+        return {
+          label: groupName,
+          options: list.map(item => ({
+            value: item.value,
+            label: item.text,
+            key: item.value
+          }))
+        };
+      }).filter((item): item is NonNullable<typeof item> => item !== null);
+    }
+  }, [options, groups, TableLocale]);
 
   const value = store.get(field);
 
@@ -81,7 +105,9 @@ const SelectFilter: FC<SelectFilterProps> = ({ className, field }) => {
       maxTagCount="responsive"
       placeholder={placeholder || `${TableLocale?.pleaseSelect}${label?.toLowerCase()}`}
       value={options.length ? value : undefined}
-      onDropdownVisibleChange={open => {
+      {...selectProps}
+      isRenderDefaultBottom={selectProps?.isRenderDefaultBottom ?? true}
+      onDropdownVisibleChange={(open) => {
         if (open) {
           fetch();
         }
@@ -89,8 +115,8 @@ const SelectFilter: FC<SelectFilterProps> = ({ className, field }) => {
       onChange={(value, option) => {
         const oldValue = store.get(field);
         let val: typeof value | undefined = value;
-        const isArray = Array.isArray(val);
-        selectProps?.onChange?.(value, option);
+        const isArray = Array.isArray(val)
+        selectProps?.onChange?.(value, option as any)
         if (typeof val === 'string' || typeof val === 'number') {
           if (val === '') val = undefined;
         } else if (isArray) {
@@ -112,13 +138,14 @@ const SelectFilter: FC<SelectFilterProps> = ({ className, field }) => {
       searchValue={searchValue}
       onSearch={val => setSearchValue(val?.trim())}
       showSearch
-      optionFilterProp="children"
+      optionFilterProp="label"
       allowClear={field.allowClear}
       dropdownMatchSelectWidth={false}
       // dropdownAlign={{ offset: [-10, 2] }}
       filterOption={(input, option) =>
-        (option!.children as unknown as string)?.toLowerCase().includes(input.toLowerCase())
+        (option!.label as unknown as string)?.toLowerCase().includes(input.toLowerCase())
       }
+      options={selectOptions}
       onBlur={() => {
         if (trigger === 'onBlur') {
           if (searchBar?.onSearch) {
@@ -135,29 +162,7 @@ const SelectFilter: FC<SelectFilterProps> = ({ className, field }) => {
       onBlurCapture={() => {
         store.focusedFieldKey = '';
       }}
-      {...selectProps}
-    >
-      {Object.keys(groups).length < 2 &&
-        options.map(item => (
-          <Option key={item.value} value={item.value}>
-            {item.text}
-          </Option>
-        ))}
-      {Object.keys(groups).length >= 2 &&
-        Object.keys(groups).map((groupName = TableLocale?.defaultGrouping || '') => {
-          const list = groups[groupName];
-          if (!list.length) return null;
-          return (
-            <OptGroup key={groupName} label={groupName}>
-              {list.map(item => (
-                <Option key={item.value} value={item.value}>
-                  {item.text}
-                </Option>
-              ))}
-            </OptGroup>
-          );
-        })}
-    </Select>
+    />
   );
 };
 export default observer(SelectFilter);
