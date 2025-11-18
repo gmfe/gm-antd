@@ -136,7 +136,7 @@ const SelectFilter: FC<SelectFilterProps> = ({ className, field }) => {
       filterOption={(input, option) =>
         (option!.label as unknown as string)?.toLowerCase().includes(input.toLowerCase())
       }
-      options={selectOptions}
+      options={selectOptions as any}
       onBlur={() => {
         if (trigger === 'onBlur') {
           if (searchBar?.onSearch) {
