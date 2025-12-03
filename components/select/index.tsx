@@ -257,6 +257,9 @@ const InternalSelect = <OptionType extends BaseOptionType | DefaultOptionType = 
         return !isDeleted;
       });
     }
+    const filterOptionFn = typeof selectProps.filterOption === 'function' 
+      ? selectProps.filterOption 
+      : false
     
     // 如果有搜索值，则进一步过滤选项
     if (searchValue) {
@@ -265,8 +268,8 @@ const InternalSelect = <OptionType extends BaseOptionType | DefaultOptionType = 
         if (option.options && Array.isArray(option.options)) {
           // 对于分组选项，过滤其子选项
           
-          const filteredChildren = option.filterOption ? option.options.filter((child: any) => {
-            return option.filterOption(child, searchValue);
+          const filteredChildren = filterOptionFn ? option.options.filter((child: any) => {
+            return filterOptionFn(searchValue, child);
           }) : option.options.filter((child: any) => {
             return (child.label ?? '').toLowerCase().includes(searchValue.toLowerCase());
           });
@@ -278,15 +281,15 @@ const InternalSelect = <OptionType extends BaseOptionType | DefaultOptionType = 
           return false;
         } else {
           // 对于普通选项，直接过滤
-          if (option.filterOption) {
-            return option.filterOption(option, searchValue);
+          if (filterOptionFn) {
+            return option.filterOption(searchValue, option);
           } else {
-            return (option.label ?? '').toLowerCase().includes(searchValue.toLowerCase());
+            const result = (option.label ?? '').toLowerCase().includes(searchValue.toLowerCase())
+            return result;
           }
         }
       });
     }
-    
     return filteredOptions;
   }, [props.options, filterDeleted, searchValue]);
 
@@ -500,6 +503,7 @@ const InternalSelect = <OptionType extends BaseOptionType | DefaultOptionType = 
       virtual={virtual}
       dropdownMatchSelectWidth={isRenderDefaultBottom ? false : dropdownMatchSelectWidth}
       {...selectProps}
+      filterOption={isRenderDefaultBottom ? false : selectProps.filterOption}
       onSearch={(value) => {
         // 更新搜索值状态
         setSearchValue(value);
