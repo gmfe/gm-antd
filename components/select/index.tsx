@@ -102,7 +102,7 @@ const InternalSelect = <OptionType extends BaseOptionType | DefaultOptionType = 
     notFoundContent,
     status: customStatus,
     showArrow,
-    isRenderDefaultBottom = false,
+    isRenderDefaultBottom = true,
     isShowCheckedAll = true,
     isShowDeletedSwitch = true,
     ...props
@@ -219,12 +219,14 @@ const InternalSelect = <OptionType extends BaseOptionType | DefaultOptionType = 
    * - filterDeleted: 控制是否过滤已删除商品的开关状态
    * - internalValue: 内部管理的选中值，用于处理全选和过滤逻辑
    */
-  const [filterDeleted, setFilterDeleted] = React.useState(true);
+  const [filterDeleted, setFilterDeleted] = React.useState(true && isShowDeletedSwitch);
   const [internalValue, setInternalValue] = React.useState<any[]>(() => {
     // 初始化内部值
     const initialValue = props.value || props.defaultValue || [];
     return Array.isArray(initialValue) ? initialValue : [initialValue];
   });
+  // 添加搜索值状态，用于跟踪当前的搜索输入
+  const [searchValue, setSearchValue] = React.useState('');
 
   // 同步外部 value 到内部状态
   React.useEffect(() => {
@@ -244,18 +246,49 @@ const InternalSelect = <OptionType extends BaseOptionType | DefaultOptionType = 
   const getAvailableOptions = React.useMemo(() => {
     if (!props.options) return [];
     
+    let filteredOptions = props.options;
+    
     if (filterDeleted) {
       // 过滤掉已删除的商品（假设已删除的商品有一个 isDeleted 属性）
       // 实际使用时，可能需要根据具体的属性名来调整
-      return props.options.filter((option: any) => {
+      filteredOptions = filteredOptions.filter((option: any) => {
         // 假设已删除的商品有 isDeleted 或 deleted 属性
         const isDeleted = option.isDeleted || option.deleted;
         return !isDeleted;
       });
     }
     
-    return props.options;
-  }, [props.options, filterDeleted]);
+    // 如果有搜索值，则进一步过滤选项
+    if (searchValue) {
+      filteredOptions = filteredOptions.filter((option: any) => {
+        // 处理分组选项
+        if (option.options && Array.isArray(option.options)) {
+          // 对于分组选项，过滤其子选项
+          
+          const filteredChildren = option.filterOption ? option.options.filter((child: any) => {
+            return option.filterOption(child, searchValue);
+          }) : option.options.filter((child: any) => {
+            return (child.label ?? '').toLowerCase().includes(searchValue.toLowerCase());
+          });
+          // 如果分组中有匹配的子选项，则保留该分组并更新其子选项
+          if (filteredChildren.length > 0) {
+            option.options = filteredChildren;
+            return true;
+          }
+          return false;
+        } else {
+          // 对于普通选项，直接过滤
+          if (option.filterOption) {
+            return option.filterOption(option, searchValue);
+          } else {
+            return (option.label ?? '').toLowerCase().includes(searchValue.toLowerCase());
+          }
+        }
+      });
+    }
+    
+    return filteredOptions;
+  }, [props.options, filterDeleted, searchValue]);
 
   /**
    * 扁平化选项，处理嵌套的 OptGroup
@@ -435,6 +468,20 @@ const InternalSelect = <OptionType extends BaseOptionType | DefaultOptionType = 
   // 如果用户没有提供 dropdownRender，则使用默认的
   const mergedDropdownRender = props.dropdownRender || defaultDropDownRender;
 
+  // 处理下拉菜单可见性变化
+  const handleDropdownVisibleChange = (open: boolean) => {
+    // 当下拉菜单关闭时，清空搜索值
+    if (!open) {
+      setTimeout(() => {
+        setSearchValue('');
+      }, 10)
+    }
+    // 如果有自定义的 onDropdownVisibleChange 处理函数，则调用它
+    if (props.onDropdownVisibleChange) {
+      props.onDropdownVisibleChange(open);
+    }
+  };
+
   // 处理值变化，同步到内部状态
   const handleChange = (value: any, option: any) => {
     if (isRenderDefaultBottom) {
@@ -453,6 +500,14 @@ const InternalSelect = <OptionType extends BaseOptionType | DefaultOptionType = 
       virtual={virtual}
       dropdownMatchSelectWidth={isRenderDefaultBottom ? false : dropdownMatchSelectWidth}
       {...selectProps}
+      onSearch={(value) => {
+        // 更新搜索值状态
+        setSearchValue(value);
+        // 如果有自定义的 onSearch 处理函数，则调用它
+        if (selectProps.onSearch) {
+          selectProps.onSearch(value);
+        }
+      }}
       value={selectValue}
       onChange={handleChange}
       transitionName={getTransitionName(
@@ -477,6 +532,7 @@ const InternalSelect = <OptionType extends BaseOptionType | DefaultOptionType = 
       showArrow={hasFeedback || showArrow}
       disabled={mergedDisabled}
       dropdownRender={mergedDropdownRender}
+      onDropdownVisibleChange={handleDropdownVisibleChange}
       options={props.children || props.optionFilterProp === 'label' ? undefined : getAvailableOptions}
     />
   );
