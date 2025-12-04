@@ -282,7 +282,7 @@ const InternalSelect = <OptionType extends BaseOptionType | DefaultOptionType = 
         } else {
           // 对于普通选项，直接过滤
           if (filterOptionFn) {
-            return option.filterOption(searchValue, option);
+            return filterOptionFn(searchValue, option);
           } else {
             const result = (option.label ?? '').toLowerCase().includes(searchValue.toLowerCase())
             return result;
