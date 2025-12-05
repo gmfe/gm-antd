@@ -504,6 +504,7 @@ const InternalSelect = <OptionType extends BaseOptionType | DefaultOptionType = 
       dropdownMatchSelectWidth={isRenderDefaultBottom ? false : dropdownMatchSelectWidth}
       {...selectProps}
       filterOption={isRenderDefaultBottom ? false : selectProps.filterOption}
+      showSearch
       onSearch={(value) => {
         // 更新搜索值状态
         setSearchValue(value);
