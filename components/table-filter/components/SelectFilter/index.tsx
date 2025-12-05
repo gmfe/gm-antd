@@ -10,17 +10,24 @@ import { useLocaleReceiver } from '../../../locale-provider/LocaleReceiver';
 
 export interface SelectFilterProps extends HTMLAttributes<HTMLDivElement> {
   field: FieldSelectItem;
+
 }
 
 const SelectFilter: FC<SelectFilterProps> = ({ className, field }) => {
-  const { multiple, options: originOptions, placeholder, remote, maxLength, label, selectProps, trigger } = field;
+  const { multiple, options: originOptions, placeholder, remote, maxLength, label, selectProps, trigger, isMountToFetch = true } = field;
   const store = useContext(TableFilterContext);
   const searchBar = useContext(SearchBarContext)
   const first = useRef(true);
   const [searchValue, setSearchValue] = useState('');
+  const searchValueRef = useRef(searchValue);
   const [options, setOptions] = useState(Array.isArray(originOptions) ? originOptions : []);
   const groups = groupBy(options, item => item.group);
   const [TableLocale] = useLocaleReceiver('Table');
+
+  // 更新 searchValueRef 的值
+  useEffect(() => {
+    searchValueRef.current = searchValue;
+  }, [searchValue]);
 
   // 将 options 转换为 Select 组件需要的格式
   const selectOptions = useMemo(() => {
@@ -51,11 +58,11 @@ const SelectFilter: FC<SelectFilterProps> = ({ className, field }) => {
   const value = store.get(field);
 
   const fetch = useMemo(() => {
-    function fetch() {
+    function fetchData() {
       if (!originOptions) return setOptions([]);
       if (Array.isArray(originOptions)) setOptions(originOptions);
       if (typeof originOptions !== 'function') return;
-      const res: any = originOptions(searchValue || undefined);
+      const res: any = originOptions(searchValueRef.current || undefined);
       if (res.then) {
         res.then((data: SelectOptions) => {
           if (store.isSaveOptions) {
@@ -67,11 +74,23 @@ const SelectFilter: FC<SelectFilterProps> = ({ className, field }) => {
         setOptions(res);
       }
     }
-    return debounce(fetch, 300);
-  }, [originOptions, searchValue]);
+    return debounce(fetchData, 500);
+  }, [originOptions]);
+
+  // 为 onChange 事件创建防抖搜索函数
+  const debouncedSearch = useMemo(() => {
+    function doSearch() {
+      if (searchBar?.onSearch) {
+        searchBar.onSearch(store.toParams());
+      } else {
+        store.search();
+      }
+    }
+    return debounce(doSearch, 300);
+  }, [searchBar, store]);
 
   useEffect(() => {
-    if (remote) {
+    if (remote && isMountToFetch) {
       fetch();
       return;
     }
@@ -81,11 +100,12 @@ const SelectFilter: FC<SelectFilterProps> = ({ className, field }) => {
       return;
     }
 
-    if (first.current) {
+    if (first.current && isMountToFetch) {
       setTimeout(fetch, 300);
       first.current = false;
     }
-  }, [originOptions, searchValue]);
+  }, [originOptions]);
+
 
   return (
     <Select
@@ -99,7 +119,7 @@ const SelectFilter: FC<SelectFilterProps> = ({ className, field }) => {
       {...selectProps}
       isRenderDefaultBottom={selectProps?.isRenderDefaultBottom ?? true}
       onDropdownVisibleChange={(open) => {
-        if (open) {
+        if (open && Array.isArray(originOptions)) {
           fetch();
         }
       }}
@@ -119,15 +139,17 @@ const SelectFilter: FC<SelectFilterProps> = ({ className, field }) => {
         }
         store.set(field, value);
         if (['onChange', 'both'].includes(trigger || store.trigger!) && value !== oldValue) {
-          if (searchBar?.onSearch) {
-            searchBar.onSearch(store.toParams())
-          } else {
-            store.search();
-          }
+          debouncedSearch();
         }
       }}
       searchValue={searchValue}
-      onSearch={val => setSearchValue(val?.trim())}
+      onSearch={val => {
+        setSearchValue(val?.trim())
+        // 搜索值变化时，如果是远程搜索或函数式选项，触发防抖获取
+        if (typeof originOptions === 'function' || remote) {
+          fetch();
+        }
+      }}
       showSearch
       allowClear={field.allowClear}
       dropdownMatchSelectWidth={false}
@@ -138,11 +160,7 @@ const SelectFilter: FC<SelectFilterProps> = ({ className, field }) => {
       options={selectOptions as any}
       onBlur={() => {
         if (trigger === 'onBlur') {
-          if (searchBar?.onSearch) {
-            searchBar.onSearch(store.toParams())
-          } else {
-            store.search();
-          }
+          debouncedSearch()
         }
       }}
       onFocus={() => {
