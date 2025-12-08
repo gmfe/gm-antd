@@ -267,12 +267,14 @@ const InternalSelect = <OptionType extends BaseOptionType | DefaultOptionType = 
         // 处理分组选项
         if (option.options && Array.isArray(option.options)) {
           // 对于分组选项，过滤其子选项
+
+          if (filterOptionFn === false) {
+            return true
+          }
           
-          const filteredChildren = filterOptionFn ? option.options.filter((child: any) => {
+          const filteredChildren = option.options.filter((child: any) => {
             return filterOptionFn(searchValue, child);
-          }) : option.options.filter((child: any) => {
-            return (child.label ?? '').toLowerCase().includes(searchValue.toLowerCase());
-          });
+          }) 
           // 如果分组中有匹配的子选项，则保留该分组并更新其子选项
           if (filteredChildren.length > 0) {
             option.options = filteredChildren;
@@ -426,6 +428,18 @@ const InternalSelect = <OptionType extends BaseOptionType | DefaultOptionType = 
     // }
   };
 
+  const canSelectOptionLength = React.useMemo(() => {
+    let sum = 0
+    getAvailableOptions.forEach(option => {
+      if (option.options) {
+        sum += option.options.length
+      } else if (option.value) {
+        sum += 1
+      }
+    })
+    return sum
+  }, [getAvailableOptions])
+
   /**
    * 默认的下拉菜单渲染函数
    * @param menu - 原始的下拉菜单元素
@@ -444,7 +458,7 @@ const InternalSelect = <OptionType extends BaseOptionType | DefaultOptionType = 
                   checked={isAllAvailableSelected}
                   onChange={handleSelectAllChange}
                 >
-                  全选({getAvailableOptions.length})
+                  全选({canSelectOptionLength})
                 </Checkbox>
               )
             }
@@ -502,6 +516,7 @@ const InternalSelect = <OptionType extends BaseOptionType | DefaultOptionType = 
       ref={ref as any}
       virtual={virtual}
       dropdownMatchSelectWidth={isRenderDefaultBottom ? false : dropdownMatchSelectWidth}
+      searchValue={searchValue}
       {...selectProps}
       filterOption={isRenderDefaultBottom ? false : selectProps.filterOption}
       showSearch
