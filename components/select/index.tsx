@@ -488,11 +488,11 @@ const InternalSelect = <OptionType extends BaseOptionType | DefaultOptionType = 
   // 处理下拉菜单可见性变化
   const handleDropdownVisibleChange = (open: boolean) => {
     // 当下拉菜单关闭时，清空搜索值
-    if (!open) {
-      setTimeout(() => {
-        setSearchValue('');
-      }, 10)
-    }
+    // if (!open) {
+    //   setTimeout(() => {
+    //     setSearchValue('');
+    //   }, 10)
+    // }
     // 如果有自定义的 onDropdownVisibleChange 处理函数，则调用它
     if (props.onDropdownVisibleChange) {
       props.onDropdownVisibleChange(open);
