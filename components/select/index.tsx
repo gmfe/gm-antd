@@ -220,10 +220,14 @@ const InternalSelect = <OptionType extends BaseOptionType | DefaultOptionType = 
    * - internalValue: 内部管理的选中值，用于处理全选和过滤逻辑
    */
   const [filterDeleted, setFilterDeleted] = React.useState(true && isShowDeletedSwitch);
-  const [internalValue, setInternalValue] = React.useState<any[]>(() => {
+  const [internalValue, setInternalValue] = React.useState<any>(() => {
     // 初始化内部值
-    const initialValue = props.value || props.defaultValue || [];
-    return Array.isArray(initialValue) ? initialValue : [initialValue];
+    const initialValue = props.value || props.defaultValue;
+    if (props.mode === 'multiple' || props.mode === 'tags') {
+      return Array.isArray(initialValue) ? initialValue : [initialValue];
+    } else {
+      return initialValue 
+    }
   });
   // 添加搜索值状态，用于跟踪当前的搜索输入
   const [searchValue, setSearchValue] = React.useState('');
@@ -234,9 +238,16 @@ const InternalSelect = <OptionType extends BaseOptionType | DefaultOptionType = 
       return 
     }
     if (props.value !== undefined) {
-      const newValue = Array.isArray(props.value) ? props.value : [props.value];
-      setInternalValue(newValue);
+      if (props.mode === 'multiple' || props.mode === 'tags') {
+        const newValue = Array.isArray(props.value) ? props.value : [props.value];
+        setInternalValue(newValue);
+      } else {
+        setInternalValue(props.value)
+      }
+    } else {
+      setInternalValue([])
     }
+
   }, [props.value]);
 
   /**
@@ -511,6 +522,13 @@ const InternalSelect = <OptionType extends BaseOptionType | DefaultOptionType = 
   // 使用内部值或外部值（受控模式优先）
   const selectValue = props.value !== undefined ? props.value : internalValue;
 
+  const otherProps = 
+    isRenderDefaultBottom && (mode ==='multiple' || mode === 'tags') 
+    ? {
+        value: selectValue
+      } 
+    : {}
+
   return (
     <RcSelect<any, any>
       ref={ref as any}
@@ -528,7 +546,7 @@ const InternalSelect = <OptionType extends BaseOptionType | DefaultOptionType = 
           selectProps.onSearch(value);
         }
       }}
-      value={selectValue}
+      {...otherProps}
       onChange={handleChange}
       transitionName={getTransitionName(
         rootPrefixCls,
