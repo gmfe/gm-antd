@@ -415,7 +415,7 @@ const InternalSelect = <OptionType extends BaseOptionType | DefaultOptionType = 
     
     if (checked) {
       // 开启过滤：移除已删除项的选中状态
-      newValue = internalValue.filter(value => newAvailableOptionValues.includes(value));
+      newValue = internalValue.filter((value: any) => newAvailableOptionValues.includes(value));
     } else {
       // 关闭过滤：保持当前选中状态不变
       newValue = internalValue;
