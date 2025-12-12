@@ -347,10 +347,13 @@ const InternalSelect = <OptionType extends BaseOptionType | DefaultOptionType = 
    * 检查是否所有可用选项都被选中
    */
   const isAllAvailableSelected = React.useMemo(() => {
+    if (!(props.mode === 'multiple' || props.mode === 'tags')) { 
+      return false
+    }
     if (!flattenOptions.length) return false;
     
     // 使用内部值来判断
-    return availableOptionValues.every(value => internalValue.includes(value)) 
+    return availableOptionValues.every(value => internalValue?.includes(value)) 
   }, [flattenOptions, availableOptionValues, internalValue, filterDeleted]);
 
   /**
