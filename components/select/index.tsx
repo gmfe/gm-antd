@@ -104,7 +104,7 @@ const InternalSelect = <OptionType extends BaseOptionType | DefaultOptionType = 
     showArrow,
     isRenderDefaultBottom = true,
     isShowCheckedAll = true,
-    isShowDeletedSwitch = true,
+    isShowDeletedSwitch = false,
     ...props
   }: SelectProps<OptionType>,
   ref: React.Ref<BaseSelectRef>,
