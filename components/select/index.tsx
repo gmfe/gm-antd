@@ -365,7 +365,7 @@ const InternalSelect = <OptionType extends BaseOptionType | DefaultOptionType = 
     if (checked) {
       // 全选：选择所有可用选项，同时保留已选中的不可用选项
       // const unavailableSelectedValues = internalValue.filter(value => !availableOptionValues.includes(value));
-      newValue = [...internalValue, ...availableOptionValues];
+      newValue = Array.from(new Set([...internalValue, ...availableOptionValues]));
     } else {
       // 取消全选：只保留不在可用选项中的已选项
       newValue = []
