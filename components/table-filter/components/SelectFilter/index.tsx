@@ -106,6 +106,13 @@ const SelectFilter: FC<SelectFilterProps> = ({ className, field }) => {
     }
   }, [originOptions]);
 
+  const memoValue = useMemo(() => {
+    if (options.length > 0 || value) {
+      return value;
+    }
+    return undefined;
+  }, [value, options.length]);
+
 
   return (
     <Select
@@ -115,7 +122,7 @@ const SelectFilter: FC<SelectFilterProps> = ({ className, field }) => {
       mode={multiple ? 'multiple' : undefined}
       maxTagCount="responsive"
       placeholder={placeholder || `${TableLocale?.pleaseSelect}${label?.toLowerCase()}`}
-      value={options.length ? value : undefined}
+      value={memoValue}
       {...selectProps}
       isRenderDefaultBottom={selectProps?.isRenderDefaultBottom ?? true}
       onDropdownVisibleChange={(open) => {
