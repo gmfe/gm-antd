@@ -368,7 +368,8 @@ const InternalSelect = <OptionType extends BaseOptionType | DefaultOptionType = 
       newValue = Array.from(new Set([...internalValue, ...availableOptionValues]));
     } else {
       // 取消全选：只保留不在可用选项中的已选项
-      newValue = []
+       // 取消全选：只保留不在可用选项中的已选项
+      newValue = internalValue.filter((value: any) => !availableOptionValues.includes(value));
     }
     
     // 更新内部状态
