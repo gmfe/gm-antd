@@ -573,7 +573,7 @@ const InternalSelect = <OptionType extends BaseOptionType | DefaultOptionType = 
       disabled={mergedDisabled}
       dropdownRender={mergedDropdownRender}
       onDropdownVisibleChange={handleDropdownVisibleChange}
-      options={props.children || props.optionFilterProp === 'label' ? undefined : getAvailableOptions}
+      {...(!(props.children || props.optionFilterProp === 'label') ? { options: getAvailableOptions } : {})}
     />
   );
 };
