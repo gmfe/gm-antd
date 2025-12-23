@@ -277,8 +277,7 @@ const InternalSelect = <OptionType extends BaseOptionType | DefaultOptionType = 
       filteredOptions = filteredOptions.filter((option: any) => {
         // 处理分组选项
         if (option.options && Array.isArray(option.options)) {
-          // 对于分组选项，过滤其子选项
-
+          // 对于分组选项，过滤其子选项 对于普通选项，直接true
           if (filterOptionFn === false) {
             return true
           }
@@ -297,7 +296,8 @@ const InternalSelect = <OptionType extends BaseOptionType | DefaultOptionType = 
           if (filterOptionFn) {
             return filterOptionFn(searchValue, option);
           } else {
-            const result = (option.label ?? '').toLowerCase().includes(searchValue.toLowerCase())
+            /** 没有filterOption 直接返回true */
+            const result = true
             return result;
           }
         }
