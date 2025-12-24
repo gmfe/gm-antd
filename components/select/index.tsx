@@ -263,9 +263,31 @@ const InternalSelect = <OptionType extends BaseOptionType | DefaultOptionType = 
       // 过滤掉已删除的商品（假设已删除的商品有一个 isDeleted 属性）
       // 实际使用时，可能需要根据具体的属性名来调整
       filteredOptions = filteredOptions.filter((option: any) => {
+        // 如果是分组选项，需要检查其子选项
+        if (option.options) {
+          // 过滤子选项中未删除的项
+          const filteredChildren = option.options.filter((child: any) => {
+            const isDeleted = child.isDeleted || child.deleted;
+            return !isDeleted;
+          });
+          // 如果分组中还有子选项，保留该分组
+          return filteredChildren.length > 0;
+        }
         // 假设已删除的商品有 isDeleted 或 deleted 属性
         const isDeleted = option.isDeleted || option.deleted;
         return !isDeleted;
+      }).map((option: any) => {
+        // 对于分组选项，返回过滤后的子选项
+        if (option.options) {
+          return {
+            ...option,
+            options: option.options.filter((child: any) => {
+              const isDeleted = child.isDeleted || child.deleted;
+              return !isDeleted;
+            })
+          };
+        }
+        return option;
       });
     }
     const filterOptionFn = typeof selectProps.filterOption === 'function' 
@@ -386,53 +408,53 @@ const InternalSelect = <OptionType extends BaseOptionType | DefaultOptionType = 
   };
 
   /**
-   * 过滤已删除商品开关的处理函数
+   * 过滤已删除商品开关的处理函数 不影响已勾选的值
    * @param checked - Switch 的状态
    */
   const handleFilterDeletedChange = (checked: boolean) => {
     // 先计算新的可用选项值，基于新的过滤状态
-    const newAvailableOptions = checked
-      ? props.options?.filter((option: any) => {
-          const isDeleted = option.isDeleted || option.deleted;
-          return !isDeleted;
-        }) || []
-      : props.options || [];
+    // const newAvailableOptions = checked
+    //   ? props.options?.filter((option: any) => {
+    //       const isDeleted = option.isDeleted || option.deleted;
+    //       return !isDeleted;
+    //     }) || []
+    //   : props.options || [];
     
-    // 扁平化新选项，处理嵌套的 OptGroup
-    const newFlattenOptions: any[] = [];
-    newAvailableOptions.forEach((option: any) => {
-      if (option.children && Array.isArray(option.children)) {
-        option.children.forEach((child: any) => {
-          newFlattenOptions.push(child);
-        });
-      } else {
-        newFlattenOptions.push(option);
-      }
-    });
+    // // 扁平化新选项，处理嵌套的 OptGroup
+    // const newFlattenOptions: any[] = [];
+    // newAvailableOptions.forEach((option: any) => {
+    //   if (option.children && Array.isArray(option.children)) {
+    //     option.children.forEach((child: any) => {
+    //       newFlattenOptions.push(child);
+    //     });
+    //   } else {
+    //     newFlattenOptions.push(option);
+    //   }
+    // });
     
-    const newAvailableOptionValues = newFlattenOptions.map(option => option.value);
+    // const newAvailableOptionValues = newFlattenOptions.map(option => option.value);
     
-    // 当过滤状态改变时，需要重新处理选中项
-    let newValue: any[];
+    // // 当过滤状态改变时，需要重新处理选中项
+    // let newValue: any[];
     
-    if (checked) {
-      // 开启过滤：移除已删除项的选中状态
-      newValue = internalValue.filter((value: any) => newAvailableOptionValues.includes(value));
-    } else {
-      // 关闭过滤：保持当前选中状态不变
-      newValue = internalValue;
-    }
+    // if (checked) {
+    //   // 开启过滤：移除已删除项的选中状态
+    //   newValue = internalValue.filter((value: any) => newAvailableOptionValues.includes(value));
+    // } else {
+    //   // 关闭过滤：保持当前选中状态不变
+    //   newValue = internalValue;
+    // }
     
     // 更新过滤状态
     setFilterDeleted(checked);
     
     // 更新内部状态
-    setInternalValue(newValue);
+    // setInternalValue(newValue);
     
-    // 如果选中值发生变化，触发 onChange
-    if (newValue !== internalValue) {
-      props.onChange?.(newValue as any, [] as any);
-    }
+    // // 如果选中值发生变化，触发 onChange
+    // if (newValue !== internalValue) {
+    //   props.onChange?.(newValue as any, [] as any);
+    // }
     
     // // 触发过滤逻辑
     // if (props.onFilterDeletedChange) {
