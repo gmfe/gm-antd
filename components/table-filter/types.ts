@@ -226,6 +226,7 @@ export interface FieldCascaderItem<
   type: 'cascader';
   /** Antd, 多选 */
   multiple: Multiple;
+  showSearch?: boolean;
   options?: CasCaderOption[] | (() => CasCaderOption[]) | (() => Promise<CasCaderOption[]>);
   defaultValue?: string[];
   /** Antd, 根结点是否可选，默认为true */

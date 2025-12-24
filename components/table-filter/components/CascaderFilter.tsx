@@ -19,6 +19,7 @@ const CascaderFilter: FC<CascaderFilterProps> = ({ className, field }) => {
     label,
     multiple,
     useAntdDisplayRender,
+    showSearch = true,
     displayRender = null,
     showCheckedStrategy,
   } = field;
@@ -89,6 +90,7 @@ const CascaderFilter: FC<CascaderFilterProps> = ({ className, field }) => {
       displayRender={displayRender as unknown as CascaderProps<CasCaderOption>['displayRender']}
       value={value}
       multiple={multiple}
+      showSearch={showSearch}
       maxTagCount="responsive"
       onChange={(value: any) => {
         store.set(field, value);
