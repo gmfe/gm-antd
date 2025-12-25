@@ -1,7 +1,7 @@
 // import type { QueryCriteriaGroup } from 'gm_api/src/common'
 // import { ListModelField } from 'gm_api/src/metadata'
 import { debounce, get, keyBy, merge, orderBy, pickBy, set } from 'lodash';
-import { makeAutoObservable, toJS } from 'mobx';
+import { makeAutoObservable, runInAction, toJS } from 'mobx';
 import type { Moment } from 'moment';
 import type {
   FieldItem,
@@ -67,6 +67,13 @@ class TableFilterStore {
 
   /** 是否在select Options 异步获取时保存他的option 值 */
   isSaveOptions?: boolean = false;
+
+  /** 自定义search */
+  onSearch?: TableFilterProps['onSearch'];
+
+  setSearch(func: TableFilterProps['onSearch']) {
+    this.onSearch = func
+  }
 
   /** 可见(启用)的字段列表 */
   getVisibleFields() {
@@ -275,8 +282,18 @@ class TableFilterStore {
   search = debounce(
     () => {
       const params = this.toParams();
-      this.loading = true;
+      if (this.onSearch) {
+        this.loading = true;
+        Promise.resolve(this.onSearch(params)).finally(() => {
+          runInAction(() => {
+            setTimeout(() => {
+              this.loading = false;
+            }, 50)
+          })
+        })
+      }
       if (this._paginationResult) {
+        this.loading = true;
         return this._paginationResult!.run(params).finally(() => {
           this.loading = false;
         });
