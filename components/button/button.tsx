@@ -164,9 +164,13 @@ const InternalButton: React.ForwardRefRenderFunction<unknown, ButtonProps> = (pr
 
   const groupSize = React.useContext(GroupSizeContext);
   const [innerLoading, setLoading] = React.useState<Loading>(!!loading);
+  const [autoLoading, setAutoLoading] = React.useState(false); // 新增：自动 loading 状态
   const [hasTwoCNChar, setHasTwoCNChar] = React.useState(false);
   const { getPrefixCls, autoInsertSpaceInButton, direction } = React.useContext(ConfigContext);
   const buttonRef = (ref as any) || React.createRef<HTMLElement>();
+
+  const loadingRef = React.useRef<boolean>(!!innerLoading);
+
   const isNeedInserted = () =>
     React.Children.count(children) === 1 && !icon && !isUnBorderedButtonType(type);
 
@@ -187,6 +191,7 @@ const InternalButton: React.ForwardRefRenderFunction<unknown, ButtonProps> = (pr
 
   // =============== Update Loading ===============
   const loadingOrDelay: Loading = typeof loading === 'boolean' ? loading : loading?.delay || true;
+  const finalLoading = innerLoading || autoLoading;
 
   React.useEffect(() => {
     let delayTimer: number | null = null;
@@ -210,16 +215,34 @@ const InternalButton: React.ForwardRefRenderFunction<unknown, ButtonProps> = (pr
     };
   }, [loadingOrDelay]);
 
+  React.useEffect(() => {
+    loadingRef.current = !!finalLoading;
+  }, [finalLoading]);
+
   React.useEffect(fixTwoCNChar, [buttonRef]);
 
   const handleClick = (e: React.MouseEvent<HTMLButtonElement | HTMLAnchorElement, MouseEvent>) => {
     const { onClick } = props;
     // https://github.com/ant-design/ant-design/issues/30207
-    if (innerLoading || mergedDisabled) {
+    if (innerLoading || autoLoading || mergedDisabled) {
       e.preventDefault();
       return;
     }
-    (onClick as React.MouseEventHandler<HTMLButtonElement | HTMLAnchorElement>)?.(e);
+
+    if (onClick) {
+      const result = (onClick as React.MouseEventHandler<HTMLButtonElement | HTMLAnchorElement>)?.(e);
+
+      // @ts-ignore
+      if (result && window.toString.call(result) === '[object Promise]') {
+        loadingRef.current = true;
+        setAutoLoading(true);
+        (result as Promise<any>)
+          .finally(() => {
+            setAutoLoading(false);
+            loadingRef.current = false;
+          });
+      }
+    }
   };
 
   warning(
@@ -242,7 +265,7 @@ const InternalButton: React.ForwardRefRenderFunction<unknown, ButtonProps> = (pr
   const sizeFullname = compactSize || groupSize || customizeSize || size;
   const sizeCls = sizeFullname ? sizeClassNameMap[sizeFullname] || '' : '';
 
-  const iconType = innerLoading ? 'loading' : icon;
+  const iconType = finalLoading ? 'loading' : icon;
 
   const linkButtonRestProps = omit(rest as AnchorButtonProps & { navigate: any }, ['navigate']);
 
@@ -254,8 +277,8 @@ const InternalButton: React.ForwardRefRenderFunction<unknown, ButtonProps> = (pr
       [`${prefixCls}-${sizeCls}`]: sizeCls,
       [`${prefixCls}-icon-only`]: !children && children !== 0 && !!iconType,
       [`${prefixCls}-background-ghost`]: ghost && !isUnBorderedButtonType(type),
-      [`${prefixCls}-loading`]: innerLoading,
-      [`${prefixCls}-two-chinese-chars`]: hasTwoCNChar && autoInsertSpace && !innerLoading,
+      [`${prefixCls}-loading`]: finalLoading,
+      [`${prefixCls}-two-chinese-chars`]: hasTwoCNChar && autoInsertSpace && !finalLoading,
       [`${prefixCls}-block`]: block,
       [`${prefixCls}-dangerous`]: !!danger,
       [`${prefixCls}-rtl`]: direction === 'rtl',
@@ -266,10 +289,10 @@ const InternalButton: React.ForwardRefRenderFunction<unknown, ButtonProps> = (pr
   );
 
   const iconNode =
-    icon && !innerLoading ? (
+    icon && !finalLoading ? (
       icon
     ) : (
-      <LoadingIcon existIcon={!!icon} prefixCls={prefixCls} loading={!!innerLoading} />
+      <LoadingIcon existIcon={!!icon} prefixCls={prefixCls} loading={!!finalLoading} />
     );
 
   const kids =
@@ -304,7 +327,7 @@ const InternalButton: React.ForwardRefRenderFunction<unknown, ButtonProps> = (pr
     return buttonNode;
   }
 
-  return <Wave disabled={!!innerLoading}>{buttonNode}</Wave>;
+  return <Wave disabled={!!finalLoading}>{buttonNode}</Wave>;
 };
 
 const Button = React.forwardRef<unknown, ButtonProps>(InternalButton) as CompoundedComponent;
