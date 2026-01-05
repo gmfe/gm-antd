@@ -149,7 +149,7 @@ const SelectFilter: FC<SelectFilterProps> = ({ className, field }) => {
           debouncedSearch();
         }
       }}
-      searchValue={searchValue}
+      // searchValue={searchValue}
       onSearch={val => {
         setSearchValue(val?.trim())
         // 搜索值变化时，如果是远程搜索或函数式选项，触发防抖获取

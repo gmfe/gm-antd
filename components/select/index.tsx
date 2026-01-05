@@ -558,7 +558,7 @@ const InternalSelect = <OptionType extends BaseOptionType | DefaultOptionType = 
       ref={ref as any}
       virtual={virtual}
       dropdownMatchSelectWidth={isRenderDefaultBottom ? false : dropdownMatchSelectWidth}
-      searchValue={searchValue}
+      // searchValue={searchValue}
       {...selectProps}
       filterOption={isRenderDefaultBottom && isMultiple ? false : selectProps.filterOption}
       showSearch
