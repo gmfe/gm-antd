@@ -547,7 +547,7 @@ const InternalSelect = <OptionType extends BaseOptionType | DefaultOptionType = 
   const selectValue = props.value !== undefined ? props.value : internalValue;
 
   const otherProps = 
-    isRenderDefaultBottom && (mode ==='multiple' || mode === 'tags') 
+    isRenderDefaultBottom && (isMultiple) 
     ? {
         value: selectValue
       } 
@@ -560,7 +560,7 @@ const InternalSelect = <OptionType extends BaseOptionType | DefaultOptionType = 
       dropdownMatchSelectWidth={isRenderDefaultBottom ? false : dropdownMatchSelectWidth}
       searchValue={searchValue}
       {...selectProps}
-      filterOption={isRenderDefaultBottom ? false : selectProps.filterOption}
+      filterOption={isRenderDefaultBottom && isMultiple ? false : selectProps.filterOption}
       showSearch
       onSearch={(value) => {
         // 更新搜索值状态
