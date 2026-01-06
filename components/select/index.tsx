@@ -481,7 +481,7 @@ const InternalSelect = <OptionType extends BaseOptionType | DefaultOptionType = 
    * @param menu - 原始的下拉菜单元素
    * @returns 自定义的下拉菜单元素
    */
-  const defaultDropDownRender = (menu: React.ReactElement) => {
+  const defaultDropDownRender = () => {
     // 获取已选项
     const selectedOptions = React.useMemo(() => {
       if (!props.options || !internalValue) return [];
@@ -490,7 +490,6 @@ const InternalSelect = <OptionType extends BaseOptionType | DefaultOptionType = 
       const result: any[] = [];
       const optionsFieldName = props.fieldNames?.options || 'options';
       const valueFieldName = props.fieldNames?.value || 'value';
-      const labelFieldName = props.fieldNames?.label || 'label';
       
       const findOptionByValue = (options: any[], value: any): any => {
         for (const option of options) {
