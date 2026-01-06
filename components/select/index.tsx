@@ -481,9 +481,9 @@ const InternalSelect = <OptionType extends BaseOptionType | DefaultOptionType = 
    * @param menu - 原始的下拉菜单元素
    * @returns 自定义的下拉菜单元素
    */
-  const defaultDropDownRender = () => {
+  const defaultDropDownRender = (menu: React.ReactNode) => {
     // 获取已选项
-    const selectedOptions = React.useMemo(() => {
+    const selectedOptions = (() => {
       if (!props.options || !internalValue) return [];
       const selectedValues = Array.isArray(internalValue) ? internalValue : [internalValue];
       
@@ -511,10 +511,10 @@ const InternalSelect = <OptionType extends BaseOptionType | DefaultOptionType = 
       });
       
       return result;
-    }, [props.options, internalValue, props.fieldNames]);
-    
+    })();
+
     // 获取未选中的可选项
-    const unselectedOptions = React.useMemo(() => {
+    const unselectedOptions = (() => {
       if (!props.options || !internalValue) return getAvailableOptions;
       const selectedValues = Array.isArray(internalValue) ? internalValue : [internalValue];
       
@@ -548,8 +548,12 @@ const InternalSelect = <OptionType extends BaseOptionType | DefaultOptionType = 
       };
       
       return filterUnselected(getAvailableOptions);
-    }, [getAvailableOptions, internalValue, props.fieldNames]);
+    })();
     
+    if (!(isMultiple && isRenderDefaultBottom) || (props.children || props.optionFilterProp === 'label')) {
+      return menu
+    }
+
     // 渲染选项列表
     const renderOptions = (options: any[]) => {
       const optionsFieldName = props.fieldNames?.options || 'options';
@@ -658,14 +662,12 @@ const InternalSelect = <OptionType extends BaseOptionType | DefaultOptionType = 
           )}
           
           {/* 可选项区域 */}
-          {(canSelectOptionLength - selectedOptions?.length) > 0 && isRenderDefaultBottom && (props.mode === 'multiple' || props.mode === 'tags') && !(props.children || props.optionFilterProp === 'label') && (
-            <div className={`${prefixCls}-dropdown-section`}>
-              <div className={`${prefixCls}-dropdown-render-section-title`}>可选项 ({canSelectOptionLength - selectedOptions.length})</div>
-              <div className={`${prefixCls}-dropdown-render-section-content`}>
-                {renderOptions(unselectedOptions)}
-              </div>
+          <div className={`${prefixCls}-dropdown-section`}>
+            <div className={`${prefixCls}-dropdown-render-section-title`}>可选项 ({canSelectOptionLength - selectedOptions.length})</div>
+            <div className={`${prefixCls}-dropdown-render-section-content`}>
+              {renderOptions(unselectedOptions)}
             </div>
-          )}
+          </div>
         </div>
         
         {/* 底部操作区域 */}
@@ -744,7 +746,7 @@ const InternalSelect = <OptionType extends BaseOptionType | DefaultOptionType = 
       dropdownMatchSelectWidth={isRenderDefaultBottom ? false : dropdownMatchSelectWidth}
       // searchValue={searchValue}
       {...selectProps}
-      filterOption={isRenderDefaultBottom && isMultiple ? false : selectProps.filterOption}
+      filterOption={isRenderDefaultBottom && isMultiple && !(props.children || props.optionFilterProp === 'label') ? false : selectProps.filterOption}
       showSearch
       onSearch={(value) => {
         // 更新搜索值状态
