@@ -24,6 +24,7 @@ import { useCompactItemContext } from '../space/Compact';
 import Checkbox from '../checkbox';
 import Space from '../space';
 import Switch from '../switch';
+import CheckOutlined from '@ant-design/icons/CheckOutlined';
 
 type RawValue = string | number;
 
@@ -481,10 +482,194 @@ const InternalSelect = <OptionType extends BaseOptionType | DefaultOptionType = 
    * @returns 自定义的下拉菜单元素
    */
   const defaultDropDownRender = (menu: React.ReactElement) => {
+    // 获取已选项
+    const selectedOptions = React.useMemo(() => {
+      if (!props.options || !internalValue) return [];
+      const selectedValues = Array.isArray(internalValue) ? internalValue : [internalValue];
+      
+      const result: any[] = [];
+      const optionsFieldName = props.fieldNames?.options || 'options';
+      const valueFieldName = props.fieldNames?.value || 'value';
+      const labelFieldName = props.fieldNames?.label || 'label';
+      
+      const findOptionByValue = (options: any[], value: any): any => {
+        for (const option of options) {
+          if (option[optionsFieldName] && Array.isArray(option[optionsFieldName])) {
+            const found = findOptionByValue(option[optionsFieldName], value);
+            if (found) return found;
+          } else if (option[valueFieldName] === value) {
+            return option;
+          }
+        }
+        return null;
+      };
+      
+      selectedValues.forEach((value: any) => {
+        const option = props.options ? findOptionByValue(props.options, value) : null;
+        if (option) {
+          result.push(option);
+        }
+      });
+      
+      return result;
+    }, [props.options, internalValue, props.fieldNames]);
+    
+    // 获取未选中的可选项
+    const unselectedOptions = React.useMemo(() => {
+      if (!props.options || !internalValue) return getAvailableOptions;
+      const selectedValues = Array.isArray(internalValue) ? internalValue : [internalValue];
+      
+      const filterUnselected = (options: any[]): any[] => {
+        return options
+          .map((option: any) => {
+            const optionsFieldName = props.fieldNames?.options || 'options';
+            const valueFieldName = props.fieldNames?.value || 'value';
+            
+            if (option[optionsFieldName] && Array.isArray(option[optionsFieldName])) {
+              // 处理分组选项
+              const filteredChildren = option[optionsFieldName].filter((child: any) => {
+                return !selectedValues.includes(child[valueFieldName]);
+              });
+              if (filteredChildren.length > 0) {
+                return {
+                  ...option,
+                  options: filteredChildren,
+                };
+              }
+              return null;
+            } else {
+              // 处理普通选项
+              if (!selectedValues.includes(option[valueFieldName])) {
+                return option;
+              }
+              return null;
+            }
+          })
+          .filter((option: any) => option !== null);
+      };
+      
+      return filterUnselected(getAvailableOptions);
+    }, [getAvailableOptions, internalValue, props.fieldNames]);
+    
+    // 渲染选项列表
+    const renderOptions = (options: any[]) => {
+      const optionsFieldName = props.fieldNames?.options || 'options';
+      const valueFieldName = props.fieldNames?.value || 'value';
+      
+      return options.map((option: any, index: number) => {
+        if (option[optionsFieldName] && Array.isArray(option[optionsFieldName])) {
+          // 渲染分组
+          return (
+            <div key={option.key || index} className={`${prefixCls}-dropdown-group`}>
+              <div className={`${prefixCls}-dropdown-group-label`}>{option.label}</div>
+              <div className={`${prefixCls}-dropdown-group-content`}>
+                {option[optionsFieldName].map((child: any, childIndex: number) => {
+                  const isSelected = internalValue?.includes(child[valueFieldName]);
+                  return (
+                    <div
+                      key={child.key || child[valueFieldName] || childIndex}
+                      className={classNames(
+                        `${prefixCls}-dropdown-item`,
+                        {
+                          [`${prefixCls}-dropdown-item-selected`]: isSelected,
+                          [`${prefixCls}-dropdown-item-disabled`]: child.disabled,
+                        }
+                      )}
+                      onClick={() => {
+                        if (child.disabled) return;
+                        const newValue = [...(internalValue || []), child[valueFieldName]];
+                        setInternalValue(newValue);
+                        props.onChange?.(newValue as any, child as any);
+                      }}
+                    >
+                      {isSelected && <CheckOutlined className={`${prefixCls}-dropdown-item-checkbox-inner`} />}
+                      <span className={`${prefixCls}-dropdown-item-label`}>{child.label}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          );
+        } else {
+          // 渲染普通选项
+          const isSelected = internalValue?.includes(option[valueFieldName]);
+          return (
+            <div
+              key={option.key || option[valueFieldName] || index}
+              className={classNames(
+                `${prefixCls}-dropdown-item`,
+                {
+                  [`${prefixCls}-dropdown-item-selected`]: isSelected,
+                  [`${prefixCls}-dropdown-item-disabled`]: option.disabled,
+                }
+              )}
+              onClick={() => {
+                if (option.disabled) return;
+                const newValue = [...(internalValue || []), option[valueFieldName]];
+                setInternalValue(newValue);
+                props.onChange?.(newValue as any, option as any);
+              }}
+            >
+              {isSelected && <CheckOutlined className={`${prefixCls}-dropdown-item-checkbox-inner`} />}
+              <span className={`${prefixCls}-dropdown-item-label`}>{option.label}</span>
+            </div>
+          );
+        }
+      });
+    };
+    
     // 添加分隔线和适当的间距，使其更符合 Ant Design 的设计规范
     return (
-      <div className={`${prefixCls}-dropdown-render`}>
-        {menu}
+      <div className={`${prefixCls}-dropdown-render-container`}>
+        <div className={`${prefixCls}-dropdown-render`}>
+          {/* 已选项区域 */}
+          {selectedOptions.length > 0 && isRenderDefaultBottom && (props.mode === 'multiple' || props.mode === 'tags') && !(props.children || props.optionFilterProp === 'label') && (
+            <div className={`${prefixCls}-dropdown-section`}>
+              <div className={`${prefixCls}-dropdown-render-section-title`}>已选项 ({selectedOptions.length})</div>
+              <div className={`${prefixCls}-dropdown-render-section-content`}>
+                {
+                  selectedOptions.map((_item, index) => {
+                    const valueFieldName = props.fieldNames?.value || 'value';
+                    const isSelected = internalValue?.includes(_item[valueFieldName]);
+                    return (
+                      <div
+                        key={_item.key || _item[valueFieldName] || index}
+                        className={classNames(
+                          `${prefixCls}-dropdown-item`,
+                          {
+                            [`${prefixCls}-dropdown-item-selected`]: isSelected,
+                            [`${prefixCls}-dropdown-item-disabled`]: _item.disabled,
+                          }
+                        )}
+                        onClick={() => {
+                          if (_item.disabled) return;
+                          const newValue = (internalValue || []).filter((v: any) => v !== _item[valueFieldName]);
+                          setInternalValue(newValue);
+                          props.onChange?.(newValue as any, _item as any);
+                        }}
+                      >
+                        <span className={`${prefixCls}-dropdown-item-label`}>{_item.label}</span>
+                        {isSelected && <CheckOutlined className={`${prefixCls}-dropdown-item-checkbox-inner`} />}
+                      </div>
+                    )
+                  })
+                }
+              </div>
+            </div>
+          )}
+          
+          {/* 可选项区域 */}
+          {(canSelectOptionLength - selectedOptions?.length) > 0 && isRenderDefaultBottom && (props.mode === 'multiple' || props.mode === 'tags') && !(props.children || props.optionFilterProp === 'label') && (
+            <div className={`${prefixCls}-dropdown-section`}>
+              <div className={`${prefixCls}-dropdown-render-section-title`}>可选项 ({canSelectOptionLength - selectedOptions.length})</div>
+              <div className={`${prefixCls}-dropdown-render-section-content`}>
+                {renderOptions(unselectedOptions)}
+              </div>
+            </div>
+          )}
+        </div>
+        
+        {/* 底部操作区域 */}
         {availableOptionValues.length > 0 && isRenderDefaultBottom && (props.mode === 'multiple' || props.mode === 'tags') && !(props.children || props.optionFilterProp === 'label') && (
           <div className={`${prefixCls}-dropdown-render-section`}>
             {
