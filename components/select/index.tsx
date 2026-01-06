@@ -551,7 +551,7 @@ const InternalSelect = <OptionType extends BaseOptionType | DefaultOptionType = 
     })();
     
     if (!(isMultiple && isRenderDefaultBottom) || (props.children || props.optionFilterProp === 'label')) {
-      return menu
+      return menu as React.ReactNode
     }
 
     // 渲染选项列表
@@ -779,7 +779,7 @@ const InternalSelect = <OptionType extends BaseOptionType | DefaultOptionType = 
       dropdownClassName={rcSelectRtlDropdownClassName}
       showArrow={hasFeedback || showArrow}
       disabled={mergedDisabled}
-      dropdownRender={mergedDropdownRender}
+      dropdownRender={mergedDropdownRender as any}
       onDropdownVisibleChange={handleDropdownVisibleChange}
       {...(!(props.children || props.optionFilterProp === 'label') ? { options: getAvailableOptions } : {})}
     />
