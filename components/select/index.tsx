@@ -124,8 +124,6 @@ const InternalSelect = <OptionType extends BaseOptionType | DefaultOptionType = 
   const rootPrefixCls = getPrefixCls();
   const { compactSize, compactItemClassnames } = useCompactItemContext(prefixCls, direction);
 
-  const [previousSelected, setPreviousSelected] = React.useState<SelectValue>(undefined);
-
   const mode = React.useMemo(() => {
     const { mode: m } = props as InternalSelectProps<OptionType>;
 
@@ -232,6 +230,7 @@ const InternalSelect = <OptionType extends BaseOptionType | DefaultOptionType = 
       return initialValue
     }
   });
+
   // 添加搜索值状态，用于跟踪当前的搜索输入
   const [searchValue, setSearchValue] = React.useState('');
   // 缓存已选中的选项，避免筛选后无法显示
@@ -550,8 +549,6 @@ const InternalSelect = <OptionType extends BaseOptionType | DefaultOptionType = 
       const filterUnselected = (options: any[]): any[] => {
         return options
           .map((option: any) => {
-         
-            
             if (option[optionsFieldName] && Array.isArray(option[optionsFieldName])) {
               // 处理分组选项
               const filteredChildren = option[optionsFieldName].filter((child: any) => {
@@ -609,9 +606,20 @@ const InternalSelect = <OptionType extends BaseOptionType | DefaultOptionType = 
                       )}
                       onClick={() => {
                         if (child.disabled) return;
-                        const newValue = [...(internalValue || []), child[valueFieldName]];
-                        setInternalValue(newValue);
-                        props.onChange?.(newValue as any, child as any);
+                        const itemValue = child[valueFieldName];
+                        const isInValue = internalValue?.includes(itemValue);
+                        
+                        if (isInValue) {
+                          // 如果在 internalValue 中，则移除
+                          const newValue = (internalValue || []).filter((v: any) => v !== itemValue);
+                          setInternalValue(newValue);
+                          props.onChange?.(newValue as any, child as any);
+                        } else {
+                          // 否则添加
+                          const newValue = [...(internalValue || []), itemValue];
+                          setInternalValue(newValue);
+                          props.onChange?.(newValue as any, child as any);
+                        }
                       }}
                     >
                       <span className={`${prefixCls}-dropdown-item-label`}>{child.label}</span>
@@ -637,9 +645,20 @@ const InternalSelect = <OptionType extends BaseOptionType | DefaultOptionType = 
               )}
               onClick={() => {
                 if (option.disabled) return;
-                const newValue = [...(internalValue || []), option[valueFieldName]];
-                setInternalValue(newValue);
-                props.onChange?.(newValue as any, option as any);
+                const itemValue = option[valueFieldName];
+                const isInValue = internalValue?.includes(itemValue);
+                
+                if (isInValue) {
+                  // 如果在 internalValue 中，则移除
+                  const newValue = (internalValue || []).filter((v: any) => v !== itemValue);
+                  setInternalValue(newValue);
+                  props.onChange?.(newValue as any, option as any);
+                } else {
+                  // 否则添加
+                  const newValue = [...(internalValue || []), itemValue];
+                  setInternalValue(newValue);
+                  props.onChange?.(newValue as any, option as any);
+                }
               }}
             >
               <span className={`${prefixCls}-dropdown-item-label`}>{option.label}</span>
@@ -675,9 +694,19 @@ const InternalSelect = <OptionType extends BaseOptionType | DefaultOptionType = 
                         )}
                         onClick={() => {
                           if (_item.disabled) return;
-                          const newValue = (internalValue || []).filter((v: any) => v !== _item[valueFieldName]);
-                          setInternalValue(newValue);
-                          props.onChange?.(newValue as any, _item as any);
+                          const itemValue = _item[valueFieldName];
+                          
+                          if (isSelected) {
+                            // 如果在 previousCurrentSelected 中，则移除
+                            const newValue = (internalValue || []).filter((v: any) => v !== itemValue);
+                            setInternalValue(newValue);
+                            props.onChange?.(newValue as any, _item as any);
+                          } else {
+                            // 否则添加
+                            const newValue = [...(internalValue || []), itemValue];
+                            setInternalValue(newValue);
+                            props.onChange?.(newValue as any, _item as any);
+                          }
                         }}
                       >
                         <span className={`${prefixCls}-dropdown-item-label`}>{_item.label}</span>
