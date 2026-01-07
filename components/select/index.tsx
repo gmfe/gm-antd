@@ -124,6 +124,8 @@ const InternalSelect = <OptionType extends BaseOptionType | DefaultOptionType = 
   const rootPrefixCls = getPrefixCls();
   const { compactSize, compactItemClassnames } = useCompactItemContext(prefixCls, direction);
 
+  const [previousSelected, setPreviousSelected] = React.useState<SelectValue>(undefined);
+
   const mode = React.useMemo(() => {
     const { mode: m } = props as InternalSelectProps<OptionType>;
 
@@ -268,38 +270,38 @@ const InternalSelect = <OptionType extends BaseOptionType | DefaultOptionType = 
   }, [props.value]);
 
   // 当 internalValue 或 props.options 变化时，更新 selectedOptionsCache
-  React.useEffect(() => {
-    if (!isRenderDefaultBottom || !props.options || !internalValue) {
-      setSelectedOptionsCache([]);
-      return;
-    }
+  // React.useEffect(() => {
+  //   if (!isRenderDefaultBottom || !props.options || !internalValue) {
+  //     setSelectedOptionsCache([]);
+  //     return;
+  //   }
 
-    const selectedValues = Array.isArray(internalValue) ? internalValue : [internalValue];
-    const valueFieldName = props.fieldNames?.value || 'value';
+  //   const selectedValues = Array.isArray(internalValue) ? internalValue : [internalValue];
+  //   const valueFieldName = props.fieldNames?.value || 'value';
     
-    // 先从缓存中保留已存在的选项
-    const cachedOptions = selectedOptionsCache.filter((cached: any) =>
-      selectedValues.includes(cached[valueFieldName])
-    );
+  //   // 先从缓存中保留已存在的选项
+  //   const cachedOptions = selectedOptionsCache.filter((cached: any) =>
+  //     selectedValues.includes(cached[valueFieldName])
+  //   );
     
-    // 找出需要从 props.options 中查找的新值
-    const cachedValues = cachedOptions.map((opt: any) => opt[valueFieldName]);
-    const newValues = selectedValues.filter((val: any) => !cachedValues.includes(val));
+  //   // 找出需要从 props.options 中查找的新值
+  //   const cachedValues = cachedOptions.map((opt: any) => opt[valueFieldName]);
+  //   const newValues = selectedValues.filter((val: any) => !cachedValues.includes(val));
     
-    // 从 props.options 中查找新选项
-    const newOptions: any[] = [];
-    newValues.forEach((value: any) => {
-      if (props.options) {
-        const option = findOptionByValue(props.options, value);
-        if (option) {
-          newOptions.push(option);
-        }
-      }
-    });
+  //   // 从 props.options 中查找新选项
+  //   const newOptions: any[] = [];
+  //   newValues.forEach((value: any) => {
+  //     if (props.options) {
+  //       const option = findOptionByValue(props.options, value);
+  //       if (option) {
+  //         newOptions.push(option);
+  //       }
+  //     }
+  //   });
     
-    // 合并缓存和新选项
-    setSelectedOptionsCache([...cachedOptions, ...newOptions]);
-  }, [internalValue, props.options, isRenderDefaultBottom, props.fieldNames, findOptionByValue]);
+  //   // 合并缓存和新选项
+  //   setSelectedOptionsCache([...cachedOptions, ...newOptions]);
+  // }, [internalValue, props.options, isRenderDefaultBottom, props.fieldNames, findOptionByValue]);
 
   /**
    * 获取可用选项（根据过滤条件）
@@ -540,14 +542,15 @@ const InternalSelect = <OptionType extends BaseOptionType | DefaultOptionType = 
 
     // 获取未选中的可选项
     const unselectedOptions = (() => {
-      if (!props.options || !internalValue) return getAvailableOptions;
-      const selectedValues = Array.isArray(internalValue) ? internalValue : [internalValue];
+      if (!props.options || searchValue) return getAvailableOptions;
+      const optionsFieldName = props.fieldNames?.options || 'options';
+      const valueFieldName = props.fieldNames?.value || 'value';
+      const selectedValues =  selectedOptions.map((_item) => _item[valueFieldName])
       
       const filterUnselected = (options: any[]): any[] => {
         return options
           .map((option: any) => {
-            const optionsFieldName = props.fieldNames?.options || 'options';
-            const valueFieldName = props.fieldNames?.value || 'value';
+         
             
             if (option[optionsFieldName] && Array.isArray(option[optionsFieldName])) {
               // 处理分组选项
@@ -611,8 +614,8 @@ const InternalSelect = <OptionType extends BaseOptionType | DefaultOptionType = 
                         props.onChange?.(newValue as any, child as any);
                       }}
                     >
-                      {isSelected && <CheckOutlined className={`${prefixCls}-dropdown-item-checkbox-inner`} />}
                       <span className={`${prefixCls}-dropdown-item-label`}>{child.label}</span>
+                      {isSelected && <CheckOutlined className={`${prefixCls}-dropdown-item-checkbox-inner`} />}
                     </div>
                   );
                 })}
@@ -639,8 +642,8 @@ const InternalSelect = <OptionType extends BaseOptionType | DefaultOptionType = 
                 props.onChange?.(newValue as any, option as any);
               }}
             >
-              {isSelected && <CheckOutlined className={`${prefixCls}-dropdown-item-checkbox-inner`} />}
               <span className={`${prefixCls}-dropdown-item-label`}>{option.label}</span>
+              {isSelected && <CheckOutlined className={`${prefixCls}-dropdown-item-checkbox-inner`} />}
             </div>
           );
         }
@@ -652,7 +655,7 @@ const InternalSelect = <OptionType extends BaseOptionType | DefaultOptionType = 
       <div className={`${prefixCls}-dropdown-render-container`}>
         <div className={`${prefixCls}-dropdown-render`}>
           {/* 已选项区域 */}
-          {selectedOptions.length > 0 && isRenderDefaultBottom && (props.mode === 'multiple' || props.mode === 'tags') && !(props.children || props.optionFilterProp === 'label') && (
+          {!searchValue && selectedOptions.length > 0 && isRenderDefaultBottom && (props.mode === 'multiple' || props.mode === 'tags') && !(props.children || props.optionFilterProp === 'label') && (
             <div className={`${prefixCls}-dropdown-section`}>
               <div className={`${prefixCls}-dropdown-render-section-title`}>已选中</div>
               <div className={`${prefixCls}-dropdown-render-section-content`}>
@@ -689,7 +692,11 @@ const InternalSelect = <OptionType extends BaseOptionType | DefaultOptionType = 
           
           {/* 可选项区域 */}
           <div className={`${prefixCls}-dropdown-section`}>
-            <div className={`${prefixCls}-dropdown-render-section-title`}>未选中</div>
+            {
+              !searchValue && (
+                <div className={`${prefixCls}-dropdown-render-section-title`}>未选中</div>
+              )
+            }
             <div className={`${prefixCls}-dropdown-render-section-content`}>
               {renderOptions(unselectedOptions)}
             </div>
@@ -734,12 +741,34 @@ const InternalSelect = <OptionType extends BaseOptionType | DefaultOptionType = 
 
   // 处理下拉菜单可见性变化
   const handleDropdownVisibleChange = (open: boolean) => {
-    // 当下拉菜单关闭时，清空搜索值
-    // if (!open) {
-    //   setTimeout(() => {
-    //     setSearchValue('');
-    //   }, 10)
-    // }
+    if (open) {
+      const selectedValues = Array.isArray(internalValue) ? internalValue : [internalValue];
+      const valueFieldName = props.fieldNames?.value || 'value';
+      
+      // 先从缓存中保留已存在的选项
+      const cachedOptions = selectedOptionsCache.filter((cached: any) =>
+        selectedValues.includes(cached[valueFieldName])
+      );
+      
+      // 找出需要从 props.options 中查找的新值
+      const cachedValues = cachedOptions.map((opt: any) => opt[valueFieldName]);
+      const newValues = selectedValues.filter((val: any) => !cachedValues.includes(val));
+      
+      // 从 props.options 中查找新选项
+      const newOptions: any[] = [];
+      newValues.forEach((value: any) => {
+        if (props.options) {
+          const option = findOptionByValue(props.options, value);
+          if (option) {
+            newOptions.push(option);
+          }
+        }
+      });
+      // 合并缓存和新选项
+      setSelectedOptionsCache([...cachedOptions, ...newOptions]);
+    } else {
+      setSearchValue('')
+    }
     // 如果有自定义的 onDropdownVisibleChange 处理函数，则调用它
     if (props.onDropdownVisibleChange) {
       props.onDropdownVisibleChange(open);
