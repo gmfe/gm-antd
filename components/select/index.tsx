@@ -727,19 +727,20 @@ const InternalSelect = <OptionType extends BaseOptionType | DefaultOptionType = 
               )
             }
             <div className={`${prefixCls}-dropdown-render-section-content`}>
-              {renderOptions(unselectedOptions)}
+              {unselectedOptions.length === 0 ? '未找到结果' : renderOptions(unselectedOptions)}
             </div>
           </div>
         </div>
         
         {/* 底部操作区域 */}
-        {availableOptionValues.length > 0 && isRenderDefaultBottom && (props.mode === 'multiple' || props.mode === 'tags') && !(props.children || props.optionFilterProp === 'label') && (
+        {isRenderDefaultBottom && (props.mode === 'multiple' || props.mode === 'tags') && !(props.children || props.optionFilterProp === 'label') && (
           <div className={`${prefixCls}-dropdown-render-footer-section`}>
             {
               isShowCheckedAll && (
                 <Checkbox
                   checked={isAllAvailableSelected}
                   onChange={handleSelectAllChange}
+                  disabled={availableOptionValues.length === 0}
                 >
                   全选({canSelectOptionLength})
                 </Checkbox>
