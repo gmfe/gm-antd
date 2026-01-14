@@ -82,6 +82,10 @@ function Component(options: TableFilterProps) {
     };
   }, [id]);
 
+  useEffect(() => {
+    store.setSearch(onSearch)
+  }, [onSearch])
+
   // fields 变化时，重新设置, 如果你的field 中包含select，
   // 而select 中的option 并不是从options 方法中获取。而是通过其他异步方式获取然后更改field 时
   // 需要用到该字段, 场景是，当你的搜索内容有相互联动时，你不得不使用这种方式，比如其他搜索内容依赖于某个搜索时间组件时

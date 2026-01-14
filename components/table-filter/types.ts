@@ -166,6 +166,8 @@ export interface FieldSelectItem<
   selectProps?: SelectProps;
   /** 同 {@link FieldInputItem.toParam} */
   toParam?: ToParam<Multiple extends true ? S[0]['value'][] : S[0]['value'], API>;
+  /** 是否在第一次的挂载的时候进行获取option */
+  isMountToFetch?: boolean;
 }
 
 /** 表单项-日期选择器 */
@@ -224,6 +226,7 @@ export interface FieldCascaderItem<
   type: 'cascader';
   /** Antd, 多选 */
   multiple: Multiple;
+  showSearch?: boolean;
   options?: CasCaderOption[] | (() => CasCaderOption[]) | (() => Promise<CasCaderOption[]>);
   defaultValue?: string[];
   /** Antd, 根结点是否可选，默认为true */

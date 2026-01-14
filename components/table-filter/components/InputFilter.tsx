@@ -63,6 +63,9 @@ const InputFilter: FC<InputFilterProps> = ({ className, field }) => {
         setUpdatedValue(target.value);
       }}
       onBlur={() => {
+        if (typeof value === 'undefined' && typeof updatedValue === 'undefined') {
+          return 
+        }
         if (['onChange', 'both'].includes(store.trigger!) && (value || '') !== updatedValue) {
           cancel();
           store.set(field.key, updatedValue);

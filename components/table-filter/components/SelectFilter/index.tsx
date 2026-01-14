@@ -10,37 +10,59 @@ import { useLocaleReceiver } from '../../../locale-provider/LocaleReceiver';
 
 export interface SelectFilterProps extends HTMLAttributes<HTMLDivElement> {
   field: FieldSelectItem;
+
 }
 
-const { Option, OptGroup } = Select;
-
 const SelectFilter: FC<SelectFilterProps> = ({ className, field }) => {
-  const {
-    multiple,
-    options: originOptions,
-    placeholder,
-    remote,
-    maxLength,
-    label,
-    selectProps,
-    trigger,
-  } = field;
+  const { multiple, options: originOptions, placeholder, remote, maxLength, label, selectProps, trigger, isMountToFetch = true } = field;
   const store = useContext(TableFilterContext);
   const searchBar = useContext(SearchBarContext);
   const first = useRef(true);
   const [searchValue, setSearchValue] = useState('');
+  const searchValueRef = useRef(searchValue);
   const [options, setOptions] = useState(Array.isArray(originOptions) ? originOptions : []);
   const groups = groupBy(options, item => item.group);
   const [TableLocale] = useLocaleReceiver('Table');
 
+  // 更新 searchValueRef 的值
+  useEffect(() => {
+    searchValueRef.current = searchValue;
+  }, [searchValue]);
+
+  // 将 options 转换为 Select 组件需要的格式
+  const selectOptions = useMemo(() => {
+    if (Object.keys(groups).length < 2) {
+      // 没有分组的情况
+      return options.map(item => ({
+        value: item.value,
+        label: item.text,
+        key: item.value
+      }));
+    } else {
+      // 有分组的情况
+      return Object.keys(groups).map((groupName = TableLocale?.defaultGrouping || '') => {
+        const list = groups[groupName];
+        if (!list.length) return null;
+        return {
+          label: groupName,
+          options: list.map(item => ({
+            value: item.value,
+            label: item.text,
+            key: item.value
+          }))
+        };
+      }).filter((item): item is NonNullable<typeof item> => item !== null);
+    }
+  }, [options, groups, TableLocale]);
+
   const value = store.get(field);
 
   const fetch = useMemo(() => {
-    function fetch() {
+    function fetchData() {
       if (!originOptions) return setOptions([]);
       if (Array.isArray(originOptions)) setOptions(originOptions);
       if (typeof originOptions !== 'function') return;
-      const res: any = originOptions(searchValue || undefined);
+      const res: any = originOptions(searchValueRef.current || undefined);
       if (res.then) {
         res.then((data: SelectOptions) => {
           if (store.isSaveOptions) {
@@ -52,11 +74,23 @@ const SelectFilter: FC<SelectFilterProps> = ({ className, field }) => {
         setOptions(res);
       }
     }
-    return debounce(fetch, 300);
-  }, [originOptions, searchValue]);
+    return debounce(fetchData, 500);
+  }, [originOptions]);
+
+  // 为 onChange 事件创建防抖搜索函数
+  const debouncedSearch = useMemo(() => {
+    function doSearch() {
+      if (searchBar?.onSearch) {
+        searchBar.onSearch(store.toParams());
+      } else {
+        store.search();
+      }
+    }
+    return debounce(doSearch, 300);
+  }, [searchBar, store]);
 
   useEffect(() => {
-    if (remote) {
+    if (remote && isMountToFetch) {
       fetch();
       return;
     }
@@ -66,11 +100,19 @@ const SelectFilter: FC<SelectFilterProps> = ({ className, field }) => {
       return;
     }
 
-    if (first.current) {
+    if (first.current && isMountToFetch) {
       setTimeout(fetch, 300);
       first.current = false;
     }
-  }, [originOptions, searchValue]);
+  }, [originOptions]);
+
+  const memoValue = useMemo(() => {
+    if (options.length > 0 || value) {
+      return value;
+    }
+    return undefined;
+  }, [value, options.length]);
+
 
   return (
     <Select
@@ -80,17 +122,19 @@ const SelectFilter: FC<SelectFilterProps> = ({ className, field }) => {
       mode={multiple ? 'multiple' : undefined}
       maxTagCount="responsive"
       placeholder={placeholder || `${TableLocale?.pleaseSelect}${label?.toLowerCase()}`}
-      value={options.length ? value : undefined}
-      onDropdownVisibleChange={open => {
-        if (open) {
+      value={memoValue}
+      {...selectProps}
+      isRenderDefaultBottom={selectProps?.isRenderDefaultBottom ?? true}
+      onDropdownVisibleChange={(open) => {
+        if (open && Array.isArray(originOptions)) {
           fetch();
         }
       }}
       onChange={(value, option) => {
         const oldValue = store.get(field);
         let val: typeof value | undefined = value;
-        const isArray = Array.isArray(val);
-        selectProps?.onChange?.(value, option);
+        const isArray = Array.isArray(val)
+        selectProps?.onChange?.(value, option as any)
         if (typeof val === 'string' || typeof val === 'number') {
           if (val === '') val = undefined;
         } else if (isArray) {
@@ -102,30 +146,28 @@ const SelectFilter: FC<SelectFilterProps> = ({ className, field }) => {
         }
         store.set(field, value);
         if (['onChange', 'both'].includes(trigger || store.trigger!) && value !== oldValue) {
-          if (searchBar?.onSearch) {
-            searchBar.onSearch(store.toParams());
-          } else {
-            store.search();
-          }
+          debouncedSearch();
         }
       }}
-      searchValue={searchValue}
-      onSearch={val => setSearchValue(val?.trim())}
+      // searchValue={searchValue}
+      onSearch={val => {
+        setSearchValue(val?.trim())
+        // 搜索值变化时，如果是远程搜索或函数式选项，触发防抖获取
+        if (typeof originOptions === 'function' || remote) {
+          fetch();
+        }
+      }}
       showSearch
-      optionFilterProp="children"
       allowClear={field.allowClear}
       dropdownMatchSelectWidth={false}
       // dropdownAlign={{ offset: [-10, 2] }}
       filterOption={(input, option) =>
-        (option!.children as unknown as string)?.toLowerCase().includes(input.toLowerCase())
+        (option!.label as unknown as string)?.toLowerCase().includes(input.toLowerCase())
       }
+      options={selectOptions as any}
       onBlur={() => {
         if (trigger === 'onBlur') {
-          if (searchBar?.onSearch) {
-            searchBar.onSearch(store.toParams());
-          } else {
-            store.search();
-          }
+          debouncedSearch()
         }
       }}
       onFocus={() => {
@@ -135,29 +177,7 @@ const SelectFilter: FC<SelectFilterProps> = ({ className, field }) => {
       onBlurCapture={() => {
         store.focusedFieldKey = '';
       }}
-      {...selectProps}
-    >
-      {Object.keys(groups).length < 2 &&
-        options.map(item => (
-          <Option key={item.value} value={item.value}>
-            {item.text}
-          </Option>
-        ))}
-      {Object.keys(groups).length >= 2 &&
-        Object.keys(groups).map((groupName = TableLocale?.defaultGrouping || '') => {
-          const list = groups[groupName];
-          if (!list.length) return null;
-          return (
-            <OptGroup key={groupName} label={groupName}>
-              {list.map(item => (
-                <Option key={item.value} value={item.value}>
-                  {item.text}
-                </Option>
-              ))}
-            </OptGroup>
-          );
-        })}
-    </Select>
+    />
   );
 };
 export default observer(SelectFilter);
