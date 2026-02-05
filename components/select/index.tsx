@@ -264,6 +264,9 @@ const InternalSelect = <OptionType extends BaseOptionType | DefaultOptionType = 
       } else {
         setInternalValue(props.value)
       }
+    } else {
+      /** 筛选重置项需要用到 */
+      setInternalValue(undefined)
     }
 
   }, [props.value]);
