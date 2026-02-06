@@ -265,8 +265,12 @@ const InternalSelect = <OptionType extends BaseOptionType | DefaultOptionType = 
         setInternalValue(props.value)
       }
     } else {
-      /** 筛选重置项需要用到 */
-      setInternalValue(undefined)
+      /** 筛选重置项需要用到，multiple模式下需要初始化为空数组而不是undefined */
+      if (props.mode === 'multiple' || props.mode === 'tags') {
+        setInternalValue([])
+      } else {
+        setInternalValue(undefined)
+      }
     }
 
   }, [props.value]);
@@ -430,9 +434,12 @@ const InternalSelect = <OptionType extends BaseOptionType | DefaultOptionType = 
     }
     if (!flattenOptions.length) return false;
     
-    // 使用内部值来判断
-    return availableOptionValues.every(value => internalValue?.includes(value)) 
-  }, [flattenOptions, availableOptionValues, internalValue, filterDeleted]);
+    // 优先使用外部受控值，确保受控模式下能正确响应
+    const currentValue = props.value !== undefined ? props.value : internalValue;
+    const valueArray = Array.isArray(currentValue) ? currentValue : [];
+    
+    return availableOptionValues.every(value => valueArray.includes(value)) 
+  }, [flattenOptions, availableOptionValues, internalValue, props.value, filterDeleted]);
 
   /**
    * 全选/取消全选的处理函数
