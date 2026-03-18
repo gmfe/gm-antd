@@ -236,11 +236,13 @@ const InternalSelect = <OptionType extends BaseOptionType | DefaultOptionType = 
   // 缓存已选中的选项，避免筛选后无法显示
   const [selectedOptionsCache, setSelectedOptionsCache] = React.useState<any[]>([]);
 
+  // 统一的字段名获取
+  const labelFieldName = props.fieldNames?.label || 'label';
+  const valueFieldName = props.fieldNames?.value || 'value';
+  const optionsFieldName = props.fieldNames?.options || 'options';
+
   // 辅助函数：从 options 中查找指定值的选项
   const findOptionByValue = React.useCallback((options: any[], value: any): any => {
-    const optionsFieldName = props.fieldNames?.options || 'options';
-    const valueFieldName = props.fieldNames?.value || 'value';
-    
     for (const option of options) {
       if (option[optionsFieldName] && Array.isArray(option[optionsFieldName])) {
         const found = findOptionByValue(option[optionsFieldName], value);
@@ -250,7 +252,7 @@ const InternalSelect = <OptionType extends BaseOptionType | DefaultOptionType = 
       }
     }
     return null;
-  }, [props.fieldNames]);
+  }, [optionsFieldName, valueFieldName]);
 
   // 同步外部 value 到内部状态
   React.useEffect(() => {
@@ -323,9 +325,9 @@ const InternalSelect = <OptionType extends BaseOptionType | DefaultOptionType = 
       // 实际使用时，可能需要根据具体的属性名来调整
       filteredOptions = filteredOptions.filter((option: any) => {
         // 如果是分组选项，需要检查其子选项
-        if (option.options) {
+        if (option[optionsFieldName]) {
           // 过滤子选项中未删除的项
-          const filteredChildren = option.options.filter((child: any) => {
+          const filteredChildren = option[optionsFieldName].filter((child: any) => {
             const isDeleted = child.isDeleted || child.deleted;
             return !isDeleted;
           });
@@ -337,10 +339,10 @@ const InternalSelect = <OptionType extends BaseOptionType | DefaultOptionType = 
         return !isDeleted;
       }).map((option: any) => {
         // 对于分组选项，返回过滤后的子选项
-        if (option.options) {
+        if (option[optionsFieldName]) {
           return {
             ...option,
-            options: option.options.filter((child: any) => {
+            [optionsFieldName]: option[optionsFieldName].filter((child: any) => {
               const isDeleted = child.isDeleted || child.deleted;
               return !isDeleted;
             })
@@ -349,26 +351,26 @@ const InternalSelect = <OptionType extends BaseOptionType | DefaultOptionType = 
         return option;
       });
     }
-    const filterOptionFn = typeof selectProps.filterOption === 'function' 
-      ? selectProps.filterOption 
+    const filterOptionFn = typeof selectProps.filterOption === 'function'
+      ? selectProps.filterOption
       : false
-    
+
     // 如果有搜索值，则进一步过滤选项
     if (searchValue) {
       filteredOptions = filteredOptions.filter((option: any) => {
         // 处理分组选项
-        if (option.options && Array.isArray(option.options)) {
+        if (option[optionsFieldName] && Array.isArray(option[optionsFieldName])) {
           // 对于分组选项，过滤其子选项 对于普通选项，直接true
           if (filterOptionFn === false) {
             return true
           }
-          
-          const filteredChildren = option.options.filter((child: any) => {
+
+          const filteredChildren = option[optionsFieldName].filter((child: any) => {
             return filterOptionFn(searchValue, child);
-          }) 
+          })
           // 如果分组中有匹配的子选项，则保留该分组并更新其子选项
           if (filteredChildren.length > 0) {
-            option.options = filteredChildren;
+            option[optionsFieldName] = filteredChildren;
             return true;
           }
           return false;
@@ -379,7 +381,7 @@ const InternalSelect = <OptionType extends BaseOptionType | DefaultOptionType = 
           } else {
             let result = true
             if (!props.onSearch) {
-              result = option?.label?.toLowerCase()?.indexOf(searchValue.toLowerCase()) !== -1
+              result = option?.[labelFieldName]?.toLowerCase()?.indexOf(searchValue.toLowerCase()) !== -1
             }
             /** 没有filterOption 直接返回true */
             return result;
@@ -388,42 +390,40 @@ const InternalSelect = <OptionType extends BaseOptionType | DefaultOptionType = 
       });
     }
     return filteredOptions;
-  }, [props.options, filterDeleted, searchValue]);
+  }, [props.options, filterDeleted, searchValue, optionsFieldName, labelFieldName]);
 
   /**
    * 扁平化选项，处理嵌套的 OptGroup
    */
   const flattenOptions = React.useMemo(() => {
     const result: any[] = [];
-    const optionsFieldName = props.fieldNames?.options || 'options'
-    const childrenFieldName = props.fieldNames?.options || 'value'
-    
+
     const processOption = (option: any) => {
       if (option[optionsFieldName] && Array.isArray(option[optionsFieldName])) {
         // 处理 OptGroup
-        option.options.forEach((child: any) => {
-          if (child[childrenFieldName]) {
+        option[optionsFieldName].forEach((child: any) => {
+          if (child[valueFieldName]) {
             result.push(child);
           }
         });
       } else {
-        if (option[childrenFieldName]) {
+        if (option[valueFieldName]) {
           result.push(option);
         }
       }
     };
-    
+
     getAvailableOptions.forEach(processOption);
-   
+
     return result;
-  }, [getAvailableOptions, filterDeleted]);
+  }, [getAvailableOptions, filterDeleted, optionsFieldName, valueFieldName]);
 
   /**
    * 获取所有可用选项的值
    */
   const availableOptionValues = React.useMemo(() => {
-    return flattenOptions.map(option => option.value);
-  }, [flattenOptions, filterDeleted]);
+    return flattenOptions.map(option => option[valueFieldName]);
+  }, [flattenOptions, filterDeleted, valueFieldName]);
 
   /**
    * 检查是否所有可用选项都被选中
@@ -531,14 +531,14 @@ const InternalSelect = <OptionType extends BaseOptionType | DefaultOptionType = 
   const canSelectOptionLength = React.useMemo(() => {
     let sum = 0
     getAvailableOptions.forEach(option => {
-      if (option.options) {
-        sum += option.options.length
-      } else if (option.value) {
+      if (option[optionsFieldName]) {
+        sum += option[optionsFieldName].length
+      } else if (option[valueFieldName]) {
         sum += 1
       }
     })
     return sum
-  }, [getAvailableOptions])
+  }, [getAvailableOptions, optionsFieldName, valueFieldName])
 
   /**
    * 默认的下拉菜单渲染函数
@@ -592,15 +592,12 @@ const InternalSelect = <OptionType extends BaseOptionType | DefaultOptionType = 
 
     // 渲染选项列表
     const renderOptions = (options: any[]) => {
-      const optionsFieldName = props.fieldNames?.options || 'options';
-      const valueFieldName = props.fieldNames?.value || 'value';
-      
       return options.map((option: any, index: number) => {
         if (option[optionsFieldName] && Array.isArray(option[optionsFieldName])) {
           // 渲染分组
           return (
             <div key={option.key || index} className={`${prefixCls}-dropdown-group`}>
-              <div className={`${prefixCls}-dropdown-group-label`}>{option.label}</div>
+              <div className={`${prefixCls}-dropdown-group-label`}>{option[labelFieldName]}</div>
               <div className={`${prefixCls}-dropdown-group-content`}>
                 {option[optionsFieldName].map((child: any, childIndex: number) => {
                   const isSelected = internalValue?.includes(child[valueFieldName]);
@@ -618,7 +615,7 @@ const InternalSelect = <OptionType extends BaseOptionType | DefaultOptionType = 
                         if (child.disabled) return;
                         const itemValue = child[valueFieldName];
                         const isInValue = internalValue?.includes(itemValue);
-                        
+
                         if (isInValue) {
                           // 如果在 internalValue 中，则移除
                           const newValue = (internalValue || []).filter((v: any) => v !== itemValue);
@@ -632,7 +629,7 @@ const InternalSelect = <OptionType extends BaseOptionType | DefaultOptionType = 
                         }
                       }}
                     >
-                      <span className={`${prefixCls}-dropdown-item-label`}>{child.label}</span>
+                      <span className={`${prefixCls}-dropdown-item-label`}>{child[labelFieldName]}</span>
                       {isSelected && <CheckOutlined className={`${prefixCls}-dropdown-item-checkbox-inner`} />}
                     </div>
                   );
@@ -657,7 +654,7 @@ const InternalSelect = <OptionType extends BaseOptionType | DefaultOptionType = 
                 if (option.disabled) return;
                 const itemValue = option[valueFieldName];
                 const isInValue = internalValue?.includes(itemValue);
-                
+
                 if (isInValue) {
                   // 如果在 internalValue 中，则移除
                   const newValue = (internalValue || []).filter((v: any) => v !== itemValue);
@@ -671,7 +668,7 @@ const InternalSelect = <OptionType extends BaseOptionType | DefaultOptionType = 
                 }
               }}
             >
-              <span className={`${prefixCls}-dropdown-item-label`}>{option.label}</span>
+              <span className={`${prefixCls}-dropdown-item-label`}>{option[labelFieldName]}</span>
               {isSelected && <CheckOutlined className={`${prefixCls}-dropdown-item-checkbox-inner`} />}
             </div>
           );
@@ -690,7 +687,6 @@ const InternalSelect = <OptionType extends BaseOptionType | DefaultOptionType = 
               <div className={`${prefixCls}-dropdown-render-section-content`}>
                 {
                   selectedOptions.map((_item, index) => {
-                    const valueFieldName = props.fieldNames?.value || 'value';
                     const isSelected = internalValue?.includes(_item[valueFieldName]);
                     return (
                       <div
@@ -705,7 +701,7 @@ const InternalSelect = <OptionType extends BaseOptionType | DefaultOptionType = 
                         onClick={() => {
                           if (_item.disabled) return;
                           const itemValue = _item[valueFieldName];
-                          
+
                           if (isSelected) {
                             // 如果在 previousCurrentSelected 中，则移除
                             const newValue = (internalValue || []).filter((v: any) => v !== itemValue);
@@ -719,7 +715,7 @@ const InternalSelect = <OptionType extends BaseOptionType | DefaultOptionType = 
                           }
                         }}
                       >
-                        <span className={`${prefixCls}-dropdown-item-label`}>{_item.label}</span>
+                        <span className={`${prefixCls}-dropdown-item-label`}>{_item[labelFieldName]}</span>
                         {isSelected && <CheckOutlined className={`${prefixCls}-dropdown-item-checkbox-inner`} />}
                       </div>
                     )
