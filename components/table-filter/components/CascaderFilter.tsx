@@ -1,5 +1,5 @@
 import type { FC, HTMLAttributes } from 'react';
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { observer } from 'mobx-react';
 import classNames from 'classnames';
 import type { CasCaderOption, FieldCascaderItem } from '../types';
@@ -13,7 +13,6 @@ export interface CascaderFilterProps extends HTMLAttributes<HTMLDivElement> {
 
 const CascaderFilter: FC<CascaderFilterProps> = ({ className, field }) => {
   const {
-    options: originOptions,
     placeholder,
     changeOnSelect,
     label,
@@ -27,12 +26,28 @@ const CascaderFilter: FC<CascaderFilterProps> = ({ className, field }) => {
   const searchBar = useContext(SearchBarContext)
   const isFetched = useRef(false);
   const [TableLocale] = useLocaleReceiver('Table');
+  // 用 ref 始终持有最新的 field.options，避免闭包陈旧
+  const originOptionsRef = useRef(field.options);
+  originOptionsRef.current = field.options;
+
+  const refreshSyncOptions = useCallback(() => {
+    const opts = originOptionsRef.current;
+    if (typeof opts === 'function') {
+      const res: any = opts();
+      if (res && !res.then) {
+        setOptions(res);
+      }
+    } else if (Array.isArray(opts)) {
+      setOptions(opts);
+    }
+  }, []);
 
   const [options, setOptions] = useState<CasCaderOption[]>(
-    Array.isArray(originOptions) ? originOptions : [],
+    Array.isArray(field.options) ? field.options : [],
   );
   const value = store.get(field);
   useEffect(() => {
+    const originOptions = originOptionsRef.current;
     if (!originOptions) return setOptions([]);
     if (Array.isArray(originOptions)) setOptions(originOptions);
     if (typeof originOptions !== 'function') return;
@@ -55,7 +70,7 @@ const CascaderFilter: FC<CascaderFilterProps> = ({ className, field }) => {
       // 同步选项：每次 originOptions 变化时重新求值
       setOptions(res);
     }
-  }, [originOptions]);
+  }, [field.options]);
 
   /** 只展示最后一级 */
   const defaultDisplayRender = (labels: string[]) => <span>{labels[labels.length - 1]}</span>;
@@ -104,6 +119,11 @@ const CascaderFilter: FC<CascaderFilterProps> = ({ className, field }) => {
       }}
       onFocus={() => {
         store.focusedFieldKey = field.key;
+      }}
+      onDropdownVisibleChange={(visible: boolean) => {
+        if (visible) {
+          refreshSyncOptions();
+        }
       }}
       // @ts-ignore
       onBlurCapture={() => {
