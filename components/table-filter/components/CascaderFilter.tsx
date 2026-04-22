@@ -40,21 +40,21 @@ const CascaderFilter: FC<CascaderFilterProps> = ({ className, field }) => {
       setOptions(store.optionData[field.key] as CasCaderOption[]);
       return;
     }
-    if (isFetched.current) {
-      return;
-    }
     const res: any = originOptions();
-    if (res.then) {
+    if (res?.then) {
+      // 异步选项：isFetched 防止重复请求
+      if (isFetched.current) return;
       res.then((data: CasCaderOption[]) => {
         if (store.isSaveOptions) {
           store.setOptionData(field.key, data);
         }
         setOptions(data);
       });
+      isFetched.current = true;
     } else {
+      // 同步选项：每次 originOptions 变化时重新求值
       setOptions(res);
     }
-    isFetched.current = true;
   }, [originOptions]);
 
   /** 只展示最后一级 */

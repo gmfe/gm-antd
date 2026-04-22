@@ -40,7 +40,10 @@ export interface TableFilterProps
   trigger?: 'onChange' | 'manual' | 'both';
   /** 是否显示展开收起按钮 */
   isExpanded?: boolean
-  /** 是否更新 fields */
+  /** 
+   * @deprecated
+   * 是否更新 fields, 有bug, 不要使用isUpdateField 会导致SearchInputSelect 无限重挂载 
+  */
   isUpdateFields?: boolean
   /** 是否一直显示自定义按钮 */
   isAlwaysShowCustom?: boolean
