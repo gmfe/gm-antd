@@ -25,35 +25,36 @@ gm-antd 当前是基于 antd 4.24.x 源码的 fork（含 25,600+ antd 原始 com
 
 ## 自定义代码清单
 
-### 全新组件（共 ~3,436 行）
+### 全新组件（共 ~3,200 行）
 
 | 组件 | 代码量 | 文件数 | 依赖 |
 |------|--------|--------|------|
-| table-filter | 2,340 行 | 12 文件 | MobX、@gm-common/hooks、antd（Select/Cascader/DatePicker/Input）、moment |
-| content-wrapper | 366 行 | 3 文件 | rc-resize-observer、antd Divider |
+| table-filter | 2,133 行 | 12 文件（11 TS + 1 Less） | MobX、@gm-common/hooks、antd（Select/Cascader/DatePicker/Input）、moment |
+| content-wrapper | 329 行 | 3 文件（2 TS + 1 Less） | rc-resize-observer、antd Divider |
 | sortable | 297 行 | 4 文件 | sortablejs、lodash |
-| table-pagination | 136 行 | 3 文件 | @gm-common/hooks、antd Pagination/Typography |
+| table-pagination | 131 行 | 3 文件（2 TS + 1 Less） | @gm-common/hooks、antd Pagination/Typography |
 | icon | 5 行 | 1 文件 | @ant-design/icons（createFromIconfontCN + 自定义 iconfont URL） |
 | get-started | 0 行 | 仅文档 | 无 |
 
-### Table 自定义 hooks（共 ~2,235 行）
+### Table 自定义 hooks（共 ~2,188 行）
 
 | Hook | 代码量 | 功能 |
 |------|--------|------|
-| useTableDIY | 800 行 | 列自定义面板（显隐/排序 + localStorage 缓存） |
-| useTableSelection | 558 行 | 批量选择 + 批量操作 UI |
-| useTableVirtual | 471 行 | 基于 react-window 虚拟滚动 |
-| useTableResizable | 191 行 | 可拖拽调整列宽（react-resizable） |
-| useTableTheme | 157 行 | 自定义表格主题 |
+| useTableDIY | 685 行（index.tsx 294 + DiyPanel.tsx 288 + util.ts 103） | 列自定义面板（显隐/排序 + localStorage 缓存） |
+| useTableSelection | 558 行（index.tsx 428 + BatchActions.tsx 83 + index.less 47） | 批量选择 + 批量操作 UI |
+| useTableVirtual | 389 行（index.tsx 195 + TableContainer.tsx 151 + util.ts 43） | 基于 react-window 虚拟滚动 |
+| useTableResizable | 191 行（index.tsx 155 + index.less 36） | 可拖拽调整列宽（react-resizable） |
+| useTableTheme | 157 行（index.tsx 120 + index.less 37） | 自定义表格主题 |
 | useTableExpandable | 58 行 | 展开行状态管理 |
+| useTable | 149 行 | 组合上述 6 个 hook 的便捷 hook |
 
-Table 核心文件修改：Table.tsx（混入 MobX）和 interface.tsx，约 841 行。
+Table 核心文件修改：Table.tsx 和 interface.tsx，约 841 行。Table.tsx 深度依赖 antd 4 内部 API（rc-table、rc-util、config-provider 内部路径），需完整重写为 antd 5 Table 包装层。
 
 ### 修改的 antd 组件
 
 | 组件 | 改动范围 | 说明 |
 |------|----------|------|
-| Select | ~500 行新增 | 全选 checkbox、筛选删除 switch、自定义 dropdown render（已选/未选分区） |
+| Select | ~897 行（其中 ~200-300 行为 GM 自定义逻辑） | 全选 checkbox、筛选删除 switch、自定义 dropdown render（已选/未选分区） |
 | Button | ~30 行新增 | 1) 新增 `'second'` 按钮类型 2) 默认 type 从 `'default'` 改为 `'second'` 3) onClick 返回 Promise 时自动 loading |
 
 ### GM 自定义 Locale
@@ -101,17 +102,36 @@ antd 5 用 CSS-in-JS 生成 hash 后缀的类名，所有在 Less 中通过 `.an
 | useTableResizable/index.less | `.ant-table-cell.react-resizable`、`.ant-table-selection-column`、`.ant-table-thead tr th` |
 | useTableTheme/index.less | `.ant-table-cell-fix-left/right`、`.ant-table-row-expand-icon-spaced`、`.ant-table-thead` |
 | table-filter/index.less | `.ant-select-selection-item`、`.ant-select-selection-placeholder`、`.ant-select-selector`、`.ant-popover-inner-content` |
-| select/style/index.less | 标准 antd select 样式（全部） |
+| select/style/index.less | 标准 antd select 样式（通过 `@{select-prefix-cls}` 引用 `.ant-select-*`，single.less 37 处、multiple.less 22 处、status.less 8 处） |
+| reset_component.less | `.ant-btn`、`.ant-modal-*`、`.ant-table-*`、`.ant-tabs-*`、`.ant-card-*`、`.ant-form-*` 等（26 处全局覆盖，全部失效） |
 
 这些 Less 文件需要完全重写为 CSS-in-JS 或全局 CSS。
 
-#### R2. `className?.includes('ant-table-selection-column')` 字符串匹配失效
+#### R2. TSX 中硬编码 antd 类名全部失效
 
-`useTableTheme/index.tsx:39` 用字符串匹配检测选择列。antd 5 的类名带 hash 后缀，判断逻辑失效。需改为检测 data 属性或其他方式。
+antd 5 的类名带 hash 后缀，所有在 TSX/TS 中硬编码的 antd 类名**全部失效**。
 
-#### R3. `INTERNAL_HOOKS` + `transformColumns` — rc-table 内部 API 不存在
+**`className?.includes()` 检测**：
+- `useTableTheme/index.tsx:39` — `['ant-table-selection-column', 'placeholder'].find(name => className?.includes(name))`
 
-`Table.tsx:560-562` 直接使用了 rc-table 的 `INTERNAL_HOOKS` 常量和 `transformColumns` 内部管道。antd 5 的 Table 内部结构已重构。
+**`className` 赋值**：
+- `useTableVirtual/index.tsx:101` — `className="ant-table-row ant-table-row-level-0"`
+- `useTableVirtual/index.tsx:120` — `'ant-table-cell gm-antd-virtual-table-cell ant-row-selection'`
+- `useTableVirtual/index.tsx:140` — `'ant-table-cell gm-antd-virtual-table-cell'`
+- `useTableVirtual/TableContainer.tsx` — 约 6 处 `ant-table-tbody`、`ant-table-*` 类名
+- `useTableSelection/index.tsx:380` — `'ant-table-row-selected'` 用于高亮选中行
+
+需全部改为通过 antd 5 的 API（data 属性、token、或其他方式）实现。
+
+#### R3. `INTERNAL_HOOKS` + `transformColumns` + `convertChildrenToColumns` — rc-table 内部 API 不存在
+
+Table.tsx 深度依赖 rc-table 内部 API：
+- `INTERNAL_HOOKS` 常量（line 5 import, line 560 使用）
+- `transformColumns` 内部管道
+- `convertChildrenToColumns`（从 `rc-table/lib/hooks/useColumns` 导入，line 171 使用）
+- `rc-table/lib/Table` 的 `RcTableProps` 类型
+
+此外 Table.tsx 的几乎所有 import 都来自 antd 4 内部路径：`rc-table`、`rc-util/lib/omit`、`../config-provider/context`、`../_util/responsiveObserve`、`../_util/scrollTo`、`../_util/warning`。antd 5 的 Table 内部结构已完全重构。
 
 #### R4. `rowSelection.renderCell` 回调签名可能变化
 
@@ -152,10 +172,11 @@ useTableResizable、useTableSelection、useTableVirtual、useTableTheme 都通�
 |------|------|
 | DiyPanel.tsx (useTableDIY) | line 110，inline style |
 | useTableSelection/index.less | line 45 |
-| table-filter/index.less | lines 53, 93, 94 |
+| table-filter/index.less | lines 53, 92, 93（line 94 已注释） |
+| table-filter/index.tsx | lines 209, 210，inline style |
 | InfoField.tsx (table-pagination) | line 25，inline style |
 
-antd 5 中 CSS 变量名变为 `--ant-color-primary`。
+共 8 处。antd 5 中 CSS 变量名变为 `--ant-color-primary`。
 
 #### R12. 大量硬编码颜色（不支持暗色模式）
 
@@ -189,16 +210,30 @@ content-wrapper 依赖一个来自 `gm-framework` 的外部 CSS 变量。
 
 form.store.ts（Moment 类型）、DateFilter.tsx（moment() 运行时）、types.ts（Moment 类型在 8+ 处）。
 
+#### R20. 自定义 hook 通过相对路径导入 antd 内部组件
+
+自定义 hook 直接引用 forked antd 的源文件路径，而非公共 API：
+
+| Hook | 内部导入 |
+|------|----------|
+| useTableSelection | `import Checkbox from '../../../checkbox/Checkbox'`、`import Button from '../../../button/button'` |
+| useTableVirtual | `import Empty from '../../../empty'` |
+| useTableTheme | `import Tooltip from '../../../tooltip/index'` |
+| BatchActions.tsx | `import Checkbox/Divider/Space from '../../../...'` |
+| DiyPanel.tsx | `import Checkbox/Button/Sortable from '../../../...'` |
+
+包装层方案中这些必须全部改为 `import { Checkbox } from 'antd'` 等。
+
 ### 现有代码 bug（迁移时可顺手修）
 
 | 文件 | 问题 |
 |------|------|
-| form.store.ts:148 | `_applyCachedValueToDefault` 用 `!==` 应该是 `===`（逻辑 bug） |
+| form.store.ts:148 | `.find(item2 => item2.key !== item.key)` 逻辑错误：`find` 返回第一个匹配项，此处几乎永远为 truthy。应改为 `!_fixedFields?.find(item2 => item2.key === item.key)` 或 `.some()` |
 | form.store.ts:257 | `pickBy(params, Boolean)` 过滤掉合法的 `0` 和 `false` 值 |
-| button/style/index.less:136 | `background-color: none` 是无效 CSS |
-| InfoField.tsx:19 | `fontFamily: 'bold'` 应该是 `fontWeight: 'bold'` |
+| button/style/index.less:135 | `background-color: none` 是无效 CSS |
+| InfoField.tsx:18 | `fontFamily: 'bold'` 应该是 `fontWeight: 'bold'` |
 | sortable_group.tsx:48 | `_.uniqueId()` 作为 React key 导致每次渲染重新挂载 |
-| table-pagination/index.tsx:74 | 直接 mutation `paginationResult.paging` |
+| table-pagination/index.tsx:74-75 | 直接 mutation `paginationResult.paging.offset` 和 `.limit` |
 
 ---
 
@@ -283,6 +318,7 @@ export { useTableVirtual } from './table/useTableVirtual';
 export { useTableResizable } from './table/useTableResizable';
 export { useTableTheme } from './table/useTableTheme';
 export { useTableExpandable } from './table/useTableExpandable';
+export { useTable } from './table/useTable';
 
 // 4. 导出自定义组件
 export { default as TableFilter, TableFilterContext } from './table-filter';
@@ -297,7 +333,9 @@ export { default as gmZhCN } from './locale/zh_CN';
 
 // 6. 兼容导出
 export const version = '2.0.0';
-export const theme = null; // Vite 兼容（如 antd 5 不再需要可移除）
+
+// 7. re-export antd 5 theme（业务代码可能引用 gm-antd 的 theme）
+// antd 5 的 `export { theme }` 已经通过第 1 步 re-export，无需额外处理
 ```
 
 ---
@@ -363,7 +401,7 @@ export const theme = null; // Vite 兼容（如 antd 5 不再需要可移除）
 8. **硬编码颜色替换**：`#d6d6d6`、`rgba(9,109,217,0.2)`、`#f5f5f5`、`rgb(113,113,112)` 等
 
 **顺手修 bug**：
-- form.store.ts:148 `!==` → `===`
+- form.store.ts:148 `.find(item2 => item2.key !== item.key)` → `!_fixedFields?.find(item2 => item2.key === item.key)`（find 用 !== 几乎永远为 truthy）
 - form.store.ts:257 `pickBy(Boolean)` → 不过滤 0/false
 
 **验证标准**：业务项目使用 TableFilter（含各种筛选项、保存设置、重置）功能正常。
@@ -387,17 +425,29 @@ export const theme = null; // Vite 兼容（如 antd 5 不再需要可移除）
 
 | Hook | 核心风险 | 处理策略 |
 |------|----------|----------|
-| useTableDIY | `createPortal` 脱离 ConfigProvider、`.ant-popover-*` 类名、`document.body.style.overflow`、Less `fade()` 函数 | portal 内包裹 ConfigProvider、样式全部重写为 CSS-in-JS、用 antd 5 Modal 的 scroll lock |
-| useTableSelection | `components.body.row` 覆盖、`rowSelection.renderCell` 签名、`'ant-table-row-selected'` 硬编码类名 | 验证 antd 5 的 components prop 接口、用 antd 5 的 rowSelection API |
-| useTableVirtual | `components.header/body` 全面覆盖、`.ant-table-*` 类名（6+ 处）、`rc-resize-observer` | 最复杂的 hook，可能需要部分重写、验证 react-window 与 antd 5 Table 的兼容性 |
+| useTableDIY | `createPortal` 脱离 ConfigProvider、`.ant-popover-*` 类名、`document.body.style.overflow`、Less `fade()` 函数、内部组件导入（Checkbox/Button/Sortable） | portal 内包裹 ConfigProvider、样式全部重写为 CSS-in-JS、用 antd 5 Modal 的 scroll lock |
+| useTableSelection | `components.body.row` 覆盖、`rowSelection.renderCell` 签名、`'ant-table-row-selected'` 硬编码类名、内部组件导入（Checkbox/Button/Divider/Space） | 验证 antd 5 的 components prop 接口、用 antd 5 的 rowSelection API |
+| useTableVirtual | `components.header/body` 全面覆盖、TSX 中约 10 处 `.ant-table-*` 硬编码类名、`rc-resize-observer`、内部组件导入（Empty） | **可能需要近完全重写**、验证 react-window 与 antd 5 Table 的兼容性 |
 | useTableResizable | `components.header.cell` 覆盖、`.ant-table-cell` 类名、`react-resizable` 集成 | 验证 antd 5 的 header cell 组件接口 |
-| useTableTheme | `className?.includes('ant-table-selection-column')`、`.ant-table-*` 类名、硬编码颜色/字体 | 用 data 属性或 props 替代类名检测、所有样式用 Design Token |
+| useTableTheme | `className?.includes('ant-table-selection-column')`、`.ant-table-*` 类名、硬编码颜色/字体、内部组件导入（Tooltip） | 用 data 属性或 props 替代类名检测、所有样式用 Design Token |
 | useTableExpandable | `expandIcon` 回调签名 | 验证 antd 5 的 ExpandIconProps 接口 |
+| useTable | 组合以上 6 个 hook | 跟随各 hook 的 API 变化更新组合逻辑 |
 
 **Table.tsx 修改**：
-- 移除 `INTERNAL_HOOKS`、`transformColumns` 等 rc-table 内部 API
-- MobX 逻辑（`useLocalStore`、`useObserver`）改为从 `mobx-react` 直接导入
+- 移除 `INTERNAL_HOOKS`、`transformColumns`、`convertChildrenToColumns` 等 rc-table 内部 API
+- 几乎所有 import 都来自 antd 4 内部路径（rc-table、rc-util、config-provider），需完整重写为 antd 5 包装层
 - `isResizable` prop 保留，但实现方式适配 antd 5
+- 注意：Table.tsx 不使用 MobX，MobX 仅在 table-filter 中使用
+
+**所有内部组件导入改为 antd 直接导入**：
+- `import Checkbox from '../../../checkbox/Checkbox'` → `import { Checkbox } from 'antd'`
+- `import Button from '../../../button/button'` → `import { Button } from './button/GmButton'`（使用 GM 包装版）
+- `import Empty from '../../../empty'` → `import { Empty } from 'antd'`
+- `import Tooltip from '../../../tooltip/index'` → `import { Tooltip } from 'antd'`
+
+**TSX 中硬编码 antd 类名重写**：
+- useTableVirtual（~10 处）、useTableSelection（1 处）、useTableTheme（1 处）中的 `.ant-table-*` 类名
+- 通过 antd 5 的 token、data 属性或其他 API 替代
 
 **所有 Less 文件重写**：
 - useTableDIY/index.less（115 行）— `.ant-popover-*`、`.ant-table-selection-column` 等全部失效
@@ -406,18 +456,19 @@ export const theme = null; // Vite 兼容（如 antd 5 不再需要可移除）
 - useTableResizable/index.less（36 行）— `.ant-table-cell` 覆盖
 - useTableTheme/index.less（37 行）— `.ant-table-*` + 硬编码颜色/字体
 
-**验证标准**：业务项目使用所有 Table hooks（DIY 面板、批量选择、虚拟滚动、可调列宽、主题、展开行）功能正常。
+**验证标准**：业务项目使用所有 Table hooks（DIY 面板、批量选择、虚拟滚动、可调列宽、主题、展开行、useTable 组合）功能正常。
 
 ---
 
 ## 各阶段依赖关系
 
 ```
-阶段 1（骨架 + 简单组件）
+阶段 1（骨架 + 简单组件 + locale 层 + 全局样式）
   └→ 阶段 2（Button + Select）
-       └→ 阶段 3（table-filter）— 依赖 Select wrapper
-       └→ 阶段 4（table-pagination）
-            └→ 阶段 5（Table hooks）— 最复杂，放最后
+       └→ 阶段 3（table-filter）— 依赖 Select wrapper + locale 层 + moment→dayjs
+  ┌→ 阶段 1（locale 层）
+  └→ 阶段 4（table-pagination）— 依赖 locale 层
+       └→ 阶段 5（Table hooks）— 最复杂，依赖所有前置阶段
 ```
 
 ## 工作量总估算
@@ -428,9 +479,9 @@ export const theme = null; // Vite 兼容（如 antd 5 不再需要可移除）
 | 2 | Button + Select 包装层 | 4-5 天 | 6-8 |
 | 3 | table-filter 迁移 | 5-7 天 | 11-15 |
 | 4 | table-pagination 迁移 | 1 天 | 12-16 |
-| 5 | Table hooks 迁移 | 5-8 天 | 17-24 |
-| - | 构建发布 + 集成测试 | 1-2 天 | 18-26 |
-| **合计** | | **18-26 人天** | |
+| 5 | Table hooks 迁移（含 useTable 组合 hook） | 6-9 天 | 18-25 |
+| - | 构建发布 + 集成测试 | 1-2 天 | 19-27 |
+| **合计** | | **19-27 人天** | |
 
 ## 业务项目升级影响
 
