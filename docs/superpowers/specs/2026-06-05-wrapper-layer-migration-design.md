@@ -1,7 +1,7 @@
 ---
 name: gm-antd Wrapper Layer Migration
 date: 2026-06-05
-updated: 2026-06-06
+updated: 2026-06-08
 status: draft
 ---
 
@@ -21,6 +21,7 @@ gm-antd 当前是基于 antd 4.24.x 源码的 fork（含 25,600+ antd 原始 com
 - **业务项目 < 5 个**，可以接受少量 API 变更
 - **CSS-in-JS**：自定义组件样式从 Less 迁移到 CSS-in-JS
 - **全量 re-export antd**：业务代码 `import { Button } from 'gm-antd'` 保持不变
+- **分阶段迁移**：每阶段独立可验证，每阶段可发布可用版本
 
 ## 自定义代码清单
 
@@ -82,14 +83,124 @@ Table 核心文件修改：Table.tsx（混入 MobX）和 interface.tsx，约 841
 - Message：z-index 1050
 - 自定义 `.ant-btn.lightgrey` 按钮变体
 
-### 其他 GM 修改
+---
 
-| 项目 | 说明 |
+## 迁移风险全景（逐行审查结果）
+
+### 致命级 — antd 5 必定报错
+
+#### R1. 所有 `.ant-*` 类名选择器失效
+
+antd 5 用 CSS-in-JS 生成 hash 后缀的类名，所有在 Less 中通过 `.ant-table-*`、`.ant-select-*`、`.ant-popover-*` 做的全局样式覆盖**全部失效**。
+
+| Less 文件 | 覆盖的 antd 类名 |
+|-----------|------------------|
+| useTableDIY/index.less | `.ant-popover-inner-content`、`.ant-popover-title`、`.ant-table-selection-column`、`.ant-table-row-level-0`、`.ant-table-cell` |
+| useTableSelection/index.less | `.ant-table-selection-column`、`.ant-table-row-level-0`、`.ant-checkbox + span` |
+| useTableVirtual/index.less | `.ant-table-container::before/after`、`.ant-row-selection`、`.ant-table-thead`、`.ant-table-row`、`.ant-table-row-selected` |
+| useTableResizable/index.less | `.ant-table-cell.react-resizable`、`.ant-table-selection-column`、`.ant-table-thead tr th` |
+| useTableTheme/index.less | `.ant-table-cell-fix-left/right`、`.ant-table-row-expand-icon-spaced`、`.ant-table-thead` |
+| table-filter/index.less | `.ant-select-selection-item`、`.ant-select-selection-placeholder`、`.ant-select-selector`、`.ant-popover-inner-content` |
+| select/style/index.less | 标准 antd select 样式（全部） |
+
+这些 Less 文件需要完全重写为 CSS-in-JS 或全局 CSS。
+
+#### R2. `className?.includes('ant-table-selection-column')` 字符串匹配失效
+
+`useTableTheme/index.tsx:39` 用字符串匹配检测选择列。antd 5 的类名带 hash 后缀，判断逻辑失效。需改为检测 data 属性或其他方式。
+
+#### R3. `INTERNAL_HOOKS` + `transformColumns` — rc-table 内部 API 不存在
+
+`Table.tsx:560-562` 直接使用了 rc-table 的 `INTERNAL_HOOKS` 常量和 `transformColumns` 内部管道。antd 5 的 Table 内部结构已重构。
+
+#### R4. `rowSelection.renderCell` 回调签名可能变化
+
+useTableDIY、useTableSelection、useTableVirtual 都使用了 `rowSelection.renderCell(value, record, index, node)`，这是 antd 4 的内部 API。
+
+#### R5. `createPortal` 到 `document.body` — 脱离 ConfigProvider 树
+
+useTableDIY 用 `createPortal(panel, document.body)` 渲染设置面板。antd 5 的 CSS-in-JS 依赖 ConfigProvider 上下文，portal 内容**不会继承主题/token**。需要在 portal 内手动包裹 ConfigProvider。
+
+### 高危级 — 很可能报错
+
+#### R6. `bordered={false}` 批量废弃
+
+至少 5 个组件用了 `bordered={false}`，antd 5 改为 `variant="borderless"`：
+- CascaderFilter、DateFilter、InputFilter、SelectFilter、Labeled 中的 Select
+
+#### R7. `Wave` 组件移除
+
+Button 依赖 `../_util/wave` 实现点击波纹效果。antd 5 用 CSS-in-JS 内置实现，不再有独立的 Wave React 组件。
+
+#### R8. DatePicker `generatePicker` 架构完全不同
+
+`date-picker/generatePicker/` 使用 antd 4 的 `momentGenerateConfig` + `generatePicker<Moment>()` 模式。antd 5 直接内置 dayjs，整个 generatePicker 基础设施不再需要。
+
+#### R9. `rc-picker/lib/interface` 深层路径导入
+
+`types.ts` 和 `DateFilter.tsx` 从 `rc-picker/lib/interface` 导入 `RangeValue`、`PickerMode`。antd 5 的 rc-picker 版本不同，路径可能变化。
+
+#### R10. `components.header.cell` / `components.body.row` 覆盖模式
+
+useTableResizable、useTableSelection、useTableVirtual、useTableTheme 都通过 `components` prop 覆盖 antd Table 的内部渲染组件（`header.cell`、`body.row`、`body.cell`）。antd 5 可能改变这些接口结构。
+
+### 中危级 — 需要适配
+
+#### R11. `var(--ant-primary-color)` 出现在 5+ 处
+
+| 文件 | 位置 |
 |------|------|
-| `export const theme = null` | components/index.tsx 中为 Vite 构建兼容添加 |
-| `export const version = '4.24.0'` | 版本号硬编码 |
-| `scripts/generate-version.js` | 版本文件写入逻辑被注释掉 |
-| `webpack.config.js` | 含注释掉的 gm- 前缀剥离逻辑 |
+| DiyPanel.tsx (useTableDIY) | line 110，inline style |
+| useTableSelection/index.less | line 45 |
+| table-filter/index.less | lines 53, 93, 94 |
+| InfoField.tsx (table-pagination) | line 25，inline style |
+
+antd 5 中 CSS 变量名变为 `--ant-color-primary`。
+
+#### R12. 大量硬编码颜色（不支持暗色模式）
+
+Less 和 inline style 中有 20+ 处硬编码颜色：`#fafafa`、`#333`、`#c3daff`、`#f5f5f5`、`#ebebeb`、`#707070`、`rgba(0,0,0,0.06)`、`rgba(9,109,217,0.2)` 等。
+
+#### R13. `fade()` Less 函数
+
+useTableDIY/index.less 使用了 Less 的 `fade()` 函数，CSS-in-JS 中没有等价物。
+
+#### R14. `PingFangSC-Medium` 平台特定字体
+
+useTableTheme/index.less 硬编码了 `font-family: PingFangSC-Medium, PingFang SC`。
+
+#### R15. `document.body.style.overflow` 直接操作 DOM
+
+useTableDIY 直接设置 `document.body.style.overflow = 'hidden'` 来锁定滚动。antd 5 有自己的滚动锁定机制。
+
+#### R16. `location.href.replace('/#', '')` — hash 路由假设
+
+table-filter 和 useTableDIY 都用 `location.href` 生成 cacheID。
+
+#### R17. `--gm-framework-size-top-right-height` 外部 CSS 变量
+
+content-wrapper 依赖一个来自 `gm-framework` 的外部 CSS 变量。
+
+#### R18. LocaleReceiver 移除
+
+10 个文件引用了 `useLocaleReceiver`，antd 5 不再存在此 API。
+
+#### R19. moment → dayjs
+
+form.store.ts（Moment 类型）、DateFilter.tsx（moment() 运行时）、types.ts（Moment 类型在 8+ 处）。
+
+### 现有代码 bug（迁移时可顺手修）
+
+| 文件 | 问题 |
+|------|------|
+| form.store.ts:148 | `_applyCachedValueToDefault` 用 `!==` 应该是 `===`（逻辑 bug） |
+| form.store.ts:257 | `pickBy(params, Boolean)` 过滤掉合法的 `0` 和 `false` 值 |
+| button/style/index.less:136 | `background-color: none` 是无效 CSS |
+| InfoField.tsx:19 | `fontFamily: 'bold'` 应该是 `fontWeight: 'bold'` |
+| sortable_group.tsx:48 | `_.uniqueId()` 作为 React key 导致每次渲染重新挂载 |
+| table-pagination/index.tsx:74 | 直接 mutation `paginationResult.paging` |
+
+---
 
 ## 包结构
 
@@ -120,6 +231,8 @@ gm-antd/
 │   ├── icon/                       # 自定义 Icon（createFromIconfontCN）
 │   ├── locale/                     # GM 自定义 locale 覆盖
 │   │   └── zh_CN.ts                # 合并 antd 5 locale + GM 自定义字段
+│   ├── locale-adapter/             # LocaleReceiver 兼容层
+│   │   └── useGMLocale.ts          # 替代 useLocaleReceiver
 │   └── styles/                     # 全局样式
 │       └── global.ts               # reset_component + reset_theme 的 CSS-in-JS 替代
 ├── package.json
@@ -149,8 +262,6 @@ gm-antd/
   }
 }
 ```
-
-antd 5 支持 React 17，不会与当前业务项目冲突。
 
 ## 导出策略
 
@@ -189,151 +300,137 @@ export const version = '2.0.0';
 export const theme = null; // Vite 兼容（如 antd 5 不再需要可移除）
 ```
 
-## 各组件迁移策略
+---
 
-### Select（包装层，不改 antd 内部）
+## 分阶段迁移计划
 
-**可行性已验证**：antd 5 的 `popupRender` API 足以实现全部自定义功能。
+### 阶段 1：搭骨架 + 简单组件（2-3 天）
 
-实现方式：
-- `popupRender` 替代 `dropdownRender`（antd 5 重命名）
+**目标**：新建包，re-export antd 5，业务项目能编译运行。迁移最简单的无依赖组件。
+
+**内容**：
+1. 新建 npm 包，配置 TypeScript 构建
+2. `src/index.ts` — re-export antd 5 全部导出
+3. 迁移 Icon（5 行，createFromIconfontCN 兼容 v5）
+4. 迁移 sortable（297 行，无 antd 依赖，仅 sortablejs + lodash）
+5. 迁移 content-wrapper（366 行，仅依赖 rc-resize-observer + antd Divider）
+6. 搭建 LocaleReceiver 兼容层 `useGMLocale`（供后续阶段使用）
+7. GM locale 合并（zh_CN.ts）
+8. 全局样式：Design Token 配置（主色 #0363ff）+ 全局 CSS（gm-modal-footer 等）
+
+**需处理的 antd 4→5 变更**：
+- content-wrapper 引用的 Divider 从相对路径改为 `antd` 导入
+- content-wrapper 的 Less（37 行）转 CSS-in-JS
+- `--gm-framework-size-top-right-height` 外部 CSS 变量确认可用
+
+**验证标准**：业务项目替换 `gm-antd` 后，使用 antd 原生组件 + Icon + Sortable + ContentWrapper 的页面正常工作。
+
+### 阶段 2：修改过的组件 — Button + Select（4-5 天）
+
+**目标**：迁移两个修改过的 antd 组件。
+
+**Button（1 天）**：
+- 包装 antd 5 Button
+- `second` 类型通过 className 注入自定义样式
+- auto-loading：检测 onClick 返回 Promise
+- 不再依赖 `Wave` 组件（antd 5 内置）
+- `second` 按钮样式（原 Less 中 `&-second` 块）转为 CSS-in-JS
+- 修复 `background-color: none` bug → `transparent`
+
+**Select（3-4 天）**：
+- 包装 antd 5 Select
+- `popupRender` 替代 `dropdownRender`
+- `onOpenChange` 替代 `onDropdownVisibleChange`
 - 受控 `options`/`value`/`onChange` 管理全选和筛选删除
-- `onOpenChange` 替代 `onDropdownVisibleChange`（antd 5 重命名）
-- `filterOption={false}` + 自定义搜索过滤
-- 全选/筛选删除逻辑提取为独立 hooks（`useSelectAll`、`useFilterDeleted`）
-- 样式从 Less 转为 CSS-in-JS
+- 全选/筛选删除逻辑提取为 `useSelectAll`、`useFilterDeleted`
+- 自定义 dropdown 样式（110 行 Less）转为 CSS-in-JS
+- 不依赖任何 antd 内部 API
 
-### Button（包装层，需处理 second 类型 + auto-loading）
+**验证标准**：业务项目使用 Button（含 second 类型、auto-loading）和 Select（含全选、筛选删除）功能正常。
 
-```tsx
-const GmButton = (props) => {
-  const [autoLoading, setAutoLoading] = useState(false);
-  const handleClick = (e) => {
-    const result = props.onClick?.(e);
-    if (result && typeof result.then === 'function') {
-      setAutoLoading(true);
-      result.finally(() => setAutoLoading(false));
-    }
-  };
+### 阶段 3：table-filter（5-7 天）
 
-  // 处理 'second' 类型：映射为 antd Button 的 'default' + 自定义样式
-  const isSecond = props.type === 'second';
-  const antdType = isSecond ? 'default' : props.type;
+**目标**：迁移最复杂的自定义组件。
 
-  return (
-    <AntButton
-      {...props}
-      type={antdType}
-      className={classNames(props.className, { 'gm-btn-second': isSecond })}
-      loading={props.loading || autoLoading}
-      onClick={handleClick}
-    />
-  );
-};
+**改动清单**：
+1. **moment → dayjs**：form.store.ts（Moment 类型）、DateFilter.tsx（moment() 运行时）、types.ts（8+ 处 Moment → Dayjs）
+2. **LocaleReceiver → useGMLocale**：6 个文件（index.tsx、CascaderFilter、DateFilter、InputFilter、SelectFilter、Setting）
+3. **内部组件引用路径**：Button、Popover、Cascader、DatePicker、Input、Select、Checkbox、Divider、Sortable — 从相对路径改为 `antd` 直接导入
+4. **Less 样式（104 行）转 CSS-in-JS**：包括 `.ant-select-*` 类名覆盖（需用 antd 5 的方式替代）
+5. **`bordered={false}` → `variant="borderless"`**：CascaderFilter、DateFilter、InputFilter、SelectFilter、Labeled
+6. **`var(--ant-primary-color)` → `var(--ant-color-primary)`**：index.less 中 3 处
+7. **`rc-picker/lib/interface` 导入**：types.ts、DateFilter.tsx 中的 `RangeValue`/`PickerMode` 需验证 antd 5 版本
+8. **硬编码颜色替换**：`#d6d6d6`、`rgba(9,109,217,0.2)`、`#f5f5f5`、`rgb(113,113,112)` 等
+
+**顺手修 bug**：
+- form.store.ts:148 `!==` → `===`
+- form.store.ts:257 `pickBy(Boolean)` → 不过滤 0/false
+
+**验证标准**：业务项目使用 TableFilter（含各种筛选项、保存设置、重置）功能正常。
+
+### 阶段 4：table-pagination（1 天）
+
+**改动清单**：
+1. antd 组件引用改为从 `antd` 导入
+2. LocaleReceiver → useGMLocale
+3. Less（5 行）转 CSS-in-JS
+4. `var(--ant-primary-color)` → `var(--ant-color-primary)`（InfoField.tsx）
+5. 修复 `fontFamily: 'bold'` → `fontWeight: 'bold'`
+
+### 阶段 5：Table hooks（最复杂，5-8 天）
+
+**目标**：迁移 6 个自定义 hook + Table.tsx/interface.tsx 修改。
+
+这是风险最高的阶段，因为大量依赖 antd 4 Table 的内部 API。
+
+**各 hook 迁移要点**：
+
+| Hook | 核心风险 | 处理策略 |
+|------|----------|----------|
+| useTableDIY | `createPortal` 脱离 ConfigProvider、`.ant-popover-*` 类名、`document.body.style.overflow`、Less `fade()` 函数 | portal 内包裹 ConfigProvider、样式全部重写为 CSS-in-JS、用 antd 5 Modal 的 scroll lock |
+| useTableSelection | `components.body.row` 覆盖、`rowSelection.renderCell` 签名、`'ant-table-row-selected'` 硬编码类名 | 验证 antd 5 的 components prop 接口、用 antd 5 的 rowSelection API |
+| useTableVirtual | `components.header/body` 全面覆盖、`.ant-table-*` 类名（6+ 处）、`rc-resize-observer` | 最复杂的 hook，可能需要部分重写、验证 react-window 与 antd 5 Table 的兼容性 |
+| useTableResizable | `components.header.cell` 覆盖、`.ant-table-cell` 类名、`react-resizable` 集成 | 验证 antd 5 的 header cell 组件接口 |
+| useTableTheme | `className?.includes('ant-table-selection-column')`、`.ant-table-*` 类名、硬编码颜色/字体 | 用 data 属性或 props 替代类名检测、所有样式用 Design Token |
+| useTableExpandable | `expandIcon` 回调签名 | 验证 antd 5 的 ExpandIconProps 接口 |
+
+**Table.tsx 修改**：
+- 移除 `INTERNAL_HOOKS`、`transformColumns` 等 rc-table 内部 API
+- MobX 逻辑（`useLocalStore`、`useObserver`）改为从 `mobx-react` 直接导入
+- `isResizable` prop 保留，但实现方式适配 antd 5
+
+**所有 Less 文件重写**：
+- useTableDIY/index.less（115 行）— `.ant-popover-*`、`.ant-table-selection-column` 等全部失效
+- useTableSelection/index.less（47 行）— `.ant-table-*` 覆盖
+- useTableVirtual/index.less（82 行）— 大量 `.ant-table-*` 覆盖 + 硬编码颜色
+- useTableResizable/index.less（36 行）— `.ant-table-cell` 覆盖
+- useTableTheme/index.less（37 行）— `.ant-table-*` + 硬编码颜色/字体
+
+**验证标准**：业务项目使用所有 Table hooks（DIY 面板、批量选择、虚拟滚动、可调列宽、主题、展开行）功能正常。
+
+---
+
+## 各阶段依赖关系
+
+```
+阶段 1（骨架 + 简单组件）
+  └→ 阶段 2（Button + Select）
+       └→ 阶段 3（table-filter）— 依赖 Select wrapper
+       └→ 阶段 4（table-pagination）
+            └→ 阶段 5（Table hooks）— 最复杂，放最后
 ```
 
-`second` 按钮类型通过 className 注入自定义样式（CSS-in-JS），不修改 antd 内部。
+## 工作量总估算
 
-### Table hooks（直接迁移，适配 antd 5 API）
-
-- antd 5 Table 的 rc-table 升级了大版本，hook 内部引用的 Table prop 类型需要更新
-- `useTableResizable` 依赖 `react-resizable`，不受 antd 版本影响
-- `useTableVirtual` 依赖 `react-window`，不受 antd 版本影响
-- `useTableDIY` 依赖 localStorage 和 antd Checkbox/Modal 等，需适配 antd 5 的导入路径
-- `useTableSelection` 批量操作 UI 用了 antd Space/Button，需适配 antd 5
-- Table.tsx 中混入的 MobX 逻辑（`useLocalStore`、`useObserver`）需要保留，但需改为从 `mobx-react` 导入
-
-### table-filter（直接迁移，需处理多个关键变更）
-
-核心逻辑不变（MobX store、context、子组件），但有以下改动点：
-
-1. **内部组件引用路径** — 所有相对路径引用（`../../button`、`../../select`、`../../cascader`、`../../date-picker`、`../../input`、`../../popover`）改为从 `antd` 直接导入
-2. **LocaleReceiver 迁移** — 10 个文件引用了 `../../locale-provider/LocaleReceiver`，antd 5 移除了 `LocaleReceiver`，需改用 `antd/es/locale/zh_CN` + React Context
-3. **moment → dayjs** — `form.store.ts`（Moment 类型）和 `DateFilter.tsx`（moment() 运行时调用）需迁移到 dayjs
-4. **rc-picker 类型** — `types.ts` 引用了 `rc-picker/lib/interface` 的 `RangeValue`/`PickerMode`，需验证 antd 5 版本的兼容性
-5. **Less 样式**（104 行）转为 CSS-in-JS
-6. **@gm-common/hooks** 的 `UsePaginationResult` 类型保持通过 peerDependencies 引用
-
-### table-pagination（直接迁移）
-
-- antd 组件引用改为从 `antd` 直接导入（Pagination、Typography）
-- LocaleReceiver 迁移同上
-- Less 样式（5 行）转为 CSS-in-JS
-- `InfoField.tsx` 中使用了 `var(--ant-color-primary)` CSS 变量，antd 5 中变量名变为 `--ant-color-primary`（需验证）
-
-### content-wrapper（直接迁移）
-
-- `rc-resize-observer` 导入方式可能变化，antd 5 中可通过 `rc-resize-observer` 包直接使用
-- 内部引用的 Divider 改为从 `antd` 导入
-- Less 样式（37 行）转为 CSS-in-JS
-
-### sortable（直接迁移）
-
-- 无 antd 依赖，仅依赖 sortablejs + lodash
-- `sortable_base.tsx` 使用 `UNSAFE_componentWillReceiveProps`（class 组件），React 17 下无影响
-
-### Icon（直接迁移）
-
-```ts
-import { createFromIconfontCN } from '@ant-design/icons';
-const Icon = createFromIconfontCN({
-  scriptUrl: 'https://at.alicdn.com/t/c/font_4079364_omop55e0gd.js',
-});
-export default Icon;
-```
-
-无需改动，`@ant-design/icons` 的 `createFromIconfontCN` API 在 v5 中保持兼容。
-
-### Locale（新建 GM locale 文件）
-
-基于 antd 5 的 `zh_CN` locale，合并 GM 自定义字段（Table 扩展字段 + TableFilter 区域），导出为 `gmZhCN`，供业务项目通过 `ConfigProvider.locale` 使用。
-
-### 全局样式（CSS-in-JS + Design Token 替代）
-
-用 antd 5 的 Design Token + 全局 CSS 文件替代两个 reset Less 文件：
-
-**reset_theme.less → Design Token：**
-```tsx
-<ConfigProvider theme={{
-  token: {
-    colorPrimary: '#0363ff',
-    colorSuccess: '#52c41a',
-    colorWarning: '#faad14',
-    colorError: '#f5222d',
-  }
-}}>
-```
-
-**reset_component.less → 全局 CSS-in-JS 或独立 CSS 文件：**
-- `.gm-modal-footer`、`.gm-drawer-footer` 等 GM 特有 class 保留为全局 CSS
-- Table 行高、选中行颜色等通过 Table 的 component token 设置
-- `.ant-btn.lightgrey` 保留为全局 CSS
-
-## 关键迁移风险
-
-### 1. LocaleReceiver 移除（高影响）
-
-10 个文件引用了 `useLocaleReceiver`，这是 antd 内部 API，antd 5 中不再存在。
-
-**解决方案**：在 gm-antd 内部实现一个简易的 `useGMLocale` hook，从 antd 5 的 locale context 读取配置，同时合并 GM 自定义字段。
-
-### 2. moment → dayjs（中影响）
-
-table-filter 的 `form.store.ts` 和 `DateFilter.tsx` 运行时使用 moment。antd 5 内部使用 dayjs。
-
-**解决方案**：将 table-filter 中的 moment 调用替换为 dayjs。API 差异较小（`moment()` → `dayjs()`，`.format()` 保持一致）。
-
-### 3. CSS 变量名变化（低影响）
-
-`var(--ant-primary-color)` 在 antd 5 中可能变为 `var(--ant-color-primary)`。
-
-**解决方案**：迁移时统一检查所有 CSS 变量引用，对齐 antd 5 的命名。
-
-### 4. rc-* 包版本差异（中影响）
-
-`rc-resize-observer`、`rc-picker/lib/interface` 等在 antd 5 中版本不同，可能有 API 变化。
-
-**解决方案**：antd 5 作为直接依赖后，自定义组件不再直接引用 rc-* 包，而是通过 antd 的高层 API 访问。对于确实需要引用 rc-* 的地方（如 `rc-resize-observer`），验证兼容性后保留为直接依赖。
+| 阶段 | 内容 | 预估人天 | 累计 |
+|------|------|----------|------|
+| 1 | 骨架 + Icon + sortable + content-wrapper + locale + 全局样式 | 2-3 天 | 2-3 |
+| 2 | Button + Select 包装层 | 4-5 天 | 6-8 |
+| 3 | table-filter 迁移 | 5-7 天 | 11-15 |
+| 4 | table-pagination 迁移 | 1 天 | 12-16 |
+| 5 | Table hooks 迁移 | 5-8 天 | 17-24 |
+| - | 构建发布 + 集成测试 | 1-2 天 | 18-26 |
+| **合计** | | **18-26 人天** | |
 
 ## 业务项目升级影响
 
@@ -352,23 +449,8 @@ table-filter 的 `form.store.ts` 和 `DateFilter.tsx` 运行时使用 moment。a
 | `visible` → `open` | Modal/Drawer/Tooltip/Popover 等 | 业务侧全局替换 |
 | `dropdownClassName` → `popupClassName` | Select/Cascader/DatePicker 等 | 可在包装层做兼容 |
 | `message.warn()` → `message.warning()` | message 调用 | 业务侧替换 |
-| Less 变量覆盖 → Design Token | 主题定制 | 业务侧迁移到 ConfigProvider，gm-antd 提供预设 theme |
+| Less 变量覆盖 → Design Token | 主题定制 | gm-antd 提供预设 theme |
 | `moment` → `dayjs` | DatePicker 相关 | antd 5 内置 dayjs，业务侧需适配 |
 | `LocaleProvider` → `ConfigProvider` | 如有使用 | 简单替换 |
 | `reset_component.less` 全局样式 | 如业务项目有引用 | gm-antd 提供替代的 CSS 文件 |
-
-可以在 gm-antd 包装层对 `dropdownClassName` → `popupClassName` 做兼容处理，减少业务侧改动。
-
-## 工作量估算
-
-| 阶段 | 内容 | 预估人天 |
-|------|------|----------|
-| 基础设施 | 新建包、配置构建、依赖安装 | 2-3 天 |
-| Select 包装层 | GmSelect + useSelectAll + useFilterDeleted + DropdownRender + 样式 | 3-4 天 |
-| Button 包装层 | GmButton（second 类型 + auto-loading） | 1 天 |
-| Table hooks 迁移 | 6 个 hook + Table.tsx 适配 | 5-8 天 |
-| table-filter 迁移 | 核心逻辑 + LocaleReceiver + moment→dayjs + 样式 CSS-in-JS | 5-7 天 |
-| 其他组件迁移 | table-pagination / content-wrapper / sortable / icon | 1-2 天 |
-| Locale + 全局样式 | GM locale 合并、Design Token 配置、全局 CSS | 2-3 天 |
-| 构建发布 | 编译、类型声明、私有 npm 发布 | 1-2 天 |
-| **合计** | | **20-30 人天** |
+| `bordered` → `variant` | 如业务项目有使用 | 可在包装层做兼容 |
