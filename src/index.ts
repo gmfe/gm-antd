@@ -10,5 +10,9 @@ export { default as ContentWrapperContext } from './content-wrapper/context';
 // Locale
 export { default as gmZhCN } from './locale/zh_CN';
 
+// Styles
+export { default as gmTheme } from './styles/theme';
+export { GMGlobalStyle } from './styles/global';
+
 // Version
 export const version = '2.0.0';
