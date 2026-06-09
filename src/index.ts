@@ -10,6 +10,8 @@ export { default as Icon } from './icon';
 export { default as Sortable } from './sortable';
 export { default as ContentWrapper } from './content-wrapper';
 export { default as ContentWrapperContext } from './content-wrapper/context';
+export { default as TableFilter, TableFilterContext, SearchBarContext } from './table-filter';
+export type { FieldItem, TableFilterProps } from './table-filter';
 
 // Locale
 export { default as gmZhCN } from './locale/zh_CN';
