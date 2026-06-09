@@ -1,6 +1,10 @@
 // gm-antd — antd 5 wrapper layer
 export * from 'antd';
 
+// Overridden components
+export { default as Button } from './button';
+export { default as Select } from './select';
+
 // Custom components
 export { default as Icon } from './icon';
 export { default as Sortable } from './sortable';
