@@ -9,21 +9,8 @@ export default defineConfig({
   splitting: false,
   sourcemap: true,
   clean: true,
-  external: [
-    'react',
-    'react-dom',
-    'antd',
-    '@ant-design/icons',
-    '@ant-design/cssinjs',
-    'mobx',
-    'mobx-react',
-    '@gm-common/hooks',
-    'sortablejs',
-    'rc-resize-observer',
-    'react-resizable',
-    'react-window',
-    'lodash',
-  ],
+  // Externalize all non-relative imports (node_modules)
+  external: [/^[^./]/],
   outDir: 'dist',
   treeshake: true,
 });
