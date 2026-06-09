@@ -340,6 +340,150 @@ export const version = '2.0.0';
 
 ---
 
+## 文档迁移（bisheng → dumi）
+
+当前文档系统基于 bisheng（antd 4 的文档工具）。迁移到 dumi（antd 5 的文档工具）。
+
+### 需要迁移的文档清单
+
+| 组件 | 文档 | demo 数量 |
+|------|------|-----------|
+| content-wrapper | `index.zh-CN.md` | 4 个（basic、context、top、two-col） |
+| table-filter | `index.zh-CN.md` | 8 个（basic、alwaysUsed、cascader、customerRender、expand、functional、group、paginationResult、visual） |
+| table-pagination | `index.zh-CN.md` | 1 个（basic） |
+| icon | `index.zh-CN.md` | 5 个（basic、custom、iconfont、scriptUrl、two-tone） |
+| table hooks | `table/index.zh-CN.md` | 含 GM hook demo（table-hook、resizable-column、virtual-list、row-selection-and-operation 等） |
+| Button（GM 修改） | 需新增 second 类型和 auto-loading 的 demo | — |
+| Select（GM 修改） | 需新增全选、筛选删除的 demo | — |
+| get-started | `index.zh-CN.md`（快速上手） | — |
+| sortable | **无文档** — 需新增 | — |
+
+### dumi 配置
+
+```ts
+// .dumirc.ts
+import { defineConfig } from 'dumi';
+
+export default defineConfig({
+  resolve: {
+    docDirs: ['docs'],
+    atomDirs: [{ type: 'component', dir: 'src' }],
+    entryFile: './src/index.ts',
+    codeBlockMode: 'active',
+    forceKebabCaseRouting: true,
+  },
+  apiParser: {},
+  locales: [{ id: 'zh-CN', name: '中文' }],
+  themeConfig: {
+    name: 'gm-antd',
+    footer: 'GM Component Library',
+    nav: [
+      { title: '指南', link: '/guide/get-started' },
+      { title: '组件', link: '/components/content-wrapper' },
+    ],
+    sidebar: {
+      '/components': [
+        { title: '布局', children: [
+          { title: 'ContentWrapper', link: '/components/content-wrapper' },
+        ]},
+        { title: '数据展示', children: [
+          { title: 'TableFilter', link: '/components/table-filter' },
+          { title: 'TablePagination', link: '/components/table-pagination' },
+          { title: 'Sortable', link: '/components/sortable' },
+          { title: 'Icon', link: '/components/icon' },
+        ]},
+        { title: '通用', children: [
+          { title: 'Button 按钮', link: '/components/button' },
+          { title: 'Select 选择器', link: '/components/select' },
+        ]},
+        { title: 'Table Hooks', children: [
+          { title: 'useTableDIY', link: '/components/use-table-diy' },
+          { title: 'useTableSelection', link: '/components/use-table-selection' },
+          { title: 'useTableVirtual', link: '/components/use-table-virtual' },
+          { title: 'useTableResizable', link: '/components/use-table-resizable' },
+          { title: 'useTableTheme', link: '/components/use-table-theme' },
+          { title: 'useTable', link: '/components/use-table' },
+        ]},
+      ],
+    },
+  },
+});
+```
+
+### 文档目录结构
+
+```
+gm-antd/
+├── docs/                              # 指南文档
+│   ├── guide/
+│   │   ├── get-started.md             # 快速上手
+│   │   └── migration.md              # antd 4→5 迁移指南
+│   └── index.md                       # 首页
+├── src/
+│   ├── content-wrapper/
+│   │   └── index.md                   # API 文档 + demo（dumi 格式）
+│   ├── table-filter/
+│   │   └── index.md
+│   ├── table-pagination/
+│   │   └── index.md
+│   ├── icon/
+│   │   └── index.md
+│   ├── sortable/
+│   │   └── index.md                   # 新增
+│   ├── button/
+│   │   └── index.md                   # 新增 GM 特性文档
+│   └── select/
+│       └── index.md                   # 新增 GM 特性文档
+├── .dumirc.ts
+└── .dumi/
+    └── theme/
+        └── layouts/
+            └── GlobalLayout.tsx       # 包裹 ConfigProvider + gmTheme
+```
+
+### demo 迁移要点
+
+bisheng demo 格式（`demo/*.md`，通过 `## title` + code block）→ dumi demo 格式（`index.md` 内嵌或 `demo/` 目录下的 `.tsx` 文件，通过 frontmatter `title`/`description`）。
+
+**bisheng 格式：**
+````md
+---
+title: zh-CN
+order: 0
+---
+
+## zh-CN
+
+基本用法
+
+```jsx
+import ContentWrapper from 'gm-antd';
+
+const App = () => <ContentWrapper>content</ContentWrapper>;
+```
+````
+
+**dumi 格式：**
+````md
+```jsx
+/**
+ * title: 基本用法
+ * description: 最简单的用法。
+ */
+import { ContentWrapper } from 'gm-antd';
+
+export default () => <ContentWrapper>content</ContentWrapper>;
+```
+````
+
+主要变化：
+1. demo 文件从 `demo/*.md` 移入 `src/组件/index.md` 或单独的 `.tsx` demo 文件
+2. import 路径从 `gm-antd` 直接导入（dumi 自动解析）
+3. 不再需要 `## zh-CN` 标题（用 frontmatter `title` 替代）
+4. demo 代码必须是可执行的 JSX，用 `export default` 导出
+
+---
+
 ## 分阶段迁移计划
 
 ### 阶段 1：搭骨架 + 简单组件（2-3 天）
@@ -355,6 +499,8 @@ export const version = '2.0.0';
 6. 搭建 LocaleReceiver 兼容层 `useGMLocale`（供后续阶段使用）
 7. GM locale 合并（zh_CN.ts）
 8. 全局样式：Design Token 配置（主色 #0363ff）+ 全局 CSS（gm-modal-footer 等）
+9. **搭建 dumi 文档系统**：安装 dumi、创建 `.dumirc.ts`、配置主题和导航
+10. **迁移已有文档**：Icon（5 demo）、ContentWrapper（4 demo）的 bisheng 格式转 dumi 格式
 
 **需处理的 antd 4→5 变更**：
 - content-wrapper 引用的 Divider 从相对路径改为 `antd` 导入
@@ -386,6 +532,10 @@ export const version = '2.0.0';
 
 **验证标准**：业务项目使用 Button（含 second 类型、auto-loading）和 Select（含全选、筛选删除）功能正常。
 
+**文档**：
+- 新增 Button second 类型和 auto-loading demo
+- 新增 Select 全选、筛选删除 demo
+
 ### 阶段 3：table-filter（5-7 天）
 
 **目标**：迁移最复杂的自定义组件。
@@ -406,6 +556,8 @@ export const version = '2.0.0';
 
 **验证标准**：业务项目使用 TableFilter（含各种筛选项、保存设置、重置）功能正常。
 
+**文档**：迁移 table-filter 的 8 个 demo 到 dumi 格式。
+
 ### 阶段 4：table-pagination（1 天）
 
 **改动清单**：
@@ -414,6 +566,8 @@ export const version = '2.0.0';
 3. Less（5 行）转 CSS-in-JS
 4. `var(--ant-primary-color)` → `var(--ant-color-primary)`（InfoField.tsx）
 5. 修复 `fontFamily: 'bold'` → `fontWeight: 'bold'`
+
+**文档**：迁移 table-pagination 的 1 个 demo 到 dumi 格式。
 
 ### 阶段 5：Table hooks（最复杂，5-8 天）
 
@@ -458,30 +612,34 @@ export const version = '2.0.0';
 
 **验证标准**：业务项目使用所有 Table hooks（DIY 面板、批量选择、虚拟滚动、可调列宽、主题、展开行、useTable 组合）功能正常。
 
+**文档**：
+- 迁移 table hooks 的 demo 到 dumi 格式（table-hook、resizable-column、virtual-list、row-selection-and-operation 等）
+- 新增 sortable 组件文档（原仓库无文档）
+
 ---
 
 ## 各阶段依赖关系
 
 ```
-阶段 1（骨架 + 简单组件 + locale 层 + 全局样式）
-  └→ 阶段 2（Button + Select）
-       └→ 阶段 3（table-filter）— 依赖 Select wrapper + locale 层 + moment→dayjs
+阶段 1（骨架 + 简单组件 + locale 层 + 全局样式 + dumi 文档搭建）
+  └→ 阶段 2（Button + Select）+ Button/Select 文档
+       └→ 阶段 3（table-filter）— 依赖 Select wrapper + locale 层 + moment→dayjs + table-filter 文档
   ┌→ 阶段 1（locale 层）
-  └→ 阶段 4（table-pagination）— 依赖 locale 层
-       └→ 阶段 5（Table hooks）— 最复杂，依赖所有前置阶段
+  └→ 阶段 4（table-pagination）— 依赖 locale 层 + table-pagination 文档
+       └→ 阶段 5（Table hooks）— 最复杂，依赖所有前置阶段 + table hooks 文档
 ```
 
 ## 工作量总估算
 
 | 阶段 | 内容 | 预估人天 | 累计 |
 |------|------|----------|------|
-| 1 | 骨架 + Icon + sortable + content-wrapper + locale + 全局样式 | 2-3 天 | 2-3 |
-| 2 | Button + Select 包装层 | 4-5 天 | 6-8 |
-| 3 | table-filter 迁移 | 5-7 天 | 11-15 |
-| 4 | table-pagination 迁移 | 1 天 | 12-16 |
-| 5 | Table hooks 迁移（含 useTable 组合 hook） | 6-9 天 | 18-25 |
-| - | 构建发布 + 集成测试 | 1-2 天 | 19-27 |
-| **合计** | | **19-27 人天** | |
+| 1 | 骨架 + Icon + sortable + content-wrapper + locale + 全局样式 + dumi 搭建 + Icon/ContentWrapper 文档 | 3-4 天 | 3-4 |
+| 2 | Button + Select 包装层 + 文档 | 4-5 天 | 7-9 |
+| 3 | table-filter 迁移 + 文档 | 5-7 天 | 12-16 |
+| 4 | table-pagination 迁移 + 文档 | 1 天 | 13-17 |
+| 5 | Table hooks 迁移（含 useTable 组合 hook）+ 文档 | 6-9 天 | 19-26 |
+| - | 构建发布 + 集成测试 | 1-2 天 | 20-28 |
+| **合计** | | **20-28 人天** | |
 
 ## 业务项目升级影响
 
