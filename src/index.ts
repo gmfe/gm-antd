@@ -12,6 +12,8 @@ export { default as ContentWrapper } from './content-wrapper';
 export { default as ContentWrapperContext } from './content-wrapper/context';
 export { default as TableFilter, TableFilterContext, SearchBarContext } from './table-filter';
 export type { FieldItem, TableFilterProps } from './table-filter';
+export { default as TablePagination } from './table-pagination';
+export { TABLE_PAGINATION_HEIGHT } from './table-pagination';
 
 // Locale
 export { default as gmZhCN } from './locale/zh_CN';
