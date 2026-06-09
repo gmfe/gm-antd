@@ -9,6 +9,7 @@ export { default as ContentWrapperContext } from './content-wrapper/context';
 
 // Locale
 export { default as gmZhCN } from './locale/zh_CN';
+export { default as useGMLocale } from './locale-adapter/useGMLocale';
 
 // Styles
 export { default as gmTheme } from './styles/theme';

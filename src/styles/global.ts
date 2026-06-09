@@ -126,7 +126,7 @@ const globalCSS = `
   background-color: #f5f5f5;
 }
 .ant-btn.lightgrey[disabled]:hover {
-  background-color: none;
+  background-color: transparent;
 }
 `;
 
