@@ -13,20 +13,13 @@
     "ant"
   ],
   "files": [
-    "dist",
-    "lib",
-    "es"
+    "dist"
   ],
-  "sideEffects": [
-    "dist/*",
-    "es/**/style/*",
-    "lib/**/style/*",
-    "*.less"
-  ],
-  "main": "lib/index.js",
-  "module": "es/index.js",
+  "sideEffects": false,
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
   "unpkg": "dist/antd.min.js",
-  "typings": "lib/index.d.ts",
   "scripts": {
     "start": "yarn add-ts-no-check && antd-tools run clean && cross-env NODE_ENV=development concurrently \"bisheng start -c ./site/bisheng.config.js\"",
     "prepare": "husky install",
@@ -80,7 +73,9 @@
     "version": "node ./scripts/generate-version",
     "add-ts-no-check": "add-ts-nocheck --patterns 'node_modules/@gm-common/**/!(*.d).ts,node_modules/@gm-common/**/!(*.d).tsx,node_modules/gm_api/**/!(*.d).ts,node_modules/gm_api/**/!(*.d).tsx,node_modules/@gm-pc/**/!(*.d).ts,node_modules/@gm-pc/**/!(*.d).tsx'",
     "update_api": "node ./node_modules/gm_api_script/scripts/update_gm_api.js",
-    "api:lite": "yarn update_api lite-master; yarn;"
+    "api:lite": "yarn update_api lite-master; yarn;",
+    "build:wrapper": "tsup",
+    "build:wrapper:watch": "tsup --watch"
   },
   "browserslist": [
     "> 0.5%",
@@ -92,11 +87,13 @@
   ],
   "dependencies": {
     "@ant-design/colors": "^6.0.0",
-    "@ant-design/icons": "^4.7.0",
+    "@ant-design/icons": "^5.0.0",
+    "@ant-design/cssinjs": "^1.21.0",
     "@ant-design/react-slick": "~0.29.1",
+    "antd": "^5.12.0",
     "@babel/runtime": "^7.18.3",
     "@ctrl/tinycolor": "^3.4.0",
-    "classnames": "^2.2.6",
+    "classnames": "^2.3.0",
     "copy-to-clipboard": "^3.2.0",
     "lodash": "^4.17.21",
     "moment": "^2.29.2",
@@ -284,6 +281,7 @@
     "stylelint-order": "^5.0.0",
     "tailwindcss": "npm:@tailwindcss/postcss7-compat",
     "theme-switcher": "^1.0.2",
+    "tsup": "^8.0.0",
     "typescript": "~4.8.4",
     "webpack-bundle-analyzer": "^4.1.0",
     "xhr-mock": "^2.4.1",
