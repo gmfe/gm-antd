@@ -42,6 +42,11 @@ components/**/*.jsx
 /.history
 *.tmp
 
+# Dumi (generated)
+.dumi/tmp/
+.dumi/tsconfig.json
+.doc-dist/
+
 # Docs templates
 site/theme/template/Color/ColorPicker.jsx
 site/theme/template/IconDisplay/*.js
