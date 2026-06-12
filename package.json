@@ -75,7 +75,10 @@
     "update_api": "node ./node_modules/gm_api_script/scripts/update_gm_api.js",
     "api:lite": "yarn update_api lite-master; yarn;",
     "build:wrapper": "tsup",
-    "build:wrapper:watch": "tsup --watch"
+    "build:wrapper:watch": "tsup --watch",
+    "doc:dev": "dumi dev",
+    "doc:build": "dumi build",
+    "doc:preview": "dumi preview"
   },
   "browserslist": [
     "> 0.5%",
@@ -87,12 +90,12 @@
   ],
   "dependencies": {
     "@ant-design/colors": "^6.0.0",
-    "@ant-design/icons": "^5.0.0",
     "@ant-design/cssinjs": "^1.21.0",
+    "@ant-design/icons": "^5.0.0",
     "@ant-design/react-slick": "~0.29.1",
-    "antd": "^5.12.0",
     "@babel/runtime": "^7.18.3",
     "@ctrl/tinycolor": "^3.4.0",
+    "antd": "^5.12.0",
     "classnames": "^2.3.0",
     "copy-to-clipboard": "^3.2.0",
     "lodash": "^4.17.21",
@@ -195,6 +198,7 @@
     "dekko": "^0.2.1",
     "docsearch-react-fork": "^0.0.0-alpha.0",
     "docsearch.js": "^2.6.3",
+    "dumi": "^2.4.30",
     "duplicate-package-checker-webpack-plugin": "^3.0.0",
     "enquire-js": "^0.2.1",
     "esbuild-loader": "^2.13.1",
