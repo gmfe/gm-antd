@@ -1,0 +1,120 @@
+/* ============================================
+   Table Hooks Global CSS
+   Contains ::before pseudo-element overrides
+   and antd structural class overrides that
+   cannot be replaced with inline styles.
+   ============================================ */
+
+/* --- useTableResizable --- */
+
+.ant-table-cell.react-resizable:not(:last-child):not(.ant-table-selection-column):not(
+    .ant-table-row-expand-icon-cell
+  ):not([colspan])::before {
+  right: 5px;
+}
+
+.ant-table-thead tr th {
+  &.react-resizable:hover::before,
+  &.react-resizable:active::before {
+    background-color: #ccc !important;
+  }
+
+  &.gm-virtual-table-cell-fixed-left::before {
+    display: none;
+  }
+}
+
+/* --- useTableTheme --- */
+
+tr td.use-table-theme {
+  overflow: hidden;
+
+  &.ant-table-cell-fix-left,
+  &.ant-table-cell-fix-right {
+    overflow: initial;
+  }
+
+  .ant-table-row-expand-icon-spaced {
+    display: none;
+  }
+}
+
+.ant-table-thead.use-table-theme tr th {
+  user-select: none;
+}
+
+/* --- useTableDIY --- */
+
+.ant-table-cell.placeholder::before {
+  display: none;
+}
+
+.ant-table-selection-column {
+  .use-table-diy-cell-no {
+    visibility: hidden;
+  }
+
+  .table-selection.mode-parent {
+    visibility: hidden;
+  }
+}
+
+.ant-table-row-level-0 > .ant-table-selection-column {
+  .use-table-diy-cell-no {
+    visibility: visible !important;
+  }
+
+  .table-selection {
+    visibility: visible !important;
+  }
+}
+
+/* --- useTableSelection --- */
+
+.ant-table-selection-column {
+  padding-left: 0 !important;
+
+  .table-selection.mode-all,
+  .table-selection.mode-child {
+    visibility: visible;
+  }
+}
+
+/* --- useTableVirtual fixed column backgrounds --- */
+
+.gm-virtual-table-cell-fixed-left,
+.gm-virtual-table-cell-fixed-right {
+  &::before {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: -1;
+    width: 100%;
+    height: calc(100% - 1px);
+    background-color: white;
+    transition: background-color 0.3s;
+    content: '';
+  }
+}
+
+.gm-table-row.gm-row-selected {
+  .gm-virtual-table-cell-fixed-left::before,
+  .gm-virtual-table-cell-fixed-right::before {
+    background-color: var(--ant-color-primary-bg, #e6f4ff);
+  }
+}
+
+.gm-table-row:hover {
+  .gm-virtual-table-cell-fixed-left::before,
+  .gm-virtual-table-cell-fixed-right::before {
+    background-color: var(--ant-color-fill-quaternary, #fafafa);
+  }
+}
+
+.gm-virtual-table-cell.placeholder {
+  visibility: hidden;
+}
+
+.gm-row-selected {
+  background-color: var(--ant-color-primary-bg, #e6f4ff);
+}
