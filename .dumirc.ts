@@ -1,5 +1,4 @@
 import { defineConfig } from 'dumi';
-import path from 'path';
 
 export default defineConfig({
   resolve: {
@@ -11,12 +10,6 @@ export default defineConfig({
   },
   apiParser: {},
   locales: [{ id: 'zh-CN', name: '中文' }],
-  // Override tsconfig paths that alias antd → components/ (antd 4 fork)
-  // Dumi's webpack must resolve antd to node_modules/antd (antd 5)
-  alias: {
-    antd: path.resolve(__dirname, 'node_modules/antd'),
-    'antd/es': path.resolve(__dirname, 'node_modules/antd/es'),
-  },
   themeConfig: {
     name: 'gm-antd',
     footer: 'GM Component Library',

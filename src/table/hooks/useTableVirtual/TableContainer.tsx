@@ -5,7 +5,7 @@ import type { FC, PropsWithChildren, ThHTMLAttributes } from 'react';
 import React, { forwardRef, useImperativeHandle, useState } from 'react';
 import { DEFAULT_HEADER_ROW_HEIGHT } from '.';
 import { getStickyStyle } from './util';
-import useToken from 'antd/es/theme/useToken';
+import { theme } from 'antd';
 
 interface Props {
   columns: TableProps<any>['columns'];
@@ -48,7 +48,13 @@ const TableContainer = forwardRef<Ref, ThHTMLAttributes<HTMLDivElement>>(
       components: {},
     });
     const { columns, rowSelection, components } = state;
-    const [, token] = useToken();
+    // tsup dts worker (rollup-plugin-dts) 会把 antd theme 命名空间错误推断为 null
+    // (TS2531, 标准 tsc 不报)。运行时 useToken 恒返回对象, 显式标注 theme 结构绕过。
+    const { token } = (
+      theme as unknown as {
+        useToken: () => { token: { colorFillQuaternary: string; colorBorderSecondary: string } };
+      }
+    ).useToken();
 
     useImperativeHandle(
       ref,
@@ -66,7 +72,7 @@ const TableContainer = forwardRef<Ref, ThHTMLAttributes<HTMLDivElement>>(
 
     const onResize = (...args: any) => {
       const index = args[2];
-      const cb = (columns[index]!.onHeaderCell as any)?.()?.onResize as any as Function || noop;
+      const cb = (columns?.[index]?.onHeaderCell as any)?.()?.onResize as any as Function || noop;
       cb(...args);
     };
 
@@ -130,7 +136,7 @@ const TableContainer = forwardRef<Ref, ThHTMLAttributes<HTMLDivElement>>(
                       }}
                       style={{
                         ...getStickyStyle(rowSelection, {
-                          columns,
+                          columns: columns || [],
                           index: columnIndex,
                         }),
                       }}

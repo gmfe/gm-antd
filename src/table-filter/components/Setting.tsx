@@ -1,6 +1,6 @@
 import React, { useContext, useMemo, useState } from 'react';
 import { Divider, Checkbox, Button } from 'antd';
-import type { CheckboxChangeEvent } from 'antd/es/checkbox';
+import type { CheckboxChangeEvent } from 'antd';
 import { keyBy } from 'lodash';
 import Sortable from '../../sortable';
 import type { SortableDataItem } from '../../sortable/types';
@@ -167,7 +167,7 @@ const Setting: React.FC<SettingProps> = ({ afterCancel, afterReset, afterSave })
         <Button size="small" type="link" onClick={() => _onReset()}>
           {tableLocale?.filterReset}
         </Button>
-        <Button size="small" type="second" onClick={() => _onCancel()}>
+        <Button size="small" type="default" onClick={() => _onCancel()}>
           {tableLocale?.cancel}
         </Button>
         <Button size="small" type="primary" onClick={() => _onSave()}>

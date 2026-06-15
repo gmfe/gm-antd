@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { Button as AntButton } from 'antd';
 import type { ButtonProps as AntButtonProps } from 'antd';
 import { secondButtonStyle, secondButtonDisabledHoverStyle, secondButtonDisabledStyle, secondButtonHoverStyle } from './styles';
@@ -18,7 +18,7 @@ const GmButton = React.forwardRef<HTMLButtonElement | HTMLAnchorElement, GmButto
     const antType = isSecond ? 'default' : type;
     const finalLoading = rest.loading || autoLoading;
 
-    const getSecondStyle = useCallback((): React.CSSProperties => {
+    const getSecondStyle = (): React.CSSProperties => {
       if (!isSecond) return style as React.CSSProperties;
 
       const base: React.CSSProperties = { ...secondButtonStyle };
@@ -29,29 +29,26 @@ const GmButton = React.forwardRef<HTMLButtonElement | HTMLAnchorElement, GmButto
         return { ...base, ...secondButtonStyle, ...secondButtonDisabledStyle, ...style };
       }
       return { ...base, ...style };
-    }, [isSecond, disabled, finalLoading, style]);
+    };
 
-    const handleClick = useCallback(
-      (e: React.MouseEvent<HTMLButtonElement | HTMLAnchorElement>) => {
-        if (autoLoading || loadingRef.current) {
-          e.preventDefault();
-          return;
-        }
+    const handleClick = (e: React.MouseEvent<HTMLButtonElement | HTMLAnchorElement>) => {
+      if (autoLoading || loadingRef.current) {
+        e.preventDefault();
+        return;
+      }
 
-        if (onClick) {
-          const result = (onClick as (e: React.MouseEvent<HTMLButtonElement | HTMLAnchorElement>) => any)(e);
-          if (result && typeof result.then === 'function') {
-            loadingRef.current = true;
-            setAutoLoading(true);
-            result.finally(() => {
-              setAutoLoading(false);
-              loadingRef.current = false;
-            });
-          }
+      if (onClick) {
+        const result = (onClick as (e: React.MouseEvent<HTMLButtonElement | HTMLAnchorElement>) => any)(e);
+        if (result && typeof result.then === 'function') {
+          loadingRef.current = true;
+          setAutoLoading(true);
+          result.finally(() => {
+            setAutoLoading(false);
+            loadingRef.current = false;
+          });
         }
-      },
-      [onClick, autoLoading],
-    );
+      }
+    };
 
     return (
       <AntButton

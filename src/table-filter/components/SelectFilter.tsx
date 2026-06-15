@@ -107,63 +107,62 @@ const SelectFilter: React.FC<SelectFilterProps> = ({ className, field }) => {
   }, [value, options.length]);
 
   return (
-    <Select
-      className={classNames(className)}
-      style={{ width: '100%' }}
-      variant="borderless"
-      mode={multiple ? 'multiple' : undefined}
-      maxTagCount="responsive"
-      placeholder={placeholder || `${tableLocale?.pleaseSelect || '请选择'}${label?.toLowerCase()}`}
-      value={memoValue}
-      {...selectProps}
-      onDropdownVisibleChange={(open: boolean) => {
-        if (open && Array.isArray(originOptions)) {
-          fetch();
+    <div onBlurCapture={() => { store.focusedFieldKey = ''; }}>
+      <Select
+        className={classNames(className)}
+        style={{ width: '100%' }}
+        variant="borderless"
+        mode={multiple ? 'multiple' : undefined}
+        maxTagCount="responsive"
+        placeholder={placeholder || `${tableLocale?.pleaseSelect || '请选择'}${label?.toLowerCase()}`}
+        value={memoValue}
+        {...selectProps}
+        onOpenChange={(open: boolean) => {
+          if (open && Array.isArray(originOptions)) {
+            fetch();
+          }
+        }}
+        onChange={(value: any, option: any) => {
+          const oldValue = store.get(field);
+          let val: typeof value | undefined = value;
+          const isArray = Array.isArray(val);
+          selectProps?.onChange?.(value, option as any);
+          if (typeof val === 'string' || typeof val === 'number') {
+            if (val === '') val = undefined;
+          } else if (isArray) {
+            if (val.length === 0) val = undefined;
+          }
+          if (val && isArray && maxLength && val.length > maxLength) {
+            value = val.slice(0, maxLength);
+          }
+          store.set(field, value);
+          if (['onChange', 'both'].includes(trigger || store.trigger!) && value !== oldValue) {
+            debouncedSearch();
+          }
+        }}
+        onSearch={val => {
+          setSearchValue(val?.trim());
+          if (typeof originOptions === 'function' || remote) {
+            fetch();
+          }
+        }}
+        showSearch
+        allowClear={field.allowClear}
+        popupMatchSelectWidth={false}
+        filterOption={(input, option) =>
+          (option?.label as unknown as string)?.toLowerCase().includes(input.toLowerCase())
         }
-      }}
-      onChange={(value: any, option: any) => {
-        const oldValue = store.get(field);
-        let val: typeof value | undefined = value;
-        const isArray = Array.isArray(val);
-        selectProps?.onChange?.(value, option as any);
-        if (typeof val === 'string' || typeof val === 'number') {
-          if (val === '') val = undefined;
-        } else if (isArray) {
-          if (val.length === 0) val = undefined;
-        }
-        if (val && isArray && maxLength && val.length > maxLength) {
-          value = val.slice(0, maxLength);
-        }
-        store.set(field, value);
-        if (['onChange', 'both'].includes(trigger || store.trigger!) && value !== oldValue) {
-          debouncedSearch();
-        }
-      }}
-      onSearch={val => {
-        setSearchValue(val?.trim());
-        if (typeof originOptions === 'function' || remote) {
-          fetch();
-        }
-      }}
-      showSearch
-      allowClear={field.allowClear}
-      dropdownMatchSelectWidth={false}
-      filterOption={(input, option) =>
-        (option?.label as unknown as string)?.toLowerCase().includes(input.toLowerCase())
-      }
-      options={selectOptions as any}
-      onBlur={() => {
-        if (trigger === 'onBlur') {
-          debouncedSearch();
-        }
-      }}
-      onFocus={() => {
-        store.focusedFieldKey = field.key;
-      }}
-      onBlurCapture={() => {
-        store.focusedFieldKey = '';
-      }}
-    />
+        options={selectOptions as any}
+        onBlur={() => {
+          if (trigger === 'onBlur') {
+            debouncedSearch();
+          }
+        }}
+        onFocus={() => {
+          store.focusedFieldKey = field.key;
+        }}
+      />
+    </div>
   );
 };
 

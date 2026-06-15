@@ -1,7 +1,7 @@
 import { clamp, cloneDeep, merge, pick } from 'lodash';
 import type { SyntheticEvent } from 'react';
 import React, { useState, useRef, useMemo, useEffect } from 'react';
-import type { ResizeCallbackData } from 'react-resizable';
+import type { ResizeCallbackData, ResizableProps } from 'react-resizable';
 import { Resizable } from 'react-resizable';
 import type { ColumnType, TableProps } from '../../interface';
 
@@ -13,6 +13,9 @@ export interface UseTableResizableResult<DataType extends { [key: string]: any }
   columns: ColumnType<DataType>[];
   components: TableProps<DataType>['components'];
 }
+
+// react-resizable 组件实例类型与 @types/react 18 的 refs 不兼容(第三方库类型滞后), 做类型转换
+const ResizableFC = Resizable as unknown as React.FC<ResizableProps>;
 
 const clearSelection = () => {
   const _document = document as any;
@@ -30,7 +33,7 @@ const clearSelection = () => {
   }
 };
 
-const getColumnKey = (column: ColumnType<any>) => {
+const getColumnKey = (column: ColumnType<any>): string | undefined => {
   const key = Array.isArray(column.dataIndex)
     ? column.dataIndex.join('.')
     : typeof column.dataIndex === 'string'
@@ -41,7 +44,8 @@ const getColumnKey = (column: ColumnType<any>) => {
       column,
       '需要 key，如果已经设置了唯一的 dataIndex，可以忽略这个属性',
     );
-  return key;
+  // 显式 String() 转换: React.Key 推断含 bigint, 作索引/computed key 会报 TS2538
+  return key == null ? undefined : String(key);
 };
 
 const ResizableTitle = (
@@ -70,7 +74,7 @@ const ResizableTitle = (
   };
 
   return (
-    <Resizable
+    <ResizableFC
       width={width}
       height={0}
       handle={
@@ -108,7 +112,7 @@ const ResizableTitle = (
         }}
         {...restProps}
       />
-    </Resizable>
+    </ResizableFC>
   );
 };
 

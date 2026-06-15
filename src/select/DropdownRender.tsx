@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Checkbox, Switch, Space } from 'antd';
 import CheckOutlined from '@ant-design/icons/CheckOutlined';
 import { useSelectAll } from './useSelectAll';
@@ -116,69 +116,63 @@ export default function DropdownRender({
     return filterUnselected(filteredOptions);
   }, [filteredOptions, searchValue, selectedOptions, valueFieldName, optionsFieldName]);
 
-  const handleItemClick = useCallback(
-    (itemValue: any, item: any) => {
-      const isInValue = valueArray.includes(itemValue);
-      let newValue: any[];
-      if (isInValue) {
-        newValue = valueArray.filter((v: any) => v !== itemValue);
-      } else {
-        newValue = [...valueArray, itemValue];
-      }
-      onChange?.(newValue, item);
-    },
-    [valueArray, onChange],
-  );
+  const handleItemClick = (itemValue: any, item: any) => {
+    const isInValue = valueArray.includes(itemValue);
+    let newValue: any[];
+    if (isInValue) {
+      newValue = valueArray.filter((v: any) => v !== itemValue);
+    } else {
+      newValue = [...valueArray, itemValue];
+    }
+    onChange?.(newValue, item);
+  };
 
-  const renderItem = useCallback(
-    (option: any, index: number) => {
-      const optVal = option[valueFieldName];
-      const isSelected = valueArray.includes(optVal);
-      const isDisabled = option.disabled;
+  const renderItem = (option: any, index: number) => {
+    const optVal = option[valueFieldName];
+    const isSelected = valueArray.includes(optVal);
+    const isDisabled = option.disabled;
 
-      if (option[optionsFieldName] && Array.isArray(option[optionsFieldName])) {
-        return (
-          <div key={option.key || index} style={dropdownGroupStyle}>
-            <div style={dropdownGroupLabelStyle}>{option[labelFieldName]}</div>
-            <div style={dropdownGroupContentStyle}>
-              {option[optionsFieldName].map((child: any, childIndex: number) => {
-                const childSelected = valueArray.includes(child[valueFieldName]);
-                const childDisabled = child.disabled;
-                return (
-                  <div
-                    key={child.key || child[valueFieldName] || childIndex}
-                    style={dropdownItemStyle(childSelected, childDisabled)}
-                    onClick={() => {
-                      if (childDisabled) return;
-                      handleItemClick(child[valueFieldName], child);
-                    }}
-                  >
-                    <span style={dropdownItemLabelStyle}>{child[labelFieldName]}</span>
-                    {childSelected && <CheckOutlined style={checkIconStyle} />}
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        );
-      }
-
+    if (option[optionsFieldName] && Array.isArray(option[optionsFieldName])) {
       return (
-        <div
-          key={option.key || optVal || index}
-          style={dropdownItemStyle(isSelected, isDisabled)}
-          onClick={() => {
-            if (isDisabled) return;
-            handleItemClick(optVal, option);
-          }}
-        >
-          <span style={dropdownItemLabelStyle}>{option[labelFieldName]}</span>
-          {isSelected && <CheckOutlined style={checkIconStyle} />}
+        <div key={option.key || index} style={dropdownGroupStyle}>
+          <div style={dropdownGroupLabelStyle}>{option[labelFieldName]}</div>
+          <div style={dropdownGroupContentStyle}>
+            {option[optionsFieldName].map((child: any, childIndex: number) => {
+              const childSelected = valueArray.includes(child[valueFieldName]);
+              const childDisabled = child.disabled;
+              return (
+                <div
+                  key={child.key || child[valueFieldName] || childIndex}
+                  style={dropdownItemStyle(childSelected, childDisabled)}
+                  onClick={() => {
+                    if (childDisabled) return;
+                    handleItemClick(child[valueFieldName], child);
+                  }}
+                >
+                  <span style={dropdownItemLabelStyle}>{child[labelFieldName]}</span>
+                  {childSelected && <CheckOutlined style={checkIconStyle} />}
+                </div>
+              );
+            })}
+          </div>
         </div>
       );
-    },
-    [valueArray, valueFieldName, labelFieldName, optionsFieldName, handleItemClick],
-  );
+    }
+
+    return (
+      <div
+        key={option.key || optVal || index}
+        style={dropdownItemStyle(isSelected, isDisabled)}
+        onClick={() => {
+          if (isDisabled) return;
+          handleItemClick(optVal, option);
+        }}
+      >
+        <span style={dropdownItemLabelStyle}>{option[labelFieldName]}</span>
+        {isSelected && <CheckOutlined style={checkIconStyle} />}
+      </div>
+    );
+  };
 
   const shouldRenderCustom =
     isMultiple &&

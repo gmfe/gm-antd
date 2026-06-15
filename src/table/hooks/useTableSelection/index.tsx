@@ -3,8 +3,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import type { ButtonProps, TableProps } from 'antd';
 import { cloneDeep, merge } from 'lodash';
 import classNames from 'classnames';
-import { Checkbox } from 'antd';
-import useToken from 'antd/es/theme/useToken';
+import { Checkbox, theme } from 'antd';
 import type { TableBatchActionsProps } from './BatchActions';
 import TableBatchActions from './BatchActions';
 
@@ -259,13 +258,15 @@ function useTableSelection<DataType extends { [key: string]: any }>(
     columnWidth: ((rowSelection.columnWidth as number) || 0) + 50,
     columnTitle: (
       <div style={{ display: 'flex', alignItems: 'center' }}>
-        {rowSelection.columnTitle}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 50 }}>
-          <Checkbox
-            checked={checkedAll}
-            onChange={() => (checkedAll ? controller.unselectAll() : controller.selectAll())}
-          />
-        </div>
+        <>
+          {rowSelection.columnTitle}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 50 }}>
+            <Checkbox
+              checked={checkedAll}
+              onChange={() => (checkedAll ? controller.unselectAll() : controller.selectAll())}
+            />
+          </div>
+        </>
       </div>
     ),
     renderCell: (value, record, index, node) => (
@@ -295,7 +296,13 @@ function useTableSelection<DataType extends { [key: string]: any }>(
   const selectedRef = useRef(selectedResult);
   selectedRef.current = selectedResult!;
 
-  const [, token] = useToken();
+  // tsup dts worker (rollup-plugin-dts) 会把 antd theme 命名空间错误推断为 null
+  // (TS2531, 标准 tsc 不报)。运行时 useToken 恒返回对象, 显式标注 theme 结构绕过。
+  const { token } = (
+    theme as unknown as {
+      useToken: () => { token: { colorPrimaryBg: string } };
+    }
+  ).useToken();
 
   const newComponents: TableProps<DataType>['components'] = useMemo(
     () =>

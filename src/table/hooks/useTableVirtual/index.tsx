@@ -3,10 +3,9 @@ import { cloneDeep, get, merge } from 'lodash';
 import ResizeObserver from 'rc-resize-observer';
 import type { ReactNode } from 'react';
 import React, { useEffect, useRef, useState } from 'react';
-import type { ListOnScrollProps } from 'react-window';
+import type { ListOnScrollProps, VariableSizeListProps } from 'react-window';
 import { VariableSizeList } from 'react-window';
-import { Empty } from 'antd';
-import useToken from 'antd/es/theme/useToken';
+import { Empty, theme } from 'antd';
 import type { Ref } from './TableContainer';
 import TableContainer from './TableContainer';
 import { getStickyStyle } from './util';
@@ -30,6 +29,9 @@ export interface UseTableVirtualProps {
 
 const DefaultTR = (props: any = {}) => <tr {...props} />;
 
+// react-window 组件实例类型与 @types/react 18 的 refs 不兼容(第三方库类型滞后), 做类型转换
+const VariableSizeListFC = VariableSizeList as unknown as React.FC<VariableSizeListProps>;
+
 function useTableVirtual({
   columns,
   scroll,
@@ -42,7 +44,13 @@ function useTableVirtual({
   const trWidth = (columns || []).reduce((pre, item) => pre + Number(item.width || 0), 0);
   const ref = useRef(document.createElement('div'));
   const innerRef = useRef<Ref>();
-  const [, token] = useToken();
+  // tsup dts worker (rollup-plugin-dts) 会把 antd theme 命名空间错误推断为 null
+  // (TS2531, 标准 tsc 不报)。运行时 useToken 恒返回对象, 显式标注 theme 结构绕过。
+  const { token } = (
+    theme as unknown as {
+      useToken: () => { token: { colorBorderSecondary: string } };
+    }
+  ).useToken();
 
   useEffect(() => {
     if (!innerRef.current?.setState) return;
@@ -58,7 +66,7 @@ function useTableVirtual({
       <ResizeObserver onResize={({ width }) => setTableWidth(width)}>
         <div className="resize-observer" />
       </ResizeObserver>
-      <VariableSizeList
+      <VariableSizeListFC
         className="gm-virtual-table"
         style={{ paddingBottom: 10 }}
         itemCount={rawData.length}
@@ -164,7 +172,7 @@ function useTableVirtual({
             </Row>
           );
         }}
-      </VariableSizeList>
+      </VariableSizeListFC>
       {rawData.length === 0 && (
         <Empty
           style={{

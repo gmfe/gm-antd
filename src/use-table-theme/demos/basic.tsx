@@ -13,12 +13,13 @@ const data = [
 ];
 
 export default () => {
-  const { columns: themedColumns } = useTableTheme(columns);
+  const { components } = useTableTheme();
 
   return (
     <Table
-      columns={themedColumns}
+      columns={columns}
       dataSource={data}
+      components={components}
       pagination={false}
       bordered
     />

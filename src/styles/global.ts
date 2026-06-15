@@ -91,7 +91,7 @@ const globalCSS = `
   background-color: #f5f5f5;
 }
 .ant-table .ant-table-tbody > tr.ant-table-row-selected > td {
-  background-color: #c3daff;
+  background-color: var(--ant-color-primary-bg, #c3daff);
 }
 
 /* Tabs title 16px */
