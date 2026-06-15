@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from 'react';
+import { useMemo } from 'react';
 
 interface UseSelectAllOptions {
   value?: any;
@@ -50,19 +50,16 @@ export function useSelectAll({
 
   const canSelectCount = flattenOptions.length;
 
-  const handleSelectAll = useCallback(
-    (checked: boolean) => {
-      const current = Array.isArray(value) ? value : [];
-      let newValue: any[];
-      if (checked) {
-        newValue = Array.from(new Set([...current, ...availableValues]));
-      } else {
-        newValue = current.filter((v: any) => !availableValues.includes(v));
-      }
-      onChange?.(newValue, flattenOptions);
-    },
-    [value, availableValues, onChange, flattenOptions],
-  );
+  const handleSelectAll = (checked: boolean) => {
+    const current = Array.isArray(value) ? value : [];
+    let newValue: any[];
+    if (checked) {
+      newValue = Array.from(new Set([...current, ...availableValues]));
+    } else {
+      newValue = current.filter((v: any) => !availableValues.includes(v));
+    }
+    onChange?.(newValue, flattenOptions);
+  };
 
   return {
     isAllSelected,

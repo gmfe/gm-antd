@@ -40,11 +40,13 @@ const Cell = ({ className, children, ...rest }: PropsWithChildren<any>) => {
             }}
           >
             {(() => {
-              if (
-                ['ant-table-selection-column', 'placeholder'].find(name =>
-                  className?.includes(name),
-                )
-              ) {
+              const isSelectionOrPlaceholder =
+                ['ant-table-selection-column', 'placeholder'].some(name =>
+                  typeof className === 'string' && className.includes(name),
+                ) ||
+                (rest as any)['data-placeholder'] === true ||
+                (rest as any).colSpan === 0;
+              if (isSelectionOrPlaceholder) {
                 return children;
               }
               if (isString) {

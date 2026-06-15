@@ -30,6 +30,7 @@ export default () => {
   const { rowSelection, rowKey, components, selectedRowKeys, controller, BatchActions } =
     useTableSelection<DataItem>({
       dataSource: data,
+      rowSelection: {},
       keyName: 'id',
       totalCount: 100,
     });
@@ -44,10 +45,7 @@ export default () => {
         </Button>
       </Space>
       {selectedRowKeys.length > 0 && (
-        <BatchActions
-          dataSource={data}
-          selectedRowKeys={selectedRowKeys}
-        >
+        <BatchActions>
           已选中 {selectedRowKeys.length} 项
         </BatchActions>
       )}

@@ -14,6 +14,8 @@ const gmTheme = {
     colorError: '#f5222d',
     colorInfo: '#0363ff',
   },
+  cssVar: true,
+  hashed: true,
 } as const;
 
 export default gmTheme;

@@ -19,14 +19,13 @@ const data = Array.from({ length: 1000 }, (_, i) => ({
 export default () => {
   const virtualProps = useTableVirtual({
     columns,
-    dataSource: data,
     scroll: { x: 630, y: 400 },
   });
 
   return (
     <Table
       columns={virtualProps.columns}
-      dataSource={virtualProps.dataSource}
+      dataSource={data}
       scroll={virtualProps.scroll}
       components={virtualProps.components}
       pagination={false}

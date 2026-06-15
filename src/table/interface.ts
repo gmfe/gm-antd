@@ -5,15 +5,15 @@ export type {
   TableProps,
 } from 'antd';
 
+// antd5 公共入口仅以 TableColumnType/TableColumnGroupType/TableColumnsType 别名导出列类型,
+// 且未导出 ExpandableConfig/GetRowKey/TableRowSelection/SorterResult/FilterValue;
+// antd/es/table/interface 是 antd table 模块的公共接口文件, 汇总了全部上述类型, 暂用该深路径(无等价公共替代)。
 export type {
   ColumnType,
   ColumnGroupType,
   ColumnsType,
   ExpandableConfig,
   GetRowKey,
-} from 'rc-table/lib/interface';
-
-export type {
   TableRowSelection,
   SorterResult,
   FilterValue,

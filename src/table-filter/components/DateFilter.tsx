@@ -31,7 +31,7 @@ const DateFilter: React.FC<DateFilterProps> = ({ field }) => {
               variant="borderless"
               value={value!}
               onChange={(dayjsVal: Dayjs | null) => {
-                store.set(field, dayjsVal);
+                store.set(field, dayjsVal ?? undefined);
                 if (['onChange', 'both'].includes(store.trigger!)) {
                   if (searchBar?.onSearch) {
                     searchBar.onSearch(store.toParams());

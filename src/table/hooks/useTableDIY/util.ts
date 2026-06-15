@@ -4,7 +4,7 @@ import type { ColumnType } from '../../interface';
 import type { GroupItem } from './DiyPanel';
 import type { ConfigItem } from '.';
 
-const getColumnKey = (column: ColumnType<any>) => {
+const getColumnKey = (column: ColumnType<any>): string | undefined => {
   const key = Array.isArray(column.dataIndex)
     ? column.dataIndex.join('.')
     : typeof column.dataIndex === 'string'
@@ -15,7 +15,8 @@ const getColumnKey = (column: ColumnType<any>) => {
       column,
       '需要 key，如果已经设置了唯一的 dataIndex，可以忽略这个属性',
     );
-  return key;
+  // 显式 String() 转换: React.Key 推断含 bigint, 作索引/computed key 会报 TS2538
+  return key == null ? undefined : String(key);
 };
 
 export { getColumnKey };

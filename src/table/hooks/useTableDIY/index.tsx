@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import type { TableProps } from 'antd';
+import { ConfigProvider, type TableProps } from 'antd';
 import { flatten } from 'lodash';
 import { useWindowSize } from 'react-use';
 import { createPortal } from 'react-dom';
@@ -65,14 +65,8 @@ const ColumnTitle = (
 
   useEffect(() => {
     if (open) {
-      document.body.style.overflow = 'hidden';
       setGroups(initGroups({ columns, config, cacheID }));
-    } else {
-      document.body.style.overflow = 'initial';
     }
-    return () => {
-      document.body.style.overflow = 'initial';
-    };
   }, [open]);
 
   const rawColumns = getRawColumns(columns);
@@ -87,61 +81,64 @@ const ColumnTitle = (
 
   return (
     <div className="use-table-diy" ref={ref} style={{ display: 'flex', alignItems: 'center' }}>
-      {rowSelection?.columnTitle}
-      {createPortal(
-        <div
-          style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            display: open ? 'flex' : 'none',
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: '100%',
-            height: '100%',
-            background: 'rgba(0,0,0,0.4)',
-            zIndex: 1000,
-          }}
-        >
-          <DiyPanel
-            style={{ width: 900, maxWidth: '70vw', background: 'white', boxShadow: '0 20px 6px -4px rgb(0 0 0 / 0.12), 0 20px 16px 0 rgb(0 0 0 / 0.08), 0 20px 28px 8px rgb(0 0 0 / 0.05)' }}
-            cacheID={cacheID}
-            groups={groups}
-            maxHeight={maxSize.maxHeight}
-            onChange={g => setGroups(g)}
-            onReset={() => {
-              const groups = initGroups({
-                columns,
-                config,
-                cacheID: 'WITH_NO_CACHE',
-              });
-              setGroups(groups);
-              const checkedColumns = flatten(Object.values(groups.map(item => item.list))).filter(
-                item => item.state.checked,
-              );
-              const sortedColumns = getSortedColumns(checkedColumns).map(item => item.column);
-              setTimeout(() => onUpdate(sortedColumns), 0);
+      <>
+        {rowSelection?.columnTitle}
+        {createPortal(
+        <ConfigProvider>
+          <div
+            style={{
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              display: open ? 'flex' : 'none',
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: '100%',
+              height: '100%',
+              background: 'rgba(0,0,0,0.4)',
+              zIndex: 1000,
             }}
-            onCancel={() => {
-              const groups = initGroups({
-                columns,
-                config,
-                cacheID,
-              });
-              setGroups(groups);
-              const checkedColumns = flatten(Object.values(groups.map(item => item.list))).filter(
-                item => item.state.checked,
-              );
-              const sortedColumns = getSortedColumns(checkedColumns).map(item => item.column);
-              setTimeout(() => onUpdate(sortedColumns), 0);
-              setOpen(false);
-            }}
-            onFinish={columns => {
-              setOpen(false);
-              setTimeout(() => onUpdate(columns), 0);
-            }}
-          />
-        </div>,
+          >
+            <DiyPanel
+              style={{ width: 900, maxWidth: '70vw', background: 'white', boxShadow: '0 20px 6px -4px rgb(0 0 0 / 0.12), 0 20px 16px 0 rgb(0 0 0 / 0.08), 0 20px 28px 8px rgb(0 0 0 / 0.05)' }}
+              cacheID={cacheID}
+              groups={groups}
+              maxHeight={maxSize.maxHeight}
+              onChange={g => setGroups(g)}
+              onReset={() => {
+                const groups = initGroups({
+                  columns,
+                  config,
+                  cacheID: 'WITH_NO_CACHE',
+                });
+                setGroups(groups);
+                const checkedColumns = flatten(Object.values(groups.map(item => item.list))).filter(
+                  item => item.state.checked,
+                );
+                const sortedColumns = getSortedColumns(checkedColumns).map(item => item.column);
+                setTimeout(() => onUpdate(sortedColumns), 0);
+              }}
+              onCancel={() => {
+                const groups = initGroups({
+                  columns,
+                  config,
+                  cacheID,
+                });
+                setGroups(groups);
+                const checkedColumns = flatten(Object.values(groups.map(item => item.list))).filter(
+                  item => item.state.checked,
+                );
+                const sortedColumns = getSortedColumns(checkedColumns).map(item => item.column);
+                setTimeout(() => onUpdate(sortedColumns), 0);
+                setOpen(false);
+              }}
+              onFinish={columns => {
+                setOpen(false);
+                setTimeout(() => onUpdate(columns), 0);
+              }}
+            />
+          </div>
+        </ConfigProvider>,
         document.body,
       )}
       <div
@@ -156,6 +153,7 @@ const ColumnTitle = (
           }}
         />
       </div>
+      </>
     </div>
   );
 };

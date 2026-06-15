@@ -1,4 +1,5 @@
 import zhCN from 'antd/es/locale/zh_CN';
+// antd5 公共入口不导出 Locale 类型, 暂用深路径(无公共替代)
 import type { Locale } from 'antd/es/locale';
 
 /**

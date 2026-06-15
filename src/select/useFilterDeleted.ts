@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 
 interface UseFilterDeletedOptions {
   options?: any[];
@@ -40,9 +40,9 @@ export function useFilterDeleted({
     return filter(options);
   }, [options, filterDeleted, optionsFieldName]);
 
-  const toggleFilterDeleted = useCallback((checked: boolean) => {
+  const toggleFilterDeleted = (checked: boolean) => {
     setFilterDeleted(checked);
-  }, []);
+  };
 
   return {
     filterDeleted,
