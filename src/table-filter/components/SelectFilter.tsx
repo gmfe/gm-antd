@@ -2,7 +2,9 @@ import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { observer } from 'mobx-react';
 import classNames from 'classnames';
 import { debounce, groupBy } from 'lodash';
-import { Select } from 'antd';
+// 用 gm-antd 自己的 compat 增强 Select(消费 isRenderDefaultBottom 等增强 prop,渲染「已选中/未选中/全选」增强下拉),
+// 而非 `from 'antd'`——后者在 gm-antd 内部会解析到真实 antd5 原生 Select(无 GmSelect 增强)。
+import Select from '../../compat/Select';
 import type { FieldSelectItem, SelectOptions } from '../types';
 import TableFilterContext, { SearchBarContext } from '../context';
 import useGMLocale from '../../locale-adapter/useGMLocale';

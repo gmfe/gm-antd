@@ -1,3 +1,9 @@
+// 注册 dayjs 中文 locale: antd5 DatePicker(rc-picker) 的星期/月份表头取自 dayjs locale,
+// antd5 zhCN locale 不带 shortWeekDays, 回退到 dayjs weekdaysMin()。gm-antd 与 antd5/rc-picker
+// 共享同一个 dayjs 实例(均在 gm-antd 的 node_modules 下), 在此注册后 DatePicker 下拉才能显示
+// 中文星期(一二三四五六日)与月份(2月), 否则消费方即使设了 dayjs.locale 也因实例不同而无效。
+import 'dayjs/locale/zh-cn';
+
 // gm-antd — antd 5 wrapper layer
 // 1. re-export antd 5。垫片组件随后用「显式 export 同名覆盖」(TS 规则:显式 export 胜出)。
 export * from 'antd';
