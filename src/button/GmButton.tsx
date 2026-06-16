@@ -1,7 +1,7 @@
 import React, { useRef, useState } from 'react';
 import { Button as AntButton } from 'antd';
 import type { ButtonProps as AntButtonProps } from 'antd';
-import { secondButtonStyle, secondButtonDisabledHoverStyle, secondButtonDisabledStyle, secondButtonHoverStyle } from './styles';
+import { secondButtonStyle, secondButtonDisabledStyle, secondButtonHoverStyle } from './styles';
 
 export type ButtonType = AntButtonProps['type'] | 'second';
 
@@ -72,10 +72,8 @@ const GmButton = React.forwardRef<HTMLButtonElement | HTMLAnchorElement, GmButto
             (e.currentTarget as HTMLElement).style.backgroundColor =
               secondButtonStyle.backgroundColor!;
           }
-          if (isSecond && disabled) {
-            (e.currentTarget as HTMLElement).style.backgroundColor =
-              secondButtonDisabledHoverStyle.backgroundColor!;
-          }
+          // disabled 的 second 按钮不在此处改背景: 之前会把 bg 设成 transparent,
+          // 导致"禁用按钮 hover 后背景消失"。disabled 应保持 #f5f5f5 禁用底色。
           rest.onMouseLeave?.(e);
         }}
       />

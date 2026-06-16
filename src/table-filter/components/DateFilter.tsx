@@ -6,6 +6,12 @@ import { DatePicker } from 'antd';
 import type { FieldDateItem, FieldDateRangeItem } from '../types';
 import TableFilterContext, { SearchBarContext } from '../context';
 import useGMLocale from '../../locale-adapter/useGMLocale';
+import {
+  momentToDayjs,
+  dayjsToMoment,
+  momentTupleToDayjs,
+  dayjsTupleToMoment,
+} from '../../compat/dateUtils';
 
 const { RangePicker } = DatePicker;
 
@@ -29,9 +35,9 @@ const DateFilter: React.FC<DateFilterProps> = ({ field }) => {
           return (
             <DatePicker
               variant="borderless"
-              value={value!}
+              value={(momentToDayjs(value as any) as Dayjs) ?? undefined}
               onChange={(dayjsVal: Dayjs | null) => {
-                store.set(field, dayjsVal ?? undefined);
+                store.set(field, dayjsToMoment(dayjsVal) ?? undefined);
                 if (['onChange', 'both'].includes(store.trigger!)) {
                   if (searchBar?.onSearch) {
                     searchBar.onSearch(store.toParams());
@@ -73,12 +79,12 @@ const DateFilter: React.FC<DateFilterProps> = ({ field }) => {
           <RangePicker
             variant="borderless"
             ranges={field.ranges ?? defaultRanges}
-            value={value!}
+            value={(momentTupleToDayjs(value as any) as any) ?? undefined}
             onChange={(moments: any) => {
               calendarDates.current = moments;
               if (moments?.[1])
                 moments[1] = field?.showTime ? moments[1] : moments[1].endOf('day');
-              store.set(field, moments);
+              store.set(field, dayjsTupleToMoment(moments));
               if (['onChange', 'both'].includes(store.trigger!)) {
                 store.search();
               }

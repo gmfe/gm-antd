@@ -42,6 +42,8 @@
     "api:lite": "yarn update_api lite-master; yarn;",
     "build:wrapper": "tsup && (tsc --emitDeclarationOnly -p tsconfig.build.json; test -f dist/index.d.ts)",
     "build:wrapper:watch": "tsup --watch",
+    "link:app": "bash scripts/link-app.sh link",
+    "unlink:app": "bash scripts/link-app.sh unlink",
     "doc:dev": "dumi dev",
     "doc:build": "dumi build",
     "doc:preview": "dumi preview"

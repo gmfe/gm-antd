@@ -5,6 +5,25 @@
    cannot be replaced with inline styles.
    ============================================ */
 
+/* --- antd5 measure-row 空白行修复 ---
+   antd5 用 .ant-table-measure-row 测列宽(scroll.x/固定列/列宽时), 本应通过
+   .ant-table-measure-cell-content { height:0; overflow:hidden } 塌成 0 高隐藏。
+   但 antd5 cssinjs 用 :where() 零优先级, 被宿主全局 CSS(给 td/th/content 设了高度)
+   覆盖后, measure-cell-content 撑到满行高, 表格顶部多出一行"空白行"。强制塌成 0。 */
+.ant-table-measure-row {
+  height: 0 !important;
+}
+.ant-table-measure-row .ant-table-measure-cell {
+  height: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+}
+.ant-table-measure-row .ant-table-measure-cell-content {
+  height: 0 !important;
+  max-height: 0 !important;
+  overflow: hidden !important;
+}
+
 /* --- useTableResizable --- */
 
 .ant-table-cell.react-resizable:not(:last-child):not(.ant-table-selection-column):not(
