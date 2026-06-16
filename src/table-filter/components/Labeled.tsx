@@ -57,7 +57,7 @@ const Labeled: React.FC<LabeledProps> = ({ style, className, fields }) => {
               size="small"
               value={groupIndex}
               onChange={value => store.groups.set(field.group || '', value)}
-              dropdownMatchSelectWidth={false}
+              popupMatchSelectWidth={false}
             >
               {fields.map((f, i) => (
                 <Select.Option key={f.key} value={i}>

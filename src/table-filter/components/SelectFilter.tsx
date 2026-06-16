@@ -107,7 +107,7 @@ const SelectFilter: React.FC<SelectFilterProps> = ({ className, field }) => {
   }, [value, options.length]);
 
   return (
-    <div onBlurCapture={() => { store.focusedFieldKey = ''; }}>
+    <div style={{ width: '100%' }} onBlurCapture={() => { store.focusedFieldKey = ''; }}>
       <Select
         className={classNames(className)}
         style={{ width: '100%' }}

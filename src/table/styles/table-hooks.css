@@ -118,3 +118,13 @@ tr td.use-table-theme {
 .gm-row-selected {
   background-color: var(--ant-color-primary-bg, #e6f4ff);
 }
+
+/* antd5 的 .ant-table-cell(td) 默认白色背景(colorBgContainer)会盖住 tr 上的选中色。
+   useTableSelection 用 gm-row-selected 标记选中行(自定义 selection,未设 selectedRowKeys,
+   antd5 不会加 ant-table-row-selected → global.ts 的 .ant-table-row-selected 规则不触发)。
+   显式给 td 设选中色,!important 覆盖 antd5 cssinjs 注入的白底,hover 也保持选中态。
+   (antd4 时代 td 默认透明,tr 选中色可直接透出;antd5 td 不透明,需此补偿) */
+.ant-table-tbody tr.gm-row-selected > td,
+.ant-table-tbody tr.gm-row-selected:hover > td {
+  background-color: var(--ant-color-primary-bg, #e6f4ff) !important;
+}

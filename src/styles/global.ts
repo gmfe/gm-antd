@@ -128,6 +128,17 @@ const globalCSS = `
 .ant-btn.lightgrey[disabled]:hover {
   background-color: transparent;
 }
+
+/* antd5 border 补偿: 部分消费方环境(旧 webpack/多 ConfigProvider)下 antd5 colorBorder token 注入为透明,
+   导致 Select/DatePicker/Input/Pagination 默认 border-color 透明(只 default 状态,hover/focus 由 cssinjs 正常覆盖)。
+   强制 antd5 默认 colorBorder #d9d9d9,保证 gm-antd 二次封装组件(TableFilter 等)视觉正常。 */
+.ant-select-outlined:not(.ant-select-borderless):not(.ant-select-disabled):not(.ant-select-customize-input) .ant-select-selector,
+.ant-picker-outlined:not(.ant-picker-borderless):not(.ant-picker-disabled),
+.ant-input-outlined:not(.ant-input-borderless),
+.ant-input-number-outlined:not(.ant-input-number-borderless),
+.ant-pagination .ant-pagination-item:not(.ant-pagination-item-disabled) {
+  border-color: #d9d9d9;
+}
 `;
 
 let injected = false;

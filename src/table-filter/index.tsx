@@ -1,11 +1,11 @@
 import classNames from 'classnames';
 import React, { useEffect, useRef, useState } from 'react';
 import { DownOutlined, FilterOutlined, UpOutlined } from '@ant-design/icons';
-import { Popover } from 'antd';
+import { Col, Popover, Row } from 'antd';
 import { observer } from 'mobx-react';
-import ResizeObserver from 'rc-resize-observer';
 import { useFirstMountState } from 'react-use';
 import GmButton from '../button';
+import './index.css';
 import TableFilterStore from './form.store';
 import Labeled from './components/Labeled';
 import TableFilterContext, { SearchBarContext } from './context';
@@ -14,7 +14,6 @@ import type { TableFilterProps } from './types';
 import useGMLocale from '../locale-adapter/useGMLocale';
 
 const GAP = 12.5;
-const FIELD_MIN_WIDTH = 300;
 
 const _controllerMap: Record<string, TableFilterStore> = {};
 
@@ -33,6 +32,7 @@ function Component(options: TableFilterProps) {
     onCustomSave,
     onSearch,
     resetFn,
+    colSpan = 6,
   } = options;
   const id = options.id ?? new URL(location.href.replace('/#', '')).pathname;
 
@@ -44,9 +44,6 @@ function Component(options: TableFilterProps) {
   const tableLocale = locale?.Table as Record<string, string> | undefined;
 
   const [expanded, setExpanded] = useState(false);
-  const [{ width }, setState] = useState({ width: 1 });
-  const flex = parseInt(`${width / FIELD_MIN_WIDTH}`, 10) || 1;
-  const fieldWidth = width / flex - ((flex - 1) * GAP) / flex;
   const isFirstMount = useFirstMountState();
 
   useEffect(() => {
@@ -101,18 +98,8 @@ function Component(options: TableFilterProps) {
   return (
     <SearchBarContext.Provider value={{ onSearch }}>
       <TableFilterContext.Provider value={store}>
-        <ResizeObserver onResize={({ width }) => setState({ width })}>
-          <div
-            className={classNames('table-filter', className)}
-            style={{
-              display: 'flex',
-              flexWrap: 'wrap',
-              alignItems: 'center',
-              paddingTop: 12,
-              paddingBottom: 12,
-              gap: GAP,
-            }}
-          >
+        <div className={classNames('table-filter', className)}>
+          <Row gutter={[GAP, GAP]}>
             {visibleFields.map(field => {
               const groupFields = field.group
                 ? visibleFields.filter(item => field.group === item.group)
@@ -122,15 +109,7 @@ function Component(options: TableFilterProps) {
 
               if (field.render) {
                 return (
-                  <div
-                    key={field.key}
-                    style={{
-                      width:
-                        field.type === 'date' && field.range
-                          ? fieldWidth * 2 + GAP
-                          : fieldWidth,
-                    }}
-                  >
+                  <Col key={field.key} span={colSpan}>
                     {React.cloneElement(field.render as React.ReactElement, {
                       field: field,
                       key: field.key,
@@ -142,24 +121,17 @@ function Component(options: TableFilterProps) {
                         }
                       },
                     })}
-                  </div>
+                  </Col>
                 );
               }
 
               return (
-                <Labeled
-                  key={field.key}
-                  fields={groupFields}
-                  style={{
-                    width:
-                      field.type === 'date' && field.range
-                        ? fieldWidth * 2 + GAP
-                        : fieldWidth,
-                  }}
-                />
+                <Col key={field.key} span={colSpan}>
+                  <Labeled fields={groupFields} />
+                </Col>
               );
             })}
-            <div style={{ gap: GAP, display: 'flex', alignItems: 'center', flexGrow: 1 }}>
+            <Col span={colSpan} style={{ display: 'flex', alignItems: 'center', gap: GAP }}>
               <div
                 style={{
                   display:
@@ -206,7 +178,6 @@ function Component(options: TableFilterProps) {
                   </div>
                 </Popover>
               </div>
-              <div style={{ flexGrow: 1 }} />
               {isExpanded && (
                 <GmButton
                   style={{ marginRight: '-10px' }}
@@ -227,7 +198,6 @@ function Component(options: TableFilterProps) {
               <GmButton
                 style={{ display: trigger === 'onChange' ? 'none' : undefined }}
                 type="primary"
-                key={store.loading ? Date.now().toString() : Date.now().toString()}
                 loading={store.loading}
                 onClick={() => {
                   if (onSearch) {
@@ -242,9 +212,9 @@ function Component(options: TableFilterProps) {
               >
                 {tableLocale?.search}
               </GmButton>
-            </div>
-          </div>
-        </ResizeObserver>
+            </Col>
+          </Row>
+        </div>
       </TableFilterContext.Provider>
     </SearchBarContext.Provider>
   );
