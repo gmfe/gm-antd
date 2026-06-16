@@ -37,7 +37,8 @@ const DateFilter: React.FC<DateFilterProps> = ({ field }) => {
               variant="borderless"
               value={(momentToDayjs(value as any) as Dayjs) ?? undefined}
               onChange={(dayjsVal: Dayjs | null) => {
-                store.set(field, dayjsToMoment(dayjsVal) ?? undefined);
+                // 字段类型声明为 Dayjs,但 erp 运行时存 Moment,这里转回 moment(as any 表明刻意桥接)
+                store.set(field, (dayjsToMoment(dayjsVal) ?? undefined) as any);
                 if (['onChange', 'both'].includes(store.trigger!)) {
                   if (searchBar?.onSearch) {
                     searchBar.onSearch(store.toParams());
@@ -84,7 +85,7 @@ const DateFilter: React.FC<DateFilterProps> = ({ field }) => {
               calendarDates.current = moments;
               if (moments?.[1])
                 moments[1] = field?.showTime ? moments[1] : moments[1].endOf('day');
-              store.set(field, dayjsTupleToMoment(moments));
+              store.set(field, dayjsTupleToMoment(moments) as any);
               if (['onChange', 'both'].includes(store.trigger!)) {
                 store.search();
               }
