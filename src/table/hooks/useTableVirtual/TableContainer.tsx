@@ -14,7 +14,7 @@ interface Props {
 }
 
 const DefaultHeaderWrapper = ({ className, children, ...rest }: PropsWithChildren<any>) => (
-  <thead className={classNames(className, 'gm-table-thead', 'default')} {...rest}>
+  <thead className={classNames(className, 'ant-table-thead', 'default')} {...rest}>
     {children}
   </thead>
 );
@@ -23,7 +23,7 @@ const DefaultHeaderCell: FC<
   { width: number; onResize?: () => void } & ThHTMLAttributes<HTMLTableHeaderCellElement>
 > = ({ className, children, width, style, onResize, ...rest }) => (
   <th
-    className={classNames(className, 'gm-table-cell', 'default')}
+    className={classNames(className, 'ant-table-cell', 'default')}
     style={{
       ...style,
       minWidth: width,
@@ -52,7 +52,7 @@ const TableContainer = forwardRef<Ref, ThHTMLAttributes<HTMLDivElement>>(
     // (TS2531, 标准 tsc 不报)。运行时 useToken 恒返回对象, 显式标注 theme 结构绕过。
     const { token } = (
       theme as unknown as {
-        useToken: () => { token: { colorFillQuaternary: string; colorBorderSecondary: string } };
+        useToken: () => { token: { colorBorderSecondary: string } };
       }
     ).useToken();
 
@@ -87,14 +87,15 @@ const TableContainer = forwardRef<Ref, ThHTMLAttributes<HTMLDivElement>>(
         >
           {THead && (
             <THead
-              className="gm-table-thead gm-use-table-virtual"
+              className="ant-table-thead use-table-virtual"
               style={{
                 position: 'sticky',
                 top: 0,
                 zIndex: 20,
                 whiteSpace: 'nowrap',
                 display: 'block',
-                backgroundColor: token.colorFillQuaternary,
+                // antd4 表头为 #fafafa 灰底;antd5 默认 headerBg 是白底,显式还原旧版观感
+                backgroundColor: '#fafafa',
                 borderBottom: `1px solid ${token.colorBorderSecondary}`,
               }}
             >
@@ -105,7 +106,7 @@ const TableContainer = forwardRef<Ref, ThHTMLAttributes<HTMLDivElement>>(
                       <Th
                         key="rowSelection"
                         className={classNames(
-                          'gm-table-cell gm-virtual-table-cell gm-row-selection',
+                          'ant-table-cell gm-virtual-table-cell gm-row-selection',
                           {
                             'gm-virtual-table-cell-fixed-left': rowSelection.fixed === 'left',
                             'gm-virtual-table-cell-fixed-right': rowSelection.fixed === 'right',
@@ -123,7 +124,7 @@ const TableContainer = forwardRef<Ref, ThHTMLAttributes<HTMLDivElement>>(
                     <Th
                       key={column.key || columnIndex}
                       className={classNames(
-                        'gm-table-cell gm-virtual-table-cell',
+                        'ant-table-cell gm-virtual-table-cell',
                         column.className,
                         {
                           'gm-virtual-table-cell-fixed-left': column.fixed === 'left',

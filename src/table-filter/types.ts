@@ -21,6 +21,9 @@ export interface TableFilterProps
   onCustomSave?: () => void;
   onSearch?: (params: any) => void;
   resetFn?: (params?: any) => void;
+  /** 栅格列宽:每个字段占的 antd Col span(24 栅格制)。默认 6(一行 4 列)。
+   *  外部传值即可统一控制所有字段宽度。 */
+  colSpan?: number;
 }
 
 export interface FieldBaseItem {

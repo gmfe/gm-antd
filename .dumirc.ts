@@ -24,12 +24,34 @@ export default defineConfig({
           children: [
             { title: 'Button 按钮', link: '/components/button' },
             { title: 'Select 选择器', link: '/components/select' },
+            { title: 'TimePicker 时间选择框', link: '/components/time-picker' },
           ],
         },
         {
           title: '布局',
           children: [
             { title: 'ContentWrapper', link: '/components/content-wrapper' },
+          ],
+        },
+        {
+          title: '兼容垫片(antd4→5)',
+          children: [
+            { title: 'Modal 对话框', link: '/components/modal' },
+            { title: 'Drawer 抽屉', link: '/components/drawer' },
+            { title: 'Tooltip 文字提示', link: '/components/tooltip' },
+            { title: 'Popover 气泡卡片', link: '/components/popover' },
+            { title: 'Dropdown 下拉菜单', link: '/components/dropdown' },
+            { title: 'Popconfirm 气泡确认框', link: '/components/popconfirm' },
+            { title: 'Input 输入框', link: '/components/input' },
+            { title: 'InputNumber 数字输入框', link: '/components/input-number' },
+            { title: 'Cascader 级联选择', link: '/components/cascader' },
+            { title: 'TreeSelect 树选择', link: '/components/tree-select' },
+            { title: 'AutoComplete 自动完成', link: '/components/auto-complete' },
+            { title: 'Mentions 提及', link: '/components/mentions' },
+            { title: 'Tabs 标签页', link: '/components/tabs' },
+            { title: 'Menu 导航菜单', link: '/components/menu' },
+            { title: 'message 全局提示', link: '/components/message' },
+            { title: 'DatePicker 日期选择框', link: '/components/date-picker' },
           ],
         },
         {

@@ -1,0 +1,106 @@
+/**
+ * TableFilter 样式(antd5 适配版)
+ *
+ * 背景:迁移 antd5 时丢失了原 index.less,导致 label/组件换行、字段无边框、设置按钮样式异常。
+ * 本文件从 main 分支 index.less 恢复,做两处 antd5 适配:
+ *   1. var(--ant-primary-color) → var(--ant-color-primary, #1677ff)(antd5 token 改名 + fallback)
+ *   2. 保留 antd5 仍存在的内部类名(.ant-select-selection-item / .ant-select-selector)
+ *
+ * 注意:项目 antd5 未开 cssVar 模式,故主色变量加 fallback,保证边框/聚焦色在任意环境可见。
+ */
+
+.table-filter {
+  /* 布局由内部 antd Row/Col + gutter 管理,这里只保留容器上下间距 */
+  padding-top: 12px;
+  padding-bottom: 12px;
+}
+
+.table-filter .labeled {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding-left: 10px;
+  overflow: hidden;
+  border: 1px solid #d6d6d6;
+  border-radius: 4px;
+  cursor: default;
+}
+
+.table-filter .labeled input,
+.table-filter .labeled .ant-select-selection-item,
+.table-filter .labeled .ant-select-selection-placeholder {
+  font-size: 14px;
+}
+
+.table-filter .labeled input,
+.table-filter .labeled .ant-select-selection-item {
+  color: black;
+}
+
+.table-filter .labeled .labeled-group {
+  position: relative;
+}
+
+.table-filter .labeled .labeled-group::after {
+  position: absolute;
+  top: -4px;
+  right: 0;
+  width: 1px;
+  height: 34px;
+  background-color: #d6d6d6;
+  content: '';
+}
+
+.table-filter .labeled .labeled-group .ant-select-selector {
+  padding-left: 0;
+}
+
+.table-filter .labeled-focused {
+  border-color: var(--ant-color-primary, #1677ff) !important;
+  outline: 0;
+  box-shadow: 0 0 0 2px rgba(9, 109, 217, 0.2);
+}
+
+.table-filter .labeled input[type='number'] {
+  appearance: textfield;
+}
+
+.table-filter .labeled input::-webkit-outer-spin-button,
+.table-filter .labeled input::-webkit-inner-spin-button {
+  appearance: none;
+}
+
+.table-filter .labeled.disabled {
+  background-color: #f5f5f5;
+  border-color: #d6d6d6 !important;
+  box-shadow: none !important;
+  cursor: not-allowed !important;
+}
+
+.table-filter .labeled.disabled div {
+  filter: opacity(0.8);
+  pointer-events: none !important;
+}
+
+.table-filter .filter-btn-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  color: rgb(113, 113, 112);
+  border: 1px solid #d6d6d6;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.table-filter .filter-btn-icon:hover {
+  color: var(--ant-color-primary, #1677ff);
+  border-color: var(--ant-color-primary, #1677ff);
+}
+
+.overlay-setting .ant-popover-inner-content {
+  min-width: 210px;
+  padding: 0;
+}

@@ -94,7 +94,7 @@ const CascaderFilter: React.FC<CascaderFilterProps> = ({ className, field }) => 
   };
 
   return (
-    <div onBlurCapture={() => { store.focusedFieldKey = ''; }}>
+    <div style={{ width: '100%' }} onBlurCapture={() => { store.focusedFieldKey = ''; }}>
       {/* antd5 Cascader 的 multiple/displayRender 存在重载泛型, multiple:boolean 会与
           displayRender 单选分支的类型冲突(第三方库类型滞后), 对 Cascader 做类型转换 */}
       <CascaderFC
@@ -124,8 +124,8 @@ const CascaderFilter: React.FC<CascaderFilterProps> = ({ className, field }) => 
         onFocus={() => {
           store.focusedFieldKey = field.key;
         }}
-        onDropdownVisibleChange={(visible: boolean) => {
-          if (visible) refreshSyncOptions();
+        onOpenChange={(open: boolean) => {
+          if (open) refreshSyncOptions();
         }}
         showCheckedStrategy={showCheckedStrategy}
         {...renderDisplayRender()}

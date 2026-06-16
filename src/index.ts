@@ -51,6 +51,7 @@ export { default as useTableTheme } from './table/hooks/useTableTheme';
 export { default as useTableDIY } from './table/hooks/useTableDIY';
 export { default as useTableSelection } from './table/hooks/useTableSelection';
 export { default as useTableVirtual } from './table/hooks/useTableVirtual';
+export { default as useTable } from './table/hooks/useTable';
 
 // 6. Table styles(全局 CSS for ::before overrides)
 import './table/styles/table-hooks.css';
