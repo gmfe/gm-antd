@@ -56,6 +56,8 @@ export { default as useTableResizable } from './table/hooks/useTableResizable';
 export { default as useTableTheme } from './table/hooks/useTableTheme';
 export { default as useTableDIY } from './table/hooks/useTableDIY';
 export { default as useTableSelection } from './table/hooks/useTableSelection';
+// BatchActions: useTableSelection 配套批量操作组件（业务深路径 antd/(lib|es)/table/hooks/useTableSelection/BatchActions）
+export { default as BatchActions } from './table/hooks/useTableSelection/BatchActions';
 export { default as useTableVirtual } from './table/hooks/useTableVirtual';
 export { default as useTable } from './table/hooks/useTable';
 

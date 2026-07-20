@@ -67,6 +67,12 @@ const SHIMS = [
   { path: 'table/hooks/useTableDIY', expr: 'useTableDIY', type: 'named', name: 'useTableDIY' },
   { path: 'table/hooks/useTableTheme', expr: 'useTableTheme', type: 'named', name: 'useTableTheme' },
   { path: 'table/hooks/useTableExpandable', expr: 'useTableExpandable', type: 'named', name: 'useTableExpandable' },
+  // Modal 根 (ERP import modal from 'antd/lib/modal', 用 modal.confirm 等静态方法)
+  { path: 'modal', expr: 'Modal', type: 'default' },
+  // Form 深路径 (ERP import { useWatch } from 'antd/(lib|es)/form/Form', Form 静态成员)
+  { path: 'form/Form', expr: 'Form', type: 'default', members: ['useWatch', 'useFormInstance', 'Item', 'List', 'Provider'] },
+  // BatchActions (gm-antd src/index.ts 顶层补导出, useTableSelection 配套批量操作组件)
+  { path: 'table/hooks/useTableSelection/BatchActions', expr: 'BatchActions', type: 'default' },
 ];
 
 function rmkdir(d) {
@@ -93,20 +99,24 @@ function genCJS(shim) {
   const rel = relToDist(shim.path);
   const chain = accessChain(shim.expr, '_m');
   if (shim.type === 'default') {
+    const members = (shim.members || []).map(mb => `exports.${mb} = _v && _v.${mb};`).join('\n');
     return `"use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-// auto-generated deep-path shim → wrapper top-level export
+// auto-generated deep-path shim → wrapper top-level export${shim.members ? ' (default + namespace members)' : ''}
 var _m = require(${JSON.stringify(rel)});
 var _v = ${chain};
 exports.default = _v;
-module.exports = _v;
+${members}
 `;
   }
-  // named
+  // named (同时 export default, 兼容 default import 写法: import useFormInstance from '...')
   return `"use strict";
-// auto-generated deep-path shim → wrapper top-level export
+Object.defineProperty(exports, "__esModule", { value: true });
+// auto-generated deep-path shim → wrapper top-level export (default + named)
 var _m = require(${JSON.stringify(rel)});
-exports.${shim.name} = ${chain};
+var _v = ${chain};
+exports.default = _v;
+exports.${shim.name} = _v;
 `;
 }
 
@@ -114,15 +124,18 @@ function genESM(shim) {
   const rel = relToDist(shim.path);
   const chain = accessChain(shim.expr, '_m');
   if (shim.type === 'default') {
-    return `// auto-generated deep-path shim → wrapper top-level export
+    const members = (shim.members || []).map(mb => `export const ${mb} = _v && _v.${mb};`).join('\n');
+    return `// auto-generated deep-path shim → wrapper top-level export${shim.members ? ' (default + namespace members)' : ''}
 import * as _m from ${JSON.stringify(rel)};
 var _v = ${chain};
 export { _v as default };
+${members}
 `;
   }
-  return `// auto-generated deep-path shim → wrapper top-level export
+  return `// auto-generated deep-path shim → wrapper top-level export (default + named)
 import * as _m from ${JSON.stringify(rel)};
-export var ${shim.name} = ${chain};
+var _v = ${chain};
+export { _v as default, _v as ${shim.name} };
 `;
 }
 
@@ -130,15 +143,19 @@ function genDTS(shim) {
   const rel = relToDist(shim.path);
   const chain = accessChain(shim.expr, '_m');
   if (shim.type === 'default') {
-    return `// auto-generated deep-path shim types
+    const members = (shim.members || []).map(mb => `export declare const ${mb}: typeof _v.${mb};`).join('\n');
+    return `// auto-generated deep-path shim types${shim.members ? ' (default + namespace members)' : ''}
 import * as _m from ${JSON.stringify(rel)};
 declare const _v: typeof ${chain};
 export { _v as default };
+${members}
 `;
   }
-  return `// auto-generated deep-path shim types
+  return `// auto-generated deep-path shim types (default + named)
 import * as _m from ${JSON.stringify(rel)};
-export declare const ${shim.name}: typeof ${chain};
+declare const _v: typeof ${chain};
+export { _v as default };
+export declare const ${shim.name}: typeof _v;
 `;
 }
 
