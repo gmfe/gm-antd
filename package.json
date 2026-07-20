@@ -1,6 +1,6 @@
 {
   "name": "gm-antd",
-  "version": "1.3.3-beta.7",
+  "version": "1.3.3-beta.9",
   "description": "An enterprise-class UI design language and React components implementation",
   "title": "GM Ant Design",
   "homepage": "https://gmfe.github.io/gm-antd/index-cn",
@@ -13,7 +13,9 @@
     "ant"
   ],
   "files": [
-    "dist"
+    "dist",
+    "lib",
+    "es"
   ],
   "sideEffects": false,
   "main": "dist/index.js",
@@ -41,7 +43,7 @@
     "update_api": "node ./node_modules/gm_api_script/scripts/update_gm_api.js",
     "api:lite": "yarn update_api lite-master; yarn;",
     "build": "yarn build:wrapper",
-    "build:wrapper": "tsup && (tsc --emitDeclarationOnly -p tsconfig.build.json; test -f dist/index.d.ts)",
+    "build:wrapper": "tsup && (tsc --emitDeclarationOnly -p tsconfig.build.json; test -f dist/index.d.ts) && node scripts/gen-deep-path-shim.js",
     "build:wrapper:watch": "tsup --watch",
     "link:app": "bash scripts/link-app.sh link",
     "unlink:app": "bash scripts/link-app.sh unlink",
