@@ -14,16 +14,18 @@ const CompatMenu = React.forwardRef<any, MenuProps>((props, ref) => {
   return <AntMenu ref={ref} {...rest} />;
 });
 
-// 业务常用 <Menu.Item>/<Menu.SubMenu> 作为类型/构造器引用,保留
-(CompatMenu as any).Item = AntMenu.Item;
-(CompatMenu as any).SubMenu = AntMenu.SubMenu;
-(CompatMenu as any).ItemGroup = AntMenu.ItemGroup;
-(CompatMenu as any).Divider = AntMenu.Divider;
+// antd5 移除了 Menu.Item/SubMenu/ItemGroup(改 items API), AntMenu.Item 是 undefined。
+// 用 marker 组件代替: <Menu.Item> 创建元素不崩(render null), menuChildrenToItems 按 displayName 识别转 items。
+// displayName 必须对齐 childrenToItems 的识别名(MenuItem/SubMenu/MenuGroup/MenuDivider)。
+const _menuItemMarker = (name: string) => {
+  const fn = ((props: any) => null) as any;
+  fn.displayName = name;
+  return fn;
+};
+(CompatMenu as any).Item = _menuItemMarker('MenuItem');
+(CompatMenu as any).SubMenu = _menuItemMarker('SubMenu');
+(CompatMenu as any).ItemGroup = _menuItemMarker('MenuGroup');
+(CompatMenu as any).Divider = _menuItemMarker('MenuDivider');
 (CompatMenu as any).displayName = 'GmMenu';
 
-export default CompatMenu as typeof CompatMenu & {
-  Item: typeof AntMenu.Item;
-  SubMenu: typeof AntMenu.SubMenu;
-  ItemGroup: typeof AntMenu.ItemGroup;
-  Divider: typeof AntMenu.Divider;
-};
+export default CompatMenu as any;

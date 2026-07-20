@@ -23,6 +23,51 @@ export interface GmSelectProps<
   isShowCheckedAll?: boolean;
 }
 
+function getSelectChildName(node: React.ReactNode): string | undefined {
+  if (!React.isValidElement(node)) return undefined;
+  const type = node.type as any;
+  return type?.displayName;
+}
+
+function normalizeReactKey(key: React.Key | null): React.Key | undefined {
+  if (key == null) return undefined;
+  const keyString = String(key);
+  if (keyString.startsWith('.$')) return keyString.slice(2);
+  if (keyString.startsWith('.')) return keyString.slice(1);
+  return keyString;
+}
+
+function selectChildrenToOptions(children: React.ReactNode): any[] | undefined {
+  if (children == null) return undefined;
+
+  const nodes = React.Children.toArray(children).filter(React.isValidElement);
+  if (!nodes.length) return undefined;
+
+  return nodes.map((node) => {
+    const { key, props } = node as React.ReactElement<any>;
+    const { children: labelNode, label, value, disabled, ...rest } = props;
+    const childName = getSelectChildName(node);
+    const normalizedKey = normalizeReactKey(key);
+
+    if (childName === 'OptGroup') {
+      return {
+        key: normalizedKey,
+        label,
+        options: selectChildrenToOptions(labelNode) || [],
+        ...rest,
+      };
+    }
+
+    return {
+      key: normalizedKey,
+      value: value !== undefined ? value : normalizedKey,
+      label: label !== undefined ? label : labelNode,
+      disabled,
+      ...rest,
+    };
+  });
+}
+
 function GmSelectInner<
   ValueType = any,
   OptionType extends BaseOptionType | DefaultOptionType = DefaultOptionType,
@@ -50,16 +95,19 @@ function GmSelectInner<
     ...rest
   } = renamed as GmSelectProps<ValueType, OptionType> & { popupRender?: any };
 
-  if (process.env.NODE_ENV !== 'production' && children != null) {
-    // eslint-disable-next-line no-console
-    console.warn('[gm-antd Select] children 形式不被支持, 请使用 options prop。children 已忽略。');
-  }
-
+  const [searchValue, setSearchValue] = React.useState('');
+  const mergedOptions = options || selectChildrenToOptions(children);
   const isMultiple = mode === 'multiple' || mode === 'tags';
   const useCustomRender =
     isMultiple &&
     isRenderDefaultBottom &&
-    !(React.Children.count(children) > 0 || optionFilterProp === 'label');
+    optionFilterProp !== 'label' &&
+    !!mergedOptions;
+
+  const handleSearch = (nextSearchValue: string) => {
+    setSearchValue(nextSearchValue);
+    onSearch?.(nextSearchValue);
+  };
 
   // 直接计算,不使用 useMemo(无外部消费者需要稳定引用)
   const mergedPopupRender = (menu: React.ReactElement) => {
@@ -71,9 +119,12 @@ function GmSelectInner<
         menu={menu}
         value={value}
         onChange={onChange}
-        options={options as any[]}
+        options={mergedOptions as any[]}
         mode={mode}
         fieldNames={fieldNames}
+        searchValue={searchValue}
+        optionFilterProp={optionFilterProp}
+        filterOption={filterOption}
         isRenderDefaultBottom={isRenderDefaultBottom}
         isShowCheckedAll={isShowCheckedAll}
         isShowDeletedSwitch={isShowDeletedSwitch}
@@ -88,12 +139,12 @@ function GmSelectInner<
       value={value}
       onChange={onChange}
       mode={mode}
-      options={options}
+      options={mergedOptions}
       fieldNames={fieldNames}
       popupRender={mergedPopupRender}
       // showSearch 强制 true: 原 GmSelect 设计(GM 增强需要搜索能力)
       showSearch
-      onSearch={onSearch}
+      onSearch={handleSearch}
       filterOption={useCustomRender ? false : filterOption}
     />
   );
@@ -108,12 +159,11 @@ const ForwardedSelect = React.forwardRef(GmSelectInner) as unknown as <
   },
 ) => React.ReactElement;
 
-// 补回 antd Select 静态成员
-(ForwardedSelect as any).Option = AntSelect.Option;
-(ForwardedSelect as any).OptGroup = AntSelect.OptGroup;
+// antd5 移除 Option/OptGroup(改 options API), AntSelect.Option 是 undefined。marker(render null + displayName),
+// 让 TS 不报 + 运行时 null(不崩); ERP 渐进迁移到 options API(GmSelectInner 已忽略 children)。
+const _optMarker = (name: string) => { const fn = (() => null) as any; fn.displayName = name; return fn; };
+(ForwardedSelect as any).Option = _optMarker('Option');
+(ForwardedSelect as any).OptGroup = _optMarker('OptGroup');
 (ForwardedSelect as any).displayName = 'GmSelect';
 
-export default ForwardedSelect as typeof ForwardedSelect & {
-  Option: typeof AntSelect.Option;
-  OptGroup: typeof AntSelect.OptGroup;
-};
+export default ForwardedSelect as any;

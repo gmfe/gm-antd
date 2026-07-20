@@ -60,7 +60,9 @@ export const dropdownItemStyle = (isSelected: boolean, isDisabled: boolean): CSS
   cursor: isDisabled ? 'not-allowed' : 'pointer',
   borderRadius: 4,
   transition: 'background-color 0.2s',
-  ...(isSelected && { color: 'var(--ant-color-primary)' }),
+  ...(isSelected && {
+    color: 'var(--ant-color-primary, var(--gm-color-primary, #0363ff))',
+  }),
   ...(isDisabled && { opacity: 0.5 }),
 });
 
@@ -73,7 +75,7 @@ export const dropdownItemLabelStyle: CSSProperties = {
 };
 
 export const checkIconStyle: CSSProperties = {
-  color: 'var(--ant-color-primary)',
+  color: 'var(--ant-color-primary, var(--gm-color-primary, #0363ff))',
   fontSize: 14,
   marginRight: 8,
 };

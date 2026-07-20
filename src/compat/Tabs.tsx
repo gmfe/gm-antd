@@ -19,10 +19,11 @@ const CompatTabs = React.forwardRef<any, TabsProps>((props, ref) => {
   );
 });
 
-// 业务可能用 Tabs.TabPane 做类型/引用,保留静态成员(antd5 仍导出,仅渲染时警告,但我们已转换)
-(CompatTabs as any).TabPane = AntTabs.TabPane;
+// antd5 移除 TabPane(改 items API), AntTabs.TabPane 是 undefined。用 marker(displayName 'TabPane'),
+// tabChildrenToItems 按 displayName 识别转 items(治本, ERP 149 处 TabPane 零改动)。
+const _tabPaneMarker = (() => null) as any;
+_tabPaneMarker.displayName = 'TabPane';
+(CompatTabs as any).TabPane = _tabPaneMarker;
 (CompatTabs as any).displayName = 'GmTabs';
 
-export default CompatTabs as typeof CompatTabs & {
-  TabPane: typeof AntTabs.TabPane;
-};
+export default CompatTabs as any;

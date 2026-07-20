@@ -103,7 +103,7 @@ const DiyPanel: FC<DiyPanelProps> = ({
           style={{
             display: 'inline-block',
             width: 3,
-            background: 'var(--ant-color-primary)',
+            background: 'var(--ant-color-primary, var(--gm-color-primary, #0363ff))',
             height: 18,
             marginRight: 5,
           }}
