@@ -54,11 +54,20 @@ const SHIMS = [
   { path: 'form/FormItem', expr: 'Form.Item', type: 'default' },
   { path: 'form/FormProvider', expr: 'Form.Provider', type: 'default' },
   // Layout
-  { path: 'layout/layout', expr: 'Layout', type: 'default' },
+  { path: 'layout/layout', expr: 'Layout', type: 'default', members: ['Header', 'Footer', 'Sider', 'Content'] },
   // Table
   { path: 'table/Table', expr: 'Table', type: 'default' },
   // locale (antd4 default export, 转发到 wrapper gmZhCN)
   { path: 'locale/zh_CN', expr: 'gmZhCN', type: 'default' },
+  // DatePicker locale 需要 picker locale(lang/timePickerLocale), 不能转发 ConfigProvider locale。
+  {
+    path: 'date-picker/locale/zh_CN',
+    passthrough: {
+      cjs: 'node_modules/antd/lib/date-picker/locale/zh_CN.js',
+      esm: 'node_modules/antd/es/date-picker/locale/zh_CN.js',
+      types: 'node_modules/antd/es/date-picker/locale/zh_CN',
+    },
+  },
   // hooks (antd4 named export)
   { path: 'form/hooks/useFormInstance', expr: 'Form.useFormInstance', type: 'named', name: 'useFormInstance' },
   { path: 'table/hooks/useTableResizable', expr: 'useTableResizable', type: 'named', name: 'useTableResizable' },
@@ -73,6 +82,11 @@ const SHIMS = [
   { path: 'form/Form', expr: 'Form', type: 'default', members: ['useWatch', 'useFormInstance', 'Item', 'List', 'Provider'] },
   // BatchActions (gm-antd src/index.ts 顶层补导出, useTableSelection 配套批量操作组件)
   { path: 'table/hooks/useTableSelection/BatchActions', expr: 'BatchActions', type: 'default' },
+];
+
+const LESS_SHIMS = [
+  'style/reset_theme.less',
+  'style/reset_component.less',
 ];
 
 function rmkdir(d) {
@@ -90,12 +104,27 @@ function relToDist(p) {
   return '../'.repeat(depth) + 'dist/index.js';
 }
 
+function relToPackagePath(p, target) {
+  const depth = depthOf(p);
+  return '../'.repeat(depth) + target;
+}
+
 // 表达式链 + optional chaining 安全访问: 'Typography.Paragraph' → '_m.Typography?.Paragraph'
 function accessChain(expr, v) {
   return expr.split('.').map((seg, i) => (i === 0 ? `${v}.${seg}` : seg)).join('?.');
 }
 
 function genCJS(shim) {
+  if (shim.passthrough) {
+    const rel = relToPackagePath(shim.path, shim.passthrough.cjs);
+    return `"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+// auto-generated deep-path shim → upstream antd locale
+var _v = require(${JSON.stringify(rel)});
+exports.default = _v.default || _v;
+`;
+  }
+
   const rel = relToDist(shim.path);
   const chain = accessChain(shim.expr, '_m');
   if (shim.type === 'default') {
@@ -121,6 +150,13 @@ exports.${shim.name} = _v;
 }
 
 function genESM(shim) {
+  if (shim.passthrough) {
+    const rel = relToPackagePath(shim.path, shim.passthrough.esm);
+    return `// auto-generated deep-path shim → upstream antd locale
+export { default } from ${JSON.stringify(rel)};
+`;
+  }
+
   const rel = relToDist(shim.path);
   const chain = accessChain(shim.expr, '_m');
   if (shim.type === 'default') {
@@ -140,8 +176,15 @@ export { _v as default, _v as ${shim.name} };
 }
 
 function genDTS(shim) {
+  if (shim.passthrough) {
+    const rel = relToPackagePath(shim.path, shim.passthrough.types);
+    return `// auto-generated deep-path shim types → upstream antd locale
+export { default } from ${JSON.stringify(rel)};
+`;
+  }
+
   const rel = relToDist(shim.path);
-  const chain = accessChain(shim.expr, '_m');
+  const chain = `_m.${shim.expr}`;
   if (shim.type === 'default') {
     const members = (shim.members || []).map(mb => `export declare const ${mb}: typeof _v.${mb};`).join('\n');
     return `// auto-generated deep-path shim types${shim.members ? ' (default + namespace members)' : ''}
@@ -168,6 +211,17 @@ function writeFile(baseDir, shim, gen) {
   fs.writeFileSync(dp, genDTS(shim));
 }
 
+function writeLessShims(baseDir) {
+  for (const lessPath of LESS_SHIMS) {
+    const fp = path.join(baseDir, lessPath);
+    fs.mkdirSync(path.dirname(fp), { recursive: true });
+    fs.writeFileSync(
+      fp,
+      `/* auto-generated compatibility shim: legacy antd4 reset less is replaced by GMGlobalStyle. */\n`,
+    );
+  }
+}
+
 function main() {
   rmkdir(LIB_DIR);
   rmkdir(ES_DIR);
@@ -177,7 +231,10 @@ function main() {
     writeFile(ES_DIR, shim, genESM);
     n++;
   }
+  writeLessShims(LIB_DIR);
+  writeLessShims(ES_DIR);
   console.log(`[gen-deep-path-shim] generated ${n} shims × (lib + es + d.ts) = ${n * 4} files`);
+  console.log(`[gen-deep-path-shim] generated ${LESS_SHIMS.length} less shims × (lib + es)`);
   console.log(`[gen-deep-path-shim] lib/ → ${LIB_DIR}`);
   console.log(`[gen-deep-path-shim] es/  → ${ES_DIR}`);
 }

@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import { Checkbox, Switch, Space } from 'antd';
 import CheckOutlined from '@ant-design/icons/CheckOutlined';
 import { useSelectAll } from './useSelectAll';
@@ -29,6 +29,7 @@ interface DropdownRenderProps {
   isShowCheckedAll?: boolean;
   isShowDeletedSwitch?: boolean;
   prefixCls?: string;
+  searchValue?: string;
   children?: React.ReactNode;
   optionFilterProp?: string;
   onSearch?: (value: string) => void;
@@ -42,14 +43,14 @@ export default function DropdownRender({
   options,
   mode,
   fieldNames,
+  searchValue = '',
   isRenderDefaultBottom = true,
   isShowCheckedAll = true,
   isShowDeletedSwitch = false,
   children,
   optionFilterProp,
+  filterOption,
 }: DropdownRenderProps) {
-  const [searchValue, setSearchValue] = useState('');
-
   const isMultiple = mode === 'multiple' || mode === 'tags';
   const labelFieldName = fieldNames?.label || 'label';
   const valueFieldName = fieldNames?.value || 'value';
@@ -61,10 +62,48 @@ export default function DropdownRender({
     fieldNames,
   });
 
+  const searchedOptions = useMemo(() => {
+    if (!filteredOptions || !searchValue) return filteredOptions;
+
+    const lowerSearchValue = String(searchValue).toLowerCase();
+    const matchOption = (option: any) => {
+      if (typeof filterOption === 'function') {
+        return filterOption(searchValue, option);
+      }
+
+      const searchFieldName = optionFilterProp || labelFieldName;
+      const target = option[searchFieldName] ?? option[labelFieldName] ?? option[valueFieldName];
+      if (typeof target === 'string' || typeof target === 'number') {
+        return String(target).toLowerCase().includes(lowerSearchValue);
+      }
+
+      return false;
+    };
+
+    return filteredOptions
+      .map((option: any) => {
+        if (option[optionsFieldName] && Array.isArray(option[optionsFieldName])) {
+          const childrenOptions = option[optionsFieldName].filter(matchOption);
+          return childrenOptions.length ? { ...option, [optionsFieldName]: childrenOptions } : null;
+        }
+
+        return matchOption(option) ? option : null;
+      })
+      .filter(Boolean) as any[];
+  }, [
+    filterOption,
+    filteredOptions,
+    labelFieldName,
+    optionFilterProp,
+    optionsFieldName,
+    searchValue,
+    valueFieldName,
+  ]);
+
   const { isAllSelected, canSelectCount, handleSelectAll, flattenOptions } = useSelectAll({
     value,
     onChange,
-    options: filteredOptions,
+    options: searchedOptions,
     mode,
     fieldNames,
     isRenderDefaultBottom,
@@ -76,7 +115,7 @@ export default function DropdownRender({
   );
 
   const selectedOptions = useMemo(() => {
-    if (!options) return [];
+    if (!filteredOptions) return [];
     const allFlat: any[] = [];
     const process = (opts: any[]) => {
       for (const opt of opts) {
@@ -87,12 +126,12 @@ export default function DropdownRender({
         }
       }
     };
-    process(options);
+    process(filteredOptions);
     return allFlat;
-  }, [options, valueArray, optionsFieldName, valueFieldName]);
+  }, [filteredOptions, valueArray, optionsFieldName, valueFieldName]);
 
   const unselectedOptions = useMemo(() => {
-    if (!filteredOptions || searchValue) return filteredOptions;
+    if (!searchedOptions || searchValue) return searchedOptions;
     const selectedValues = selectedOptions.map((item: any) => item[valueFieldName]);
 
     const filterUnselected = (opts: any[]): any[] => {
@@ -113,8 +152,8 @@ export default function DropdownRender({
         .filter(Boolean) as any[];
     };
 
-    return filterUnselected(filteredOptions);
-  }, [filteredOptions, searchValue, selectedOptions, valueFieldName, optionsFieldName]);
+    return filterUnselected(searchedOptions);
+  }, [searchedOptions, searchValue, selectedOptions, valueFieldName, optionsFieldName]);
 
   const handleItemClick = (itemValue: any, item: any) => {
     const isInValue = valueArray.includes(itemValue);

@@ -60,7 +60,7 @@ const TableBatchActions: FC<TableBatchActionsProps> = ({
             <Space>
               <div>
                 {tableLocale?.selected}
-                <span style={{ color: 'var(--ant-color-primary)' }}>
+                <span style={{ color: 'var(--ant-color-primary, var(--gm-color-primary, #0363ff))' }}>
                   {isSelectedTotal ? totalCount : selectedRowKeys.length}{' '}
                 </span>
                 {tableLocale?.project}

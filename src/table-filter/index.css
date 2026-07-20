@@ -3,7 +3,8 @@
  *
  * 背景:迁移 antd5 时丢失了原 index.less,导致 label/组件换行、字段无边框、设置按钮样式异常。
  * 本文件从 main 分支 index.less 恢复,做两处 antd5 适配:
- *   1. var(--ant-primary-color) → var(--ant-color-primary, #1677ff)(antd5 token 改名 + fallback)
+ *   1. var(--ant-primary-color) → var(--ant-color-primary, var(--gm-color-primary, #0363ff))
+ *      (antd5 token 改名 + GM theme fallback)
  *   2. 保留 antd5 仍存在的内部类名(.ant-select-selection-item / .ant-select-selector)
  *
  * 注意:项目 antd5 未开 cssVar 模式,故主色变量加 fallback,保证边框/聚焦色在任意环境可见。
@@ -57,9 +58,14 @@
 }
 
 .table-filter .labeled-focused {
-  border-color: var(--ant-color-primary, #1677ff) !important;
+  border-color: var(--ant-color-primary, var(--gm-color-primary, #0363ff)) !important;
   outline: 0;
-  box-shadow: 0 0 0 2px rgba(9, 109, 217, 0.2);
+  box-shadow: 0 0 0 2px var(--ant-control-outline, rgba(3, 99, 255, 0.2));
+}
+
+.table-filter .labeled:focus,
+.table-filter .labeled:focus-visible {
+  outline: 0;
 }
 
 .table-filter .labeled input[type='number'] {
@@ -96,8 +102,13 @@
 }
 
 .table-filter .filter-btn-icon:hover {
-  color: var(--ant-color-primary, #1677ff);
-  border-color: var(--ant-color-primary, #1677ff);
+  color: var(--ant-color-primary, var(--gm-color-primary, #0363ff));
+  border-color: var(--ant-color-primary, var(--gm-color-primary, #0363ff));
+}
+
+.table-filter .filter-btn-icon:focus,
+.table-filter .filter-btn-icon:focus-visible {
+  outline: 0;
 }
 
 .overlay-setting .ant-popover-inner-content {

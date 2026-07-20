@@ -42,6 +42,9 @@ export function withCompat<P extends object>(
     const compatProps = applyCompatProps(props as Record<string, any>, options) as P;
     return React.createElement(Component, { ...compatProps, ref });
   });
+  // 保留原组件静态成员(Dropdown.Button / Input.TextArea / Cascader.SHOW_ALL / TreeSelect.SHOW_ALL 等)。
+  // forwardRef 包装默认会丢, 这里 Object.assign 拷回(运行时) + as typeof Component 保留类型。
+  Object.assign(Wrapped, Component);
   (Wrapped as any).displayName = `withCompat(${(Component as any).displayName || (Component as any).name || 'Component'})`;
-  return Wrapped;
+  return Wrapped as unknown as typeof Component;
 }

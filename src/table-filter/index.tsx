@@ -165,8 +165,14 @@ function Component(options: TableFilterProps) {
                       justifyContent: 'center',
                       width: 34,
                       height: 34,
-                      color: showSetting ? 'var(--ant-color-primary)' : 'rgb(113, 113, 112)',
-                      border: `1px solid ${showSetting ? 'var(--ant-color-primary)' : '#d6d6d6'}`,
+                      color: showSetting
+                        ? 'var(--ant-color-primary, var(--gm-color-primary, #0363ff))'
+                        : 'rgb(113, 113, 112)',
+                      border: `1px solid ${
+                        showSetting
+                          ? 'var(--ant-color-primary, var(--gm-color-primary, #0363ff))'
+                          : '#d6d6d6'
+                      }`,
                       borderRadius: 4,
                       cursor: 'pointer',
                     }}

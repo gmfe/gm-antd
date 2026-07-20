@@ -12,7 +12,7 @@ const InfoField: React.FC<InfoFieldProps> = ({ className, style, label, value })
     <span style={{ marginRight: 10, color: 'black', fontWeight: 'bold' }}>
       {label}
     </span>
-    <span style={{ color: 'var(--ant-color-primary)' }}>
+    <span style={{ color: 'var(--ant-color-primary, var(--gm-color-primary, #0363ff))' }}>
       {value}
     </span>
   </div>
