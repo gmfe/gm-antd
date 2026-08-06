@@ -11,6 +11,8 @@ function InternalTable<RecordType extends object = any>(
     isResizable = true,
     columns,
     components,
+    dataSource,
+    scroll,
     ...rest
   } = props;
 
@@ -20,11 +22,18 @@ function InternalTable<RecordType extends object = any>(
     components,
   );
 
+  // 空数据时不固定表头：rc-table 的 FixedHolder 在固定表头模式下会给表头追加一个 scrollbar
+  // 占位列，但空数据时 colgroup 缺少该列的宽度定义（isColGroupEmpty），导致该占位列吸收剩余
+  // 宽度撑成大块空白列。空数据时本就无需垂直滚动固定表头，故置空 y 规避。
+  const isEmpty = !dataSource || dataSource.length === 0;
+  const mergedScroll = isEmpty && scroll ? { ...scroll, y: undefined } : scroll;
+
   return (
     <AntTable<RecordType>
       ref={ref as any}
       columns={shouldResize ? result.columns : columns}
       components={shouldResize ? result.components : components}
+      scroll={mergedScroll}
       {...rest}
     />
   );
