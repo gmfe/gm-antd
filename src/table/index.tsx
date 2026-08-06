@@ -33,6 +33,7 @@ function InternalTable<RecordType extends object = any>(
       ref={ref as any}
       columns={shouldResize ? result.columns : columns}
       components={shouldResize ? result.components : components}
+      dataSource={dataSource}
       scroll={mergedScroll}
       {...rest}
     />

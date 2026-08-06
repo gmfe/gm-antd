@@ -47,11 +47,17 @@ function CompatSingle(props: CompatDatePickerProps, ref: React.Ref<any>) {
     };
   }
 
+  // 稳定 dayjs value 引用，避免每次 render 新实例干扰 rc-picker 内部状态
+  const dayjsValue = React.useMemo(
+    () => (value ? (momentToDayjs(value) ?? undefined) : undefined),
+    [value?.valueOf?.() ?? null],
+  );
+
   return (
     <AntDatePicker
       ref={ref}
       {...(transformBordered(rest as any) as AntDatePickerProps)}
-      value={value ? (momentToDayjs(value) ?? undefined) : undefined}
+      value={dayjsValue}
       defaultValue={defaultValue ? (momentToDayjs(defaultValue) ?? undefined) : undefined}
       defaultPickerValue={defaultPickerValue ? (momentToDayjs(defaultPickerValue) ?? undefined) : undefined}
       pickerValue={pickerValue ? (momentToDayjs(pickerValue) ?? undefined) : undefined}
@@ -77,11 +83,17 @@ export interface CompatRangePickerProps
 
 function CompatRange(props: CompatRangePickerProps, ref: React.Ref<any>) {
   const { value, defaultValue, defaultPickerValue, onChange, disabledDate, ...rest } = props;
+  // 稳定 dayjs value 引用：仅当 moment 值的 timestamp 变化时才重新转换，
+  // 避免每次 render 新建 dayjs 实例导致 rc-picker 内部 selectedValue 被重置、选择交互错乱
+  const dayjsValue = React.useMemo(
+    () => momentTupleToDayjs(value as any) ?? undefined,
+    [value?.[0]?.valueOf?.() ?? null, value?.[1]?.valueOf?.() ?? null],
+  );
   return (
     <AntDatePicker.RangePicker
       ref={ref}
       {...(transformBordered(rest as any) as AntRangePickerProps)}
-      value={momentTupleToDayjs(value as any) ?? undefined}
+      value={dayjsValue}
       defaultValue={momentTupleToDayjs(defaultValue as any) ?? undefined}
       defaultPickerValue={momentTupleToDayjs(defaultPickerValue as any) ?? undefined}
       disabledDate={disabledDate ? (d: Dayjs) => disabledDate(dayjsToMoment(d)!) : undefined}
