@@ -57,6 +57,11 @@ const SHIMS = [
   { path: 'layout/layout', expr: 'Layout', type: 'default', members: ['Header', 'Footer', 'Sider', 'Content'] },
   // Table
   { path: 'table/Table', expr: 'Table', type: 'default' },
+  // Table 深路径根 (antd/lib/table / antd/es/table): 消费方 ~130 处从这里导入
+  // ColumnsType/ColumnType/TableProps 等类型(antd4 习惯写法)。代理到真实 antd5 对应模块,
+  // 保持原深路径的命名类型导出可解析,业务零改动。
+  { path: 'table', proxy: { cjs: 'node_modules/antd/lib/table', esm: 'node_modules/antd/es/table', types: 'node_modules/antd/lib/table' } },
+  { path: 'table/interface', proxy: { cjs: 'node_modules/antd/lib/table/interface', esm: 'node_modules/antd/es/table/interface', types: 'node_modules/antd/lib/table/interface' } },
   // locale (antd4 default export, 转发到 wrapper gmZhCN)
   { path: 'locale/zh_CN', expr: 'gmZhCN', type: 'default' },
   // DatePicker locale 需要 picker locale(lang/timePickerLocale), 不能转发 ConfigProvider locale。
@@ -115,6 +120,13 @@ function accessChain(expr, v) {
 }
 
 function genCJS(shim) {
+  if (shim.proxy) {
+    const rel = relToPackagePath(shim.path, shim.proxy.cjs);
+    return `"use strict";
+// auto-generated deep-path proxy → upstream antd module (full re-export)
+module.exports = require(${JSON.stringify(rel)});
+`;
+  }
   if (shim.passthrough) {
     const rel = relToPackagePath(shim.path, shim.passthrough.cjs);
     return `"use strict";
@@ -150,6 +162,13 @@ exports.${shim.name} = _v;
 }
 
 function genESM(shim) {
+  if (shim.proxy) {
+    const rel = relToPackagePath(shim.path, shim.proxy.esm);
+    return `// auto-generated deep-path proxy → upstream antd module (full re-export)
+export * from ${JSON.stringify(rel)};
+export { default } from ${JSON.stringify(rel)};
+`;
+  }
   if (shim.passthrough) {
     const rel = relToPackagePath(shim.path, shim.passthrough.esm);
     return `// auto-generated deep-path shim → upstream antd locale
@@ -176,6 +195,13 @@ export { _v as default, _v as ${shim.name} };
 }
 
 function genDTS(shim) {
+  if (shim.proxy) {
+    const rel = relToPackagePath(shim.path, shim.proxy.types);
+    return `// auto-generated deep-path proxy types → upstream antd module (full re-export)
+export * from ${JSON.stringify(rel)};
+export { default } from ${JSON.stringify(rel)};
+`;
+  }
   if (shim.passthrough) {
     const rel = relToPackagePath(shim.path, shim.passthrough.types);
     return `// auto-generated deep-path shim types → upstream antd locale
