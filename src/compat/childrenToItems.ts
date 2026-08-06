@@ -25,12 +25,26 @@ function isAnyMenu(node: React.ReactNode): boolean {
 }
 
 /**
+ * 收集 children 为扁平数组。
+ * 注意:不能用 React.Children.toArray —— 它会给 key 加前缀(如 '0' -> '.$0'),
+ * 导致转出的 item.key 与外部受控的 activeKey/selectedKeys 严格相等判断失败
+ * (表现为 Tabs 初始不高亮、Menu 默认不选中,点击后才恢复)。forEach 不改写 key。
+ */
+function collectChildren(children: React.ReactNode): React.ReactNode[] {
+  const arr: React.ReactNode[] = [];
+  React.Children.forEach(children, child => {
+    arr.push(child);
+  });
+  return arr;
+}
+
+/**
  * 把 <Tabs.TabPane> children 转成 antd 5 Tabs 的 items[]。
  * 仅当存在 TabPane 元素时转换;否则返回 undefined(交还 antd 5 处理,可能仅警告)。
  */
 export function tabChildrenToItems(children: React.ReactNode): any[] | undefined {
   if (children == null) return undefined;
-  const arr = React.Children.toArray(children).filter(Boolean);
+  const arr = collectChildren(children).filter(Boolean);
   if (!arr.length) return undefined;
   if (!arr.some(isTabPane)) return undefined;
   return arr.map(node => {
@@ -47,7 +61,7 @@ export function tabChildrenToItems(children: React.ReactNode): any[] | undefined
  */
 export function menuChildrenToItems(children: React.ReactNode): any[] | undefined {
   if (children == null) return undefined;
-  const arr = React.Children.toArray(children).filter(Boolean);
+  const arr = collectChildren(children).filter(Boolean);
   if (!arr.length) return undefined;
   if (!arr.some(isAnyMenu)) return undefined;
   return arr.map(node => {
