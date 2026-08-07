@@ -60,6 +60,16 @@ const DateFilter: React.FC<DateFilterProps> = ({ field }) => {
         }
 
         const commonProps = pick(field, ['disabledDate', 'showTime', 'allowClear', 'onCalendarChange']);
+        const value = store.get(field);
+        // 稳定 dayjs value 引用：仅当 moment 值的 timestamp 变化时才重新转换，
+        // 避免每次 render 新建 dayjs 数组导致 rc-picker 在选择过程中（如 input blur 触发
+        // store.focusedFieldKey 变化引起 re-render）把内部 calendarValue 重置回受控 value，
+        // 表现为「单击日期没选上、需要双击」。field.range 对单实例恒定，分支内调用 Hook 安全。
+        const dayjsValue = React.useMemo(
+          () => (momentTupleToDayjs(value as any) as any) ?? undefined,
+          // eslint-disable-next-line react-hooks/exhaustive-deps
+          [value?.[0]?.valueOf?.() ?? null, value?.[1]?.valueOf?.() ?? null],
+        );
         const defaultRanges: FieldDateRangeItem['ranges'] = {
           [tableFilterLocale?.today || '今天']: [dayjs().startOf('day'), dayjs().endOf('day')],
           [tableFilterLocale?.yesterday || '昨天']: [
@@ -75,12 +85,11 @@ const DateFilter: React.FC<DateFilterProps> = ({ field }) => {
             dayjs().endOf('day'),
           ],
         };
-        const value = store.get(field);
         return (
           <RangePicker
             variant="borderless"
             ranges={field.ranges ?? defaultRanges}
-            value={(momentTupleToDayjs(value as any) as any) ?? undefined}
+            value={dayjsValue}
             onChange={(moments: any) => {
               calendarDates.current = moments;
               if (moments?.[1])
@@ -122,5 +131,4 @@ const DateFilter: React.FC<DateFilterProps> = ({ field }) => {
     </Observer>
   );
 };
-
 export default observer(DateFilter);

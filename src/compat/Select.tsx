@@ -90,12 +90,15 @@ function GmSelectInner<
     popupRender: customPopupRender, // rename 后已从 dropdownRender 变为 popupRender
     children,
     onSearch,
+    onOpenChange,
+    searchValue: controlledSearchValue,
     optionFilterProp,
     filterOption,
     ...rest
   } = renamed as GmSelectProps<ValueType, OptionType> & { popupRender?: any };
 
-  const [searchValue, setSearchValue] = React.useState('');
+  const [innerSearchValue, setInnerSearchValue] = React.useState('');
+  const searchValue = controlledSearchValue ?? innerSearchValue;
   const mergedOptions = options || selectChildrenToOptions(children);
   const isMultiple = mode === 'multiple' || mode === 'tags';
   const useCustomRender =
@@ -105,8 +108,19 @@ function GmSelectInner<
     !!mergedOptions;
 
   const handleSearch = (nextSearchValue: string) => {
-    setSearchValue(nextSearchValue);
+    if (controlledSearchValue === undefined) {
+      setInnerSearchValue(nextSearchValue);
+    }
     onSearch?.(nextSearchValue);
+  };
+
+  const handleOpenChange = (open: boolean) => {
+    // antd5 多选下拉关闭时会保留搜索词，导致再次打开仍只展示上次过滤结果。
+    // GmSelect 统一在关闭时恢复完整选项，与原组件交互保持一致。
+    if (!open && searchValue) {
+      handleSearch('');
+    }
+    onOpenChange?.(open);
   };
 
   // 直接计算,不使用 useMemo(无外部消费者需要稳定引用)
@@ -144,7 +158,9 @@ function GmSelectInner<
       popupRender={mergedPopupRender}
       // showSearch 强制 true: 原 GmSelect 设计(GM 增强需要搜索能力)
       showSearch
+      searchValue={searchValue}
       onSearch={handleSearch}
+      onOpenChange={handleOpenChange}
       filterOption={useCustomRender ? false : filterOption}
     />
   );

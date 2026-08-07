@@ -143,7 +143,9 @@ const SelectFilter: React.FC<SelectFilterProps> = ({ className, field }) => {
           }
         }}
         onSearch={val => {
-          setSearchValue(val?.trim());
+          const nextSearchValue = val?.trim() || '';
+          searchValueRef.current = nextSearchValue;
+          setSearchValue(nextSearchValue);
           if (typeof originOptions === 'function' || remote) {
             fetch();
           }
