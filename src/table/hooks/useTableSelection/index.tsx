@@ -6,6 +6,10 @@ import classNames from 'classnames';
 import { Checkbox, theme } from 'antd';
 import type { TableBatchActionsProps } from './BatchActions';
 import TableBatchActions from './BatchActions';
+// 批量操作按钮此前渲染为原生 <button> + data-type/data-ghost 属性, 依赖配套 CSS 呈现样式,
+// 但 antd5 迁移后该 CSS 缺失, 导致批量按钮退化为浏览器默认按钮外观。
+// 改为直接使用 gm Button, 复用统一的按钮样式体系。
+import Button from '../../../button';
 
 export interface UseTableSelectionOptions<
   DataType extends { [key: string]: any } = any,
@@ -167,8 +171,9 @@ function useTableSelection<DataType extends { [key: string]: any }>(
       const hasChildren = !!record[childrenColumnName];
       setSelected(selected => {
         let res: Array<string | number> = [];
+        // 与 legacy 对齐：禁用的行不可选中；此前误写为 !disabled 导致正常行永远加不进去
         const add = (record: DataType) => {
-          if (!disabled(record)) return;
+          if (disabled(record)) return;
           res.push(record[keyName]);
         };
         switch (mode) {
@@ -348,7 +353,9 @@ function useTableSelection<DataType extends { [key: string]: any }>(
         type = 'primary',
         ghost = true,
         ...rest
-      }) => <button {...(rest as any)} data-size={size} data-type={type} data-ghost={ghost} />;
+      }) => (
+        <Button size={size} type={type} ghost={ghost} {...(rest as any)} />
+      );
       fc.Button = ActionButton;
 
       fc.height = 52;
