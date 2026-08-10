@@ -161,6 +161,9 @@ function GmSelectInner<
       searchValue={searchValue}
       onSearch={handleSearch}
       onOpenChange={handleOpenChange}
+      // 透传 optionFilterProp: 单选/未走自定义渲染时由底层 rc-select 按 label 过滤,
+      // 否则 antd5 默认按 value(id) 过滤,导致"按 id 搜索"的问题
+      optionFilterProp={optionFilterProp}
       filterOption={useCustomRender ? false : filterOption}
     />
   );
