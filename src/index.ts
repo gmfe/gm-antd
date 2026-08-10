@@ -40,6 +40,8 @@ export type { CompatDatePickerProps as DatePickerProps } from './compat';
 // 3. GM 增强组件
 export { default as Button } from './button';
 export { default as Table } from './table';
+// 3b. Upload: 给 antd5 原生 Upload 补回旧 gm-pc 的 Upload.open 命令式弹窗 API
+export { Upload } from './upload';
 
 // 4. 自定义组件
 export { default as Icon } from './icon';
