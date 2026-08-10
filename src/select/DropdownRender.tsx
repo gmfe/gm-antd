@@ -64,6 +64,9 @@ export default function DropdownRender({
 
   const searchedOptions = useMemo(() => {
     if (!filteredOptions || !searchValue) return filteredOptions;
+    // filterOption === false 表示调用方自行过滤(典型场景:远程搜索,options 已是服务端过滤结果),
+    // 本地不再二次过滤,与 antd 原生语义保持一致;否则会把 JSX label 等无法匹配的选项全部滤掉
+    if (filterOption === false) return filteredOptions;
 
     const lowerSearchValue = String(searchValue).toLowerCase();
     const matchOption = (option: any) => {
