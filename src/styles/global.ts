@@ -281,6 +281,15 @@ html {
   border-color: var(--ant-color-primary, var(--ant-primary-color, var(--gm-color-primary, #0363ff)));
   box-shadow: 0 0 0 2px var(--ant-control-outline, rgba(3, 99, 255, 0.16));
 }
+
+/* Select/Cascader/TreeSelect(共用 .ant-select 根节点)作为 flex item 时,min-width:auto 会让
+   自身宽度被内容(tag)撑大;maxTagCount=responsive 的 rc-overflow 又随容器宽度反复重算,
+   形成"tag 显示→撑宽→重算→tag 收起→缩回→重算"的反馈循环,导致选中项高频闪动(60fps)。
+   统一 min-width: 0 使组件宽度只由布局决定、不被内容顶开,打断该循环。
+   对非 flex 场景 min-width:auto 本就等效 0,无副作用。 */
+.ant-select {
+  min-width: 0;
+}
 `;
 
 const GM_GLOBAL_STYLE_ATTR = 'data-gm-antd';
