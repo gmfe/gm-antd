@@ -117,8 +117,13 @@ function GmSelectInner<
   const handleOpenChange = (open: boolean) => {
     // antd5 多选下拉关闭时会保留搜索词，导致再次打开仍只展示上次过滤结果。
     // GmSelect 统一在关闭时恢复完整选项，与原组件交互保持一致。
+    // 清空动作必须延迟到宏任务: 选中选项时 rc-select 在同一事件批次内先更新 value
+    // 再触发 onOpenChange(false)，若同步 onSearch('')，业务方会在 value 完成渲染前
+    // 清掉 options，rc-select 的 label 缓存(useCache)来不及建立，回显退化为原始 value。
     if (!open && searchValue) {
-      handleSearch('');
+      setTimeout(() => {
+        handleSearch('');
+      });
     }
     onOpenChange?.(open);
   };

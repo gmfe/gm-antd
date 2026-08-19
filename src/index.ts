@@ -27,6 +27,7 @@ export {
   Tabs,
   Menu,
   DatePicker,
+  TimePicker,
 } from './compat';
 // 2b. 加宽后的 props 类型(同名 export type 覆盖 export * 的 antd 类型)
 export type { ModalProps, DrawerProps, TooltipProps, PopoverProps, DropdownProps, PopconfirmProps } from './compat';
@@ -36,6 +37,8 @@ export type { GmSelectProps } from './compat';
 export type { GmSelectProps as SelectProps } from './compat'; // 加宽版 SelectProps 覆盖 antd
 export type { TabsProps, MenuProps } from './compat';
 export type { CompatDatePickerProps as DatePickerProps } from './compat';
+export type { CompatTimePickerProps as TimePickerProps } from './compat';
+export type { CompatTimeRangePickerProps as TimeRangePickerProps } from './compat';
 
 // 3. GM 增强组件
 export { default as Button } from './button';
