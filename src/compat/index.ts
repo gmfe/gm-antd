@@ -33,3 +33,5 @@ export { default as Menu } from './Menu';
 export type { MenuProps } from './Menu';
 export { default as DatePicker } from './DatePicker';
 export type { CompatDatePickerProps } from './DatePicker';
+export { default as TimePicker } from './TimePicker';
+export type { CompatTimePickerProps, CompatTimeRangePickerProps } from './TimePicker';

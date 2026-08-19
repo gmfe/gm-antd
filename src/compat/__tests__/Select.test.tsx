@@ -1,5 +1,5 @@
 import React from 'react';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import Select from '../Select';
 
 jest.mock('antd', () => {
@@ -20,7 +20,7 @@ jest.mock('antd', () => {
 });
 
 describe('GmSelect', () => {
-  it('关闭下拉时清空搜索词并通知外部', () => {
+  it('关闭下拉时延迟到宏任务再清空搜索词并通知外部', async () => {
     const onSearch = jest.fn();
     const onOpenChange = jest.fn();
 
@@ -37,9 +37,15 @@ describe('GmSelect', () => {
     expect(screen.getByTestId('search-value').textContent).toBe('未');
 
     fireEvent.click(screen.getByRole('button', { name: '关闭下拉' }));
-    expect(screen.getByTestId('search-value').textContent).toBe('');
-    expect(onSearch).toHaveBeenNthCalledWith(1, '未');
-    expect(onSearch).toHaveBeenNthCalledWith(2, '');
+    // onOpenChange 同步触发，但清空搜索词延迟到当前事件批次之后，
+    // 让选中 value 先带着完整 options 完成一次渲染(rc-select label 缓存建立)
     expect(onOpenChange).toHaveBeenCalledWith(false);
+    expect(onSearch).toHaveBeenCalledTimes(1);
+    expect(screen.getByTestId('search-value').textContent).toBe('未');
+
+    await waitFor(() =>
+      expect(onSearch).toHaveBeenNthCalledWith(2, ''),
+    );
+    expect(screen.getByTestId('search-value').textContent).toBe('');
   });
 });
