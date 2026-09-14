@@ -20,15 +20,28 @@ const options = [
 export default () => {
   const [value, setValue] = useState<string[]>([]);
   return (
-    <Select
-      mode="multiple"
-      options={options}
-      value={value}
-      onChange={setValue}
-      placeholder="多选(下拉底部有全选 / 过滤已删除)"
-      isShowCheckedAll
-      isShowDeletedSwitch
-      style={{ width: 320 }}
-    />
+    <>
+      <Select
+        mode="multiple"
+        options={options}
+        value={value}
+        onChange={setValue}
+        placeholder="多选(下拉底部有全选 / 过滤已删除)"
+        isShowCheckedAll
+        isShowDeletedSwitch
+        style={{ width: 320 }}
+      />
+      {/* 回归用例:窄触发器(<250px)时下拉不应被裁剪,gm-select-dropdown 兜底 min-width 250 */}
+      <div style={{ marginTop: 16 }}>
+        <Select
+          mode="multiple"
+          options={options}
+          value={value}
+          onChange={setValue}
+          placeholder="窄触发器(下拉仍应 ≥250px)"
+          style={{ width: 120 }}
+        />
+      </div>
+    </>
   );
 };

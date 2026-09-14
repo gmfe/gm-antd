@@ -88,6 +88,7 @@ function GmSelectInner<
     onChange,
     fieldNames,
     popupRender: customPopupRender, // rename 后已从 dropdownRender 变为 popupRender
+    popupClassName,
     children,
     onSearch,
     onOpenChange,
@@ -161,6 +162,10 @@ function GmSelectInner<
       options={mergedOptions}
       fieldNames={fieldNames}
       popupRender={mergedPopupRender}
+      // 自定义下拉(DropdownRender)时挂 gm-select-dropdown 类:
+      // globalCSS 以 min-width 250px 兜底,避免窄触发器 + matchWidth 时
+      // 内容(minWidth 250)被 dropdown 的 overflow:hidden 裁剪。
+      popupClassName={useCustomRender ? `gm-select-dropdown ${popupClassName || ''}` : popupClassName}
       // showSearch 强制 true: 原 GmSelect 设计(GM 增强需要搜索能力)
       showSearch
       searchValue={searchValue}
