@@ -169,6 +169,10 @@ export default function DropdownRender({
     onChange?.(newValue, item);
   };
 
+  // 列表项类名: hover 高亮规则在 styles/global.ts(:hover 伪类无法用 inline style 表达)
+  const itemClassName = (isDisabled: boolean) =>
+    isDisabled ? 'gm-select-dropdown-item gm-select-dropdown-item-disabled' : 'gm-select-dropdown-item';
+
   const renderItem = (option: any, index: number) => {
     const optVal = option[valueFieldName];
     const isSelected = valueArray.includes(optVal);
@@ -185,6 +189,7 @@ export default function DropdownRender({
               return (
                 <div
                   key={child.key || child[valueFieldName] || childIndex}
+                  className={itemClassName(childDisabled)}
                   style={dropdownItemStyle(childSelected, childDisabled)}
                   onClick={() => {
                     if (childDisabled) return;
@@ -204,6 +209,7 @@ export default function DropdownRender({
     return (
       <div
         key={option.key || optVal || index}
+        className={itemClassName(isDisabled)}
         style={dropdownItemStyle(isSelected, isDisabled)}
         onClick={() => {
           if (isDisabled) return;
@@ -237,6 +243,7 @@ export default function DropdownRender({
                 return (
                   <div
                     key={item.key || item[valueFieldName] || index}
+                    className={itemClassName(!!item.disabled)}
                     style={dropdownItemStyle(isSelected, !!item.disabled)}
                     onClick={() => {
                       if (item.disabled) return;

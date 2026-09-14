@@ -130,11 +130,8 @@ html {
   border-top: 1px solid #f0f0f0;
   border-radius: 0 0 8px 8px;
 }
-.ant-modal .ant-modal-close-icon {
-  width: 16px;
-  height: 16px;
-  font-size: 12px;
-}
+/* 不再强制 .ant-modal-close-icon 尺寸: antd4 fork 时代为对齐视觉加的 width/height/font-size,
+   在 antd5 下破坏 .ant-modal-close 的 flex 居中(svg 左偏 2px、缩小)。antd5 原生居中即可。 */
 
 /* GM footer positioning */
 .ant-modal .gm-modal-footer,
@@ -280,6 +277,35 @@ html {
 .ant-input-affix-wrapper.ant-input-outlined:not(.ant-input-borderless):not(.ant-input-affix-wrapper-disabled):not(.ant-input-affix-wrapper-status-error):not(.ant-input-affix-wrapper-status-warning):focus-within {
   border-color: var(--ant-color-primary, var(--ant-primary-color, var(--gm-color-primary, #0363ff)));
   box-shadow: 0 0 0 2px var(--ant-control-outline, rgba(3, 99, 255, 0.16));
+}
+/* 裸 .ant-input(无 affix-wrapper)的 hover/focus 补偿:
+   antd5 cssinjs 的 hash class 被 :where() 包裹(特异度贡献 0),其 focus 规则与本文件上面的
+   default 态补偿同为 (0,2,0),而本 style 注入在 head 末尾,级联同分靠后者胜 → focus 边框
+   被 default 态补偿钉死成 #d9d9d9,表现为"聚焦边框样式消失"。
+   与 affix-wrapper 补偿同构,补齐裸 input 的 hover/focus(排除 disabled/error/warning 态)。 */
+.ant-input-outlined:not(.ant-input-borderless):not(.ant-input-disabled):not(.ant-input-status-error):not(.ant-input-status-warning):hover {
+  border-color: var(--ant-color-primary-hover, var(--ant-primary-color-hover, #2b84ff));
+}
+.ant-input-outlined:not(.ant-input-borderless):not(.ant-input-disabled):not(.ant-input-status-error):not(.ant-input-status-warning):focus,
+.ant-input-outlined:not(.ant-input-borderless):not(.ant-input-disabled):not(.ant-input-status-error):not(.ant-input-status-warning):focus-within {
+  border-color: var(--ant-color-primary, var(--ant-primary-color, var(--gm-color-primary, #0363ff)));
+  box-shadow: 0 0 0 2px var(--ant-control-outline, rgba(3, 99, 255, 0.16));
+}
+
+/* GmSelect 自定义下拉(DropdownRender)列表项 hover 高亮:
+   列表项样式是 inline style(styles.ts),:hover 伪类无法用 inline style 表达,
+   旧 antd4 fork 的 .ant-select-dropdown-item:hover 背景在 wrapper 迁移时丢失。
+   类名由 DropdownRender.tsx 挂上,disabled 态不高亮。 */
+.gm-select-dropdown-item:hover:not(.gm-select-dropdown-item-disabled) {
+  background-color: var(--ant-color-fill-quaternary, #f5f5f5);
+}
+
+/* GmSelect 自定义下拉弹层宽度兜底:
+   DropdownRender 内容有 minWidth 250,但弹层根节点(.ant-select-dropdown)在
+   matchWidth 模式下 inline width=触发器宽度,窄触发器(<250)时内容会被
+   overflow:hidden 裁剪。配合 compat/Select.tsx 挂的 gm-select-dropdown 类兜底。 */
+.gm-select-dropdown {
+  min-width: 250px;
 }
 
 /* Select/Cascader/TreeSelect(共用 .ant-select 根节点)作为 flex item 时,min-width:auto 会让

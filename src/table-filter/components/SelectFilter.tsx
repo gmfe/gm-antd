@@ -152,7 +152,10 @@ const SelectFilter: React.FC<SelectFilterProps> = ({ className, field }) => {
         }}
         showSearch
         allowClear={field.allowClear}
-        popupMatchSelectWidth={false}
+        // 不再传 popupMatchSelectWidth: false:
+        // false 时弹层宽度=纯内容宽(antd5 无触发器最小宽度兜底),选项文字短时下拉"特别短"。
+        // 默认 true 让弹层跟随触发器宽度;窄触发器场景由 gm-select-dropdown 的
+        // min-width 250px(globalCSS)兜底防裁剪。
         filterOption={(input, option) =>
           (option?.label as unknown as string)?.toLowerCase().includes(input.toLowerCase())
         }
