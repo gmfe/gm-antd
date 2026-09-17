@@ -5,14 +5,24 @@ import { secondButtonStyle, secondButtonDisabledStyle, secondButtonHoverStyle } 
 
 export type ButtonType = AntButtonProps['type'] | 'second';
 
+/** 防连点时间窗间隔: 人类双击间隔通常 <250ms, 正常连续操作 300ms+ */
+const THROTTLE_MS = 300;
+
 export interface GmButtonProps extends Omit<AntButtonProps, 'type'> {
   type?: ButtonType;
+  /**
+   * 防连点时间窗(默认开启): 300ms 内同一按钮只放行首次点击, 后续点击忽略。
+   * 与 autoLoading 互补 —— 时间窗不依赖 onClick 写法, 同步 handler / fire-and-forget
+   * 的快速双击也能拦截; 确实需要 <300ms 连续响应的场景传 false 关闭。
+   */
+  throttle?: boolean;
 }
 
 const GmButton = React.forwardRef<HTMLButtonElement | HTMLAnchorElement, GmButtonProps>(
-  ({ type = 'second', onClick, disabled, style, className, ...rest }, ref) => {
+  ({ type = 'second', onClick, disabled, throttle = true, style, className, ...rest }, ref) => {
     const [autoLoading, setAutoLoading] = useState(false);
     const loadingRef = useRef(false);
+    const lastClickRef = useRef(0);
 
     const isSecond = type === 'second';
     const antType = isSecond ? 'default' : type;
@@ -32,6 +42,14 @@ const GmButton = React.forwardRef<HTMLButtonElement | HTMLAnchorElement, GmButto
     };
 
     const handleClick = (e: React.MouseEvent<HTMLButtonElement | HTMLAnchorElement>) => {
+      // 防连点时间窗: ref 同步判定, 双击第二击必然被拦(不依赖 React 重渲染时机)
+      const now = Date.now();
+      if (throttle && now - lastClickRef.current < THROTTLE_MS) {
+        e.preventDefault();
+        return;
+      }
+      lastClickRef.current = now;
+
       if (autoLoading || loadingRef.current) {
         e.preventDefault();
         return;
