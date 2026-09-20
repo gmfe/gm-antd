@@ -115,16 +115,19 @@ html {
   overflow: hidden;
   border-radius: 8px;
 }
-.ant-modal .ant-modal-header {
+/* header/body/footer 排除 .base-table-modal(gm-virtual-table diy 弹窗,类名挂在 .ant-modal-wrap 上):
+   不排除时本文件规则与业务方 .base-table-modal 归零规则同为 (0,2,0),
+   本 style 注入在 head 末尾靠后者胜,会把 diy 弹窗的 body 撑出 24px 内边距。 */
+.ant-modal-wrap:not(.base-table-modal) .ant-modal-header {
   padding: 16px 24px;
   margin-bottom: 0;
   border-bottom: 1px solid #f0f0f0;
   border-radius: 8px 8px 0 0;
 }
-.ant-modal .ant-modal-body {
+.ant-modal-wrap:not(.base-table-modal) .ant-modal-body {
   padding: 24px;
 }
-.ant-modal .ant-modal-footer {
+.ant-modal-wrap:not(.base-table-modal) .ant-modal-footer {
   padding: 10px 16px;
   margin-top: 0;
   border-top: 1px solid #f0f0f0;
