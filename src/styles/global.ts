@@ -261,6 +261,29 @@ html {
   background-color: transparent;
 }
 
+/* Default 按钮(variant-outlined)交互态接管:
+   cssinjs 的 .ant-btn-variant-outlined:not(:disabled):hover 会显式把 background
+   改写为 defaultHoverBg(colorBgContainer 白),特异性 (0,3,0) 压过 GM/ERP 挂在
+   .ant-btn-default (0,2,0) 的灰底 #f2f3f4 → hover 一瞬间灰底变白,表现为
+   "hover 后按钮背景色消失"(modal 内反差最明显)。
+   以 (0,5,0) 接管:GM 视觉灰底蓝字无边框,hover 保持灰底仅字色变化(antd4 时代行为)。
+   注意 danger 按钮(type=default + danger)同样挂 .ant-btn-default 类,必须排除,
+   其样式由 .ant-btn-color-dangerous / genDangerousStyle 负责。 */
+.ant-btn-default.ant-btn-variant-outlined:not(.ant-btn-dangerous):not(:disabled) {
+  color: var(--ant-color-primary, var(--ant-primary-color, var(--gm-color-primary, #0363ff)));
+  background-color: #f2f3f4;
+  border-color: transparent;
+  box-shadow: none;
+}
+.ant-btn-default.ant-btn-variant-outlined:not(.ant-btn-dangerous):not(:disabled):hover {
+  color: var(--ant-color-primary-hover, var(--ant-primary-color-hover, #0363ff));
+  background-color: #f2f3f4;
+}
+.ant-btn-default.ant-btn-variant-outlined:not(.ant-btn-dangerous):not(:disabled):active {
+  color: var(--ant-color-primary-active, var(--ant-primary-color-active, #004fcf));
+  background-color: #e8eaed;
+}
+
 /* antd5 border 补偿: 部分消费方环境(旧 webpack/多 ConfigProvider)下 antd5 colorBorder token 注入为透明,
    导致 Select/DatePicker/Input/Pagination 默认 border-color 透明。
    强制 antd5 默认 colorBorder #d9d9d9,保证 gm-antd 二次封装组件(TableFilter 等)视觉正常。
