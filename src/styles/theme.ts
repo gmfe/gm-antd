@@ -74,6 +74,12 @@ const gmTheme: ThemeConfig = {
     colorErrorOutline: gmThemeColors.errorOutline,
     colorBorder: '#d9d9d9',
     colorFillQuaternary: '#f5f5f5',
+    // antd 5.29.x 的 colorBgSolid 系 token 计算存在坏值（getAlphaColor(colorTextBase, 1)
+    // 把数字 1 当背景色参数 → 算出纯黑系），default 按钮（5.27+ 为 variant-solid）的
+    // hover/active 背景会被 cssinjs 用坏值改写。此处覆盖为 antd 预期的浅灰系。
+    colorBgSolid: '#f0f0f0',
+    colorBgSolidHover: '#d9d9d9',
+    colorBgSolidActive: '#bfbfbf',
     colorTextDisabled: gmThemeColors.disabled,
     borderRadius: 4,
   },
