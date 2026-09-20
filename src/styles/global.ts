@@ -183,9 +183,9 @@ html {
 .ant-modal-confirm-content {
   word-break: break-all;
 }
-.ant-modal-confirm .ant-modal-confirm-body-wrapper {
-  padding: 24px;
-}
+/* confirm 弹窗的间距由上方 .ant-modal-body { padding: 24px } 统一承担
+   （confirm 无 header/footer，content 已归零）。不要给 body-wrapper 再叠 padding，
+   否则与 .ant-modal-body 双层叠加，confirm 内容被撑出 48px 内边距。 */
 
 /* Modal confirm title bold */
 .ant-modal-confirm-body .ant-modal-confirm-title {
@@ -262,8 +262,11 @@ html {
 }
 
 /* antd5 border 补偿: 部分消费方环境(旧 webpack/多 ConfigProvider)下 antd5 colorBorder token 注入为透明,
-   导致 Select/DatePicker/Input/Pagination 默认 border-color 透明(只 default 状态,hover/focus 由 cssinjs 正常覆盖)。
-   强制 antd5 默认 colorBorder #d9d9d9,保证 gm-antd 二次封装组件(TableFilter 等)视觉正常。 */
+   导致 Select/DatePicker/Input/Pagination 默认 border-color 透明。
+   强制 antd5 默认 colorBorder #d9d9d9,保证 gm-antd 二次封装组件(TableFilter 等)视觉正常。
+   注意: default 态补偿特异性 (0,3,0)~(0,4,0) 且本 style 注入在 head 末尾,会压过 antd5 cssinjs
+   的 hover/focus 规则(hash 类被 :where() 包裹,特异度贡献 0)——因此下方必须给每个补偿目标
+   成套补齐 hover/focus,否则交互态边框被钉死 #d9d9d9 不变色。 */
 .ant-select-outlined:not(.ant-select-borderless):not(.ant-select-disabled):not(.ant-select-customize-input) .ant-select-selector,
 .ant-picker-outlined:not(.ant-picker-borderless):not(.ant-picker-disabled),
 .ant-input-outlined:not(.ant-input-borderless),
@@ -293,6 +296,43 @@ html {
 .ant-input-outlined:not(.ant-input-borderless):not(.ant-input-disabled):not(.ant-input-status-error):not(.ant-input-status-warning):focus-within {
   border-color: var(--ant-color-primary, var(--ant-primary-color, var(--gm-color-primary, #0363ff)));
   box-shadow: 0 0 0 2px var(--ant-control-outline, rgba(3, 99, 255, 0.16));
+}
+/* DatePicker/RangePicker(同挂 .ant-picker)的 hover/focus 补偿:
+   上方 default 态补偿把 hover/focus 边框钉死 #d9d9d9,此处补齐交互态(排除 borderless/disabled)。 */
+.ant-picker-outlined:not(.ant-picker-borderless):not(.ant-picker-disabled):hover {
+  border-color: var(--ant-color-primary-hover, var(--ant-primary-color-hover, #2b84ff));
+}
+.ant-picker-outlined:not(.ant-picker-borderless):not(.ant-picker-disabled).ant-picker-focused,
+.ant-picker-outlined:not(.ant-picker-borderless):not(.ant-picker-disabled):focus,
+.ant-picker-outlined:not(.ant-picker-borderless):not(.ant-picker-disabled):focus-within {
+  border-color: var(--ant-color-primary, var(--ant-primary-color, var(--gm-color-primary, #0363ff)));
+  box-shadow: 0 0 0 2px var(--ant-control-outline, rgba(3, 99, 255, 0.16));
+}
+/* Select 的 hover/focused 补偿(default 补偿同为 (0,4,0),head 末尾注入压过 cssinjs):
+   排除 borderless/disabled/customize-input,与 default 补偿的作用域一致。 */
+.ant-select-outlined:not(.ant-select-borderless):not(.ant-select-disabled):not(.ant-select-customize-input):hover
+  .ant-select-selector {
+  border-color: var(--ant-color-primary-hover, var(--ant-primary-color-hover, #2b84ff));
+}
+.ant-select-focused:not(.ant-select-borderless):not(.ant-select-disabled):not(.ant-select-customize-input)
+  .ant-select-selector {
+  border-color: var(--ant-color-primary, var(--ant-primary-color, var(--gm-color-primary, #0363ff)));
+  box-shadow: 0 0 0 2px var(--ant-control-outline, rgba(3, 99, 255, 0.16));
+}
+/* InputNumber 的 hover/focus 补偿。 */
+.ant-input-number-outlined:not(.ant-input-number-borderless):not(.ant-input-number-disabled):hover {
+  border-color: var(--ant-color-primary-hover, var(--ant-primary-color-hover, #2b84ff));
+}
+.ant-input-number-outlined:not(.ant-input-number-borderless):not(.ant-input-number-disabled).ant-input-number-focused,
+.ant-input-number-outlined:not(.ant-input-number-borderless):not(.ant-input-number-disabled):focus-within {
+  border-color: var(--ant-color-primary, var(--ant-primary-color, var(--gm-color-primary, #0363ff)));
+  box-shadow: 0 0 0 2px var(--ant-control-outline, rgba(3, 99, 255, 0.16));
+}
+/* Pagination 的 hover/active 补偿: default 补偿的选择器只排除 disabled,
+   item-active(选中页码)同样非 disabled,会被一并钉灰,此处一并恢复。 */
+.ant-pagination .ant-pagination-item:not(.ant-pagination-item-disabled):hover,
+.ant-pagination .ant-pagination-item-active {
+  border-color: var(--ant-color-primary, var(--ant-primary-color, var(--gm-color-primary, #0363ff)));
 }
 
 /* GmSelect 自定义下拉(DropdownRender)列表项 hover 高亮:
