@@ -60,7 +60,11 @@ const GmButton = React.forwardRef<HTMLButtonElement | HTMLAnchorElement, GmButto
         if (result && typeof result.then === 'function') {
           loadingRef.current = true;
           setAutoLoading(true);
-          result.finally(() => {
+          // P0 修复: 直接调 result.finally 在非原生 thenable(如 mobx flow 返回值、
+          // 自定义 promise-like)上会抛 "finally is not a function" —— 且异常发生在
+          // loading 锁定之后, 没有任何解锁路径, 按钮永久锁死。
+          // Promise.resolve 把 thenable 归一为原生 Promise, .finally 必然存在。
+          Promise.resolve(result).finally(() => {
             setAutoLoading(false);
             loadingRef.current = false;
           });
