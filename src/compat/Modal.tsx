@@ -1,6 +1,6 @@
-import React from 'react';
-import { Modal as AntModal } from 'antd';
 import type { ModalFuncProps, ModalProps as AntModalProps } from 'antd';
+import { Modal as AntModal } from 'antd';
+import type React from 'react';
 import { withCompat } from './withCompat';
 
 export type ModalProps = AntModalProps;
@@ -25,7 +25,7 @@ const WrappedModal = withCompat(AntModal as React.ComponentType<ModalProps>, {
     onVisibleChange: 'afterOpenChange',
     destroyOnClose: 'destroyOnHidden',
   },
-});
+}) as typeof AntModal;
 
 /**
  * P0 修复(2026-09 ERP 线上事故): Modal.info 等静态方法在 antd5 + React18 下,
@@ -38,23 +38,28 @@ const WrappedModal = withCompat(AntModal as React.ComponentType<ModalProps>, {
  * 仍在 DOM(正常路径 antd 早已卸载完毕), 强制移除整个静态实例挂载容器,
  * 并在页面上已无任何 ant-modal-wrap 时释放 body 滚动锁。
  */
+function removeStaticModalWraps(wraps: Element[]) {
+  wraps.forEach(wrap => {
+    // 静态实例的挂载容器(body 直下的裸 div, 内含 wrap + mask), 从根上移除
+    const container = wrap.parentElement;
+    if (container && container !== document.body) {
+      container.remove();
+    } else if (wrap instanceof HTMLElement) {
+      wrap.remove();
+    }
+  });
+  // 动画中断时 antd 的 scrollLocker 同样不会恢复, 手动兜底
+  if (!document.querySelector('.ant-modal-wrap')) {
+    document.body.style.removeProperty('overflow');
+    document.body.classList.remove('ant-scrolling-effect');
+  }
+}
+
 function scheduleWrapCleanup(mark: string) {
   window.setTimeout(() => {
-    const wraps = document.querySelectorAll('.' + mark);
-    for (const wrap of wraps) {
-      // 静态实例的挂载容器(body 直下的裸 div, 内含 wrap + mask), 从根上移除
-      const container = wrap.parentElement;
-      if (container && container !== document.body) {
-        container.remove();
-      } else if (wrap instanceof HTMLElement) {
-        wrap.remove();
-      }
-    }
-    // 动画中断时 antd 的 scrollLocker 同样不会恢复, 手动兜底
-    if (!document.querySelector('.ant-modal-wrap')) {
-      document.body.style.removeProperty('overflow');
-      document.body.classList.remove('ant-scrolling-effect');
-    }
+    removeStaticModalWraps(
+      Array.prototype.slice.call(document.querySelectorAll(`.${mark}`)) as Element[],
+    );
   }, WRAP_CLEANUP_DELAY_MS);
 }
 
@@ -62,9 +67,9 @@ function scheduleWrapCleanup(mark: string) {
 // 「确定」按钮不经过 GmButton, 快速双击时同步 onOk 会执行两次。这里显式覆盖:
 // 1. 给非 Promise 的 onOk 加 300ms 时间窗(返回 Promise 的原样透传, antd5 原生 loading 防护继续生效);
 // 2. 所有静态实例注入唯一标记 + 关闭路径保险丝(见 scheduleWrapCleanup)。
-for (const method of CONFIRM_LIKE_STATICS) {
+CONFIRM_LIKE_STATICS.forEach(method => {
   const original = (AntModal as unknown as Record<string, unknown>)[method];
-  if (typeof original !== 'function') continue;
+  if (typeof original !== 'function') return;
   const bound = original.bind(AntModal);
   (WrappedModal as unknown as Record<string, unknown>)[method] = (config: ModalFuncProps = {}) => {
     const userOnOk = config.onOk;
@@ -87,9 +92,9 @@ for (const method of CONFIRM_LIKE_STATICS) {
         if (typeof userOnOk === 'function') {
           result = userOnOk(...args);
         }
-        // onOk 返回 Promise 时 antd 会保持弹窗直到 settle, 关闭在那之后才发起
+        // antd 仅在 Promise fulfilled 后关闭弹窗; rejected 时会停止 loading 并保持弹窗打开
         if (result && typeof (result as Promise<unknown>).then === 'function') {
-          Promise.resolve(result).then(schedule, schedule);
+          Promise.resolve(result).then(schedule, () => undefined);
         } else {
           schedule();
         }
@@ -112,6 +117,21 @@ for (const method of CONFIRM_LIKE_STATICS) {
     }
     return instance;
   };
-}
+});
+
+// destroyAll 不会经过单实例的 destroy 包装。先快照本次要关闭的静态实例，避免延时清理
+// 误删 destroyAll 调用后新打开的弹窗。
+const originalDestroyAll = AntModal.destroyAll.bind(AntModal);
+WrappedModal.destroyAll = () => {
+  const wraps = (
+    Array.prototype.slice.call(document.querySelectorAll('.ant-modal-wrap')) as Element[]
+  ).filter(wrap =>
+    (wrap.getAttribute('class') || '')
+      .split(/\s+/)
+      .some(className => className.startsWith(STATIC_MARK_PREFIX)),
+  );
+  originalDestroyAll();
+  window.setTimeout(() => removeStaticModalWraps(wraps), WRAP_CLEANUP_DELAY_MS);
+};
 
 export default WrappedModal;
