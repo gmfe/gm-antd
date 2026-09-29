@@ -225,6 +225,22 @@ html {
 .ant-table .ant-table-tbody > tr.ant-table-row-selected > td {
   background-color: var(--gm-color-table-td-active, #b2d5ff);
 }
+/*
+ * Table 行 hover 高亮残留兜底:
+ * rc-table 用 JS 切换 .ant-table-cell-row-hover 类管理行 hover(按行索引存区间)。
+ * 被 hover 的行因数据变化(删除行/刷新替换/翻页)被卸载时,mouseleave 不会派发,
+ * hover 类残留并"转移"到同索引的新行上,表现为无鼠标悬停的行一直高亮。
+ * 上游已知且拒绝修复: https://github.com/ant-design/ant-design/issues/56125 (not planned)。
+ * 行当前未被 :hover 时压掉残留 hover 类背景(恢复父行底色);正常 hover 时
+ * tr 必为 :hover,本规则不命中。选中行排除: 其 hover/常驻底色相同(#b2d5ff),
+ * 残留类无视觉差异,且不能把选中色误刷成白。
+ */
+.ant-table
+  .ant-table-tbody
+  > tr.ant-table-row:not(.ant-table-row-selected):not(:hover)
+  > td.ant-table-cell-row-hover {
+  background-color: inherit;
+}
 
 /* Tabs title 16px */
 .ant-tabs-tab-btn {
