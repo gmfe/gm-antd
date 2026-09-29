@@ -92,6 +92,11 @@ const gmTheme: ThemeConfig = {
       headerBg: '#fafafa',
       headerColor: '#1f1f1f',
       rowHoverBg: '#f5f5f5',
+      // 展开行底色与 rowHoverBg(#f5f5f5)撞色:antd 默认 rowExpandedBg 取 colorFillAlter,
+      // 渲染后与行 hover 色完全一致,展开区域常态灰底被误认为"父行一直 hover",
+      // 内层嵌套表格行 hover 又与展开区灰底融为一体,产生"hover 残留"观感。
+      // 残留兜底见 styles/global.ts 中 cell-row-hover 注释。
+      rowExpandedBg: '#ffffff',
       rowSelectedBg: gmThemeColors.primaryBg,
       rowSelectedHoverBg: gmThemeColors.primaryBg,
       cellPaddingBlock: 16,
