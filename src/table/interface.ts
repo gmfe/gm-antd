@@ -66,9 +66,18 @@ export interface ConfigItem {
   group?: string;
 }
 
+// 列宽拖拽限制的放开配置(默认 fixed 列与最后一列不可拖拽, 保持历史行为)
+export interface TableResizableConfig {
+  /** fixed 列是否可拖拽, 默认 false */
+  fixed?: boolean;
+  /** 最后一列是否可拖拽, 默认 false */
+  lastColumn?: boolean;
+}
+
 // GM Table props (extends antd 5 TableProps)
 export interface GMTableProps<RecordType = any> extends AntTableProps<RecordType> {
-  isResizable?: boolean;
+  /** 是否启用列宽拖拽; 传对象时可放开对应列形态的拖拽限制 */
+  isResizable?: boolean | TableResizableConfig;
 }
 
 // Shared column key utility type
