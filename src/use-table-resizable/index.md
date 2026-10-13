@@ -16,6 +16,12 @@ group:
 
 <code src="./demos/basic.tsx"></code>
 
+## fixed 列与最后一列拖拽
+
+默认 fixed 列与最后一列不可拖拽，通过 `options` 放开（Table 组件对应 `isResizable` 传对象形态）：
+
+<code src="./demos/fixed-column.tsx"></code>
+
 ## API
 
 ### 参数
@@ -24,6 +30,7 @@ group:
 | --- | --- | --- | --- |
 | columns | 列配置 | `ColumnsType` | `[]` |
 | components | antd components | `object` | - |
+| options | 拖拽限制放开配置：`fixed` 允许 fixed 列拖拽，`lastColumn` 允许最后一列拖拽 | `{ fixed?: boolean; lastColumn?: boolean }` | - |
 
 ### 返回值
 

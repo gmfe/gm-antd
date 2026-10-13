@@ -3,7 +3,7 @@ import type { SyntheticEvent } from 'react';
 import React, { useState, useRef, useMemo, useEffect } from 'react';
 import type { ResizeCallbackData, ResizableProps } from 'react-resizable';
 import { Resizable } from 'react-resizable';
-import type { ColumnType, TableProps } from '../../interface';
+import type { ColumnType, TableProps, TableResizableConfig } from '../../interface';
 
 const DEFAULT_COLUMNS_HEAD_WIDTH = 100;
 const MIN_COLUMN_WIDTH = 150;
@@ -119,7 +119,11 @@ const ResizableTitle = (
 const useTableResizable = <DataType extends { [key: string]: any }>(
   columns: ColumnType<DataType>[] = [],
   components?: TableProps<DataType>['components'],
+  options?: TableResizableConfig,
 ): UseTableResizableResult<DataType> => {
+  // 默认保持历史行为: fixed 列与最后一列不可拖拽, options 显式放开
+  const { fixed: fixedResizable = false, lastColumn: lastColumnResizable = false } =
+    options ?? {};
   const [width, setWidth] = useState<{ [key: string]: number }>({});
   const originColumns = useRef(columns.map(column => pick(column, ['width', 'dataIndex', 'key'])));
   const newComponents: TableProps<any>['components'] = useMemo(
@@ -155,10 +159,13 @@ const useTableResizable = <DataType extends { [key: string]: any }>(
         width: width[getColumnKey(col)!] || col.width || MIN_COLUMN_WIDTH,
         onResize: handleResize(col) as any,
       });
+      const disableResize =
+        (col.fixed && !fixedResizable) ||
+        (index === columns.length - 1 && !lastColumnResizable);
       return {
         ...col,
         width: width[getColumnKey(col)!] || col.width || MIN_COLUMN_WIDTH,
-        onHeaderCell: col.fixed || index === columns.length - 1 ? undefined : onHeaderCell,
+        onHeaderCell: disableResize ? undefined : onHeaderCell,
       };
     }),
     components: newComponents,

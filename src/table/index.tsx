@@ -20,6 +20,7 @@ function InternalTable<RecordType extends object = any>(
   const result = useTableResizable(
     shouldResize ? columns as any : [],
     components,
+    typeof isResizable === 'object' ? isResizable : undefined,
   );
 
   // 空数据时不固定表头：rc-table 的 FixedHolder 在固定表头模式下会给表头追加一个 scrollbar
