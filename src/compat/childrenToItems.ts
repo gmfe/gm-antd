@@ -29,11 +29,24 @@ function isAnyMenu(node: React.ReactNode): boolean {
  * 注意:不能用 React.Children.toArray —— 它会给 key 加前缀(如 '0' -> '.$0'),
  * 导致转出的 item.key 与外部受控的 activeKey/selectedKeys 严格相等判断失败
  * (表现为 Tabs 初始不高亮、Menu 默认不选中,点击后才恢复)。forEach 不改写 key。
+ *
+ * 需要递归展开 Fragment 与数组:业务里大量存在
+ * `{cond && <><TabPane/><TabPane/></>}` 的条件分组写法,React.Children.forEach
+ * 不展开 Fragment,整个 Fragment 会被当成一个 label=undefined 的 item,
+ * 分组内的 TabPane 全部丢失(如 ERP 采购入库单费用分摊/金额折让 Tab 不显示)。
+ * 展开时直接读取 props.children 递归,同样不改写 key。
  */
 function collectChildren(children: React.ReactNode): React.ReactNode[] {
   const arr: React.ReactNode[] = [];
   React.Children.forEach(children, child => {
-    arr.push(child);
+    if (child === null || child === undefined || typeof child === 'boolean') return;
+    if (Array.isArray(child)) {
+      arr.push(...collectChildren(child));
+    } else if (React.isValidElement(child) && (child.type as any) === React.Fragment) {
+      arr.push(...collectChildren((child.props as any).children));
+    } else {
+      arr.push(child);
+    }
   });
   return arr;
 }
